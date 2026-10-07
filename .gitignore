@@ -1,0 +1,14 @@
+.DS_Store
+*.epub
+*.EPUB
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+node_modules/
+build/
+.waf-*
+.lock-waf*
+offline-prototype/output/
+offline-prototype/storage-probe/resources/readings.pmr

@@ -1,0 +1,34 @@
+{
+  "name": "storage-probe",
+  "author": "",
+  "version": "1.0.0",
+  "keywords": [
+    "pebble-app"
+  ],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Daily Mass",
+    "uuid": "bfbd18b3-4a25-44b1-99f9-2de4fbe0f076",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "dummy"
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "raw",
+          "name": "READINGS_DB",
+          "file": "readings.pmr"
+        }
+      ]
+    }
+  }
+}
