@@ -34,7 +34,7 @@ through the whole reading, including every part. It drops in over 200 ms when
 opened and updates immediately on page turns. It stops above the footer and
 adds no saved-place or resume behavior. Liturgical-color strips and red rubrics
 remain, with 8-pixel paragraph gaps. A Chi-Rho identifies **Roman Missal** in the
-launcher. 
+launcher.
 
 Opening and exiting the app saves seven days of offline App Glance subtitles.
 The launcher shows the day's celebration or season/week, advancing at local
