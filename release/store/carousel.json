@@ -11,28 +11,28 @@
     "caption": "The Gospel, with red rubrics and a crimson progress ribbon",
     "width": 200,
     "height": 228,
-    "sha256": "5724b54e47970baea3c1c2d85dcf1e0a72b9889ea45a5b3b8dbe048654bdc36e"
+    "sha256": "3b3136a78758d6c4500fe14699dbfe3747b12e4b3b6a20ce8740a3b649a4b4aa"
   },
   {
     "file": "screenshots/03-church-mode.png",
     "caption": "Church mode for a dark reading page",
     "width": 200,
     "height": 228,
-    "sha256": "d1cad9df6698c6b62abac29076d2f224bcda8aadad54bf46fd2091245e52d7a7"
+    "sha256": "79cf0fa8c357b65ff1b9199c4f9fc6abf7b2bffc2edc341275d9dcc116adc6a2"
   },
   {
     "file": "screenshots/04-next-reading.png",
     "caption": "Continue through the Mass, one reading after another",
     "width": 200,
     "height": 228,
-    "sha256": "c45165eead2f9974527cc6a9669f82cd6304076cf208ffbe16edda9d4997c1d6"
+    "sha256": "d5643ef845ed53cc323d9c899f3a98d9a5f551e6cc31de2b7f92d564a10cd226"
   },
   {
     "file": "screenshots/05-settings.png",
     "caption": "Text size and theme, together in Settings",
     "width": 200,
     "height": 228,
-    "sha256": "7992d795a6126b2688592cd8c0db34c21b3e2d2a04d400351b84f95cfd2224d5"
+    "sha256": "6bc30aa60d1ffcca8b00d23b409873241e7c7a90275586109a0d1bc0c181f279"
   },
   {
     "file": "screenshots/06-date-shortcuts.png",

@@ -8,6 +8,22 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
+## Release 1.3.1 in progress
+
+Owner authorized “great! now release and bump the version”. Both GitHub and the
+existing Pebble listing are in scope. Version 1.3.1 includes the full-height
+reader, subtle automatic version label and thin crimson menu divider. The
+initial local divider callback faulted on physical PT2 4.38.4 at PC 0x7ca; it was
+replaced by ordinary row padding/drawing. The corrected UI passed three physical
+launches and reading navigation, and the owner confirmed it works.
+
+Current release evidence: artifacts/release-1.3.1/. Existing UI/geometry and
+physical-fix evidence: artifacts/settings-version/ and artifacts/launch-fix/.
+Build a clean 1.3.1 once, freeze the bytes, install that exact candidate on PT2,
+then publish GitHub first and the store second. Banner, icons and description
+are unchanged; refresh the six native screenshots in the established order.
+Do not overwrite v1.3.0 or its frozen candidate. Record verified final state here.
+
 ## Version 1.3.0 published and verified
 
 Owner authorized the new banner, version bump and release of the latest code on

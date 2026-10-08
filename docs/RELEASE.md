@@ -1,3 +1,21 @@
+# Release candidate — 1.3.1
+
+Owner authorized publication to GitHub and the existing Pebble App Store listing.
+This patch adds full-height reading pages, a thin crimson menu divider and an
+automatic, subtle version label in Settings. The divider uses ordinary row drawing,
+verified on PT2 firmware 4.38.4 after a native separator callback caused a startup
+fault during development. Reading and calendar resources are unchanged.
+
+Clean SDK 4.33.1 build and all four ASan/UBSan host suites pass.
+PBW: 962,242 bytes; SHA-256:
+`ad66f1a57e2e26b7eeba89f3c6fe6ac6849eb94cc702c18e87edd2a238b8c58b`.
+Resources: 937,965 bytes; static RAM: 59,122 bytes; heap before allocations: 71,950.
+The six native store screenshots are refreshed; banner, icons and description stay
+unchanged. Current evidence: `artifacts/release-1.3.1/`. Freeze candidate 1 before
+physical installation and publication. Version 1.3.0 remains public until verified.
+
+---
+
 # Public release — 1.3.0
 
 Daily Roman Missal 1.3.0 is published and verified on both services, as authorized

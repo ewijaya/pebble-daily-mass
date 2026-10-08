@@ -39,8 +39,10 @@ def build(ctx):
         # tinf's internal invariant assertions use hosted libc abort(), which is
         # unavailable on Pebble. Its explicit malformed-input checks remain on.
         # Host tests retain harness assertions. Keep ARM stack-usage evidence.
+        # Use the same version label as the SDK's generated appinfo.json.
         ctx.pbl_build(source=ctx.path.ant_glob('src/c/**/*.c'), target=app_elf,
-                      bin_type='app', defines=['NDEBUG'], cflags=['-fstack-usage'])
+                      bin_type='app', defines=['NDEBUG', 'MISSAL_VERSION="{}"'.format(
+                          ctx.env.PROJECT_INFO['versionLabel'])], cflags=['-fstack-usage'])
 
         if build_worker:
             worker_elf = '{}/pebble-worker.elf'.format(ctx.env.BUILD_DIR)

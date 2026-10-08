@@ -31,10 +31,16 @@ room for larger rows, with full celebration names in Day details.
 
 A quiet 4-pixel crimson ribbon at the reader's right edge grows with progress
 through the whole reading, including every part. It drops in over 200 ms when
-opened and updates immediately on page turns. It stops above the footer and
+opened and updates immediately on page turns. It ends just above the bottom edge and
 adds no saved-place or resume behavior. Liturgical-color strips and red rubrics
 remain, with 8-pixel paragraph gaps. A Chi-Rho identifies **Roman Missal** in the
 launcher.
+
+Version 1.3.1 adds a quiet version label at the bottom of Settings,
+read automatically from the SDK's build metadata, and a thin crimson rule
+between the readings and Day details/Settings. The reader's black page-counter
+footer is removed, giving the text the full screen height; the ribbon still
+shows progress and Select still opens Settings. The 1.3.1 release is being prepared.
 
 Opening and exiting the app saves seven days of offline App Glance subtitles.
 The launcher shows the day's celebration or season/week, advancing at local

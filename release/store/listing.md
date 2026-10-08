@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.3.0
+Version: 1.3.1
 Developer: Edward
 
 ## Description
@@ -44,19 +44,17 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.3.0 makes following the readings during Mass simpler.
+Daily Roman Missal 1.3.1 gives the readings more room.
 
-Continue from the First Reading to the Psalm and onward with Down. A card shows
-what comes next; Up at the beginning returns to the previous reading.
+The black page-counter strip is removed, so reading text uses the full screen.
+The crimson ribbon continues to show progress; Select still opens Settings.
 
-Settings is now on the main menu and remains available with Select in the reader.
-Large and Extra Large extend to menus, citations and prompts. Choose Light or
-Church (dark) mode; both text size and theme are remembered.
+A thin crimson rule separates the readings from Day details and Settings.
+A quiet version label appears at the bottom of Settings and follows the app's
+build version automatically.
 
-A thin crimson missal ribbon shows progress through the entire reading, including
-long readings with several parts. It opens with a gentle drop and stays clear
-of the text and footer. Each launch still opens today's menu; reading positions
-are not saved. All readings and calendar features remain fully offline.
+Verified on Pebble Time 2, including successful launches and reading navigation.
+All readings, liturgical-calendar selection and offline behavior are unchanged.
 
 ## Privacy
 

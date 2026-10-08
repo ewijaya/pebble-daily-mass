@@ -7,7 +7,8 @@
 static Window *menu_window, *reader_window, *options_window;
 static MenuLayer *menu;
 static MenuLayer *options_menu;
-static TextLayer *title, *season, *celebration, *footer;
+static TextLayer *title, *season, *celebration;
+static TextLayer *settings_version;
 static Layer *body_layer, *ribbon_layer;
 static Animation *ribbon_animation;
 static int ribbon_length, ribbon_target;
@@ -62,7 +63,6 @@ static int font_size;
 static bool dark_mode;
 static char settings_summary[32];
 static int viewport_height, max_offset, page_step;
-static char footer_text[48];
 static uint32_t startup_ms;
 static bool first_menu_draw;
 static struct { GColor fill, text, ink, paper, body, rubric; } theme;
@@ -109,6 +109,7 @@ static void refresh_theme(void) {
   if (season) {text_layer_set_text_color(season,theme.ink);text_layer_set_background_color(season,GColorClear);}
   if (celebration) {text_layer_set_text_color(celebration,theme.ink);text_layer_set_background_color(celebration,GColorClear);}
   style_menu(menu);style_menu(date_menu);style_menu(options_menu);
+  if (settings_version) text_layer_set_text_color(settings_version,dark_mode ? GColorLightGray : GColorDarkGray);
   if (body_layer) layer_mark_dirty(body_layer);
   snprintf(settings_summary,sizeof(settings_summary),"%s text · %s",font_size ? "XL" : "Large",dark_mode ? "Dark" : "Light");
 }
@@ -174,9 +175,11 @@ static void draw_body(Layer *layer, GContext *ctx) {
         GRect(8,strip_height+8,width-16,64),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
     graphics_context_set_text_color(ctx,theme.rubric);
     graphics_draw_text(ctx,next ? citations[selected+1] : "Return to the menu with Back.",rubric_font,
-        GRect(8,strip_height+76,width-16,viewport_height-strip_height-102),GTextOverflowModeTrailingEllipsis,GTextAlignmentCenter,NULL);
+        GRect(8,strip_height+76,width-16,viewport_height-strip_height-124),GTextOverflowModeTrailingEllipsis,GTextAlignmentCenter,NULL);
     graphics_context_set_text_color(ctx,theme.body);
     graphics_draw_text(ctx,"Up: return to reading",fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
+        GRect(4,viewport_height-48,width-8,22),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
+    graphics_draw_text(ctx,next ? "Down: next reading" : "Back: readings menu",fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
         GRect(4,viewport_height-26,width-8,26),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
     return;
   }
@@ -278,28 +281,21 @@ static void ribbon_open(void) {
 }
 
 static void move_to(int offset) {
-  if (!scroll || !footer || page_step <= 0) return;
+  if (!scroll || !body_layer || page_step <= 0) return;
   if (offset < 0) offset = 0;
   if (offset > max_offset) offset = max_offset;
   scroll_layer_set_content_offset(scroll, GPoint(0, end_card ? 0 : -offset), false);
   layer_mark_dirty(body_layer);
   ribbon_update(offset);
-  if (end_card) {
-    text_layer_set_text(footer,selected+1<day.count ? "Down: next reading" : "Back: readings menu");
-    return;
-  }
+  if (end_card) return;
   int pages = 1 + (max_offset + page_step - 1) / page_step;
   int page = offset == max_offset ? pages : 1 + offset / page_step;
-  if (!details_mode && day_valid && selected < day.count && day.readings[selected].parts > 1)
-    snprintf(footer_text, sizeof(footer_text), "%d/%d  Part %u/%u", page, pages, reading_part+1, day.readings[selected].parts);
-  else snprintf(footer_text, sizeof(footer_text), "%d/%d  Select: settings", page, pages);
-  text_layer_set_text(footer, footer_text);
   APP_LOG(APP_LOG_LEVEL_INFO, "Reader size=%s offset=%d/%d page=%d/%d",
           font_size ? "XL" : "L", offset, max_offset, page, pages);
 }
 
 static void layout_reading(void) {
-  if (!body_layer || !scroll || !footer) return;
+  if (!body_layer || !scroll) return;
   // Retain approximate progress when changing size; new readings start at top.
   int previous_max = max_offset;
   int previous_offset = -scroll_layer_get_content_offset(scroll).y;
@@ -385,22 +381,28 @@ static void reader_click_config(void *context) {
 static int16_t choice_height(MenuLayer *layer, MenuIndex *index, void *context) {
   return font_size ? 60 : 48;
 }
-static void draw_choice(GContext *ctx,const Layer *cell,const char *label,const char *subtitle,GColor ink) {
+static void draw_choice(GContext *ctx,const Layer *cell,const char *label,const char *subtitle,GColor ink,int top) {
   GRect bounds=layer_get_bounds(cell);
   bool highlighted=menu_cell_layer_is_highlighted(cell);
   graphics_context_set_fill_color(ctx,highlighted ? theme.fill : theme.paper);
   graphics_fill_rect(ctx,bounds,0,GCornerNone);
+  if (top) {
+    graphics_context_set_fill_color(ctx,theme.paper);
+    graphics_fill_rect(ctx,GRect(0,0,bounds.size.w,top),0,GCornerNone);
+    graphics_context_set_fill_color(ctx,GColorDarkCandyAppleRed);
+    graphics_fill_rect(ctx,GRect(8,4,bounds.size.w-16,1),0,GCornerNone);
+  }
   graphics_context_set_text_color(ctx,highlighted ? theme.text : theme.body);
-  graphics_draw_text(ctx,label,text_font(),GRect(8,0,bounds.size.w-16,font_size ? 32 : 28),
+  graphics_draw_text(ctx,label,text_font(),GRect(8,top,bounds.size.w-16,font_size ? 32 : 28),
       GTextOverflowModeTrailingEllipsis,GTextAlignmentLeft,NULL);
   graphics_context_set_text_color(ctx,highlighted ? theme.text : ink);
-  graphics_draw_text(ctx,subtitle,small_font(),GRect(8,font_size ? 32 : 26,bounds.size.w-16,font_size ? 28 : 22),
+  graphics_draw_text(ctx,subtitle,small_font(),GRect(8,top+(font_size ? 32 : 26),bounds.size.w-16,font_size ? 28 : 22),
       GTextOverflowModeTrailingEllipsis,GTextAlignmentLeft,NULL);
 }
 static uint16_t settings_count(MenuLayer *layer,uint16_t section,void *context) {return 2;}
 static void settings_draw(GContext *ctx,const Layer *cell,MenuIndex *index,void *context) {
   draw_choice(ctx,cell,index->row ? "Theme" : "Text size",
-      index->row ? (dark_mode ? "Church (dark)" : "Light") : (font_size ? "Extra Large" : "Large"),theme.ink);
+      index->row ? (dark_mode ? "Church (dark)" : "Light") : (font_size ? "Extra Large" : "Large"),theme.ink,0);
 }
 static void settings_select(MenuLayer *layer,MenuIndex *index,void *context) {
   if (!index->row) {
@@ -414,7 +416,17 @@ static void settings_select(MenuLayer *layer,MenuIndex *index,void *context) {
   APP_LOG(APP_LOG_LEVEL_INFO,"Settings text=%s theme=%s",font_size ? "XL" : "L",dark_mode ? "dark" : "light");
 }
 static void options_load(Window *window) {
-  options_menu=menu_layer_create(layer_get_bounds(window_get_root_layer(window)));
+  GRect bounds=layer_get_bounds(window_get_root_layer(window));
+  settings_version=text_layer_create(GRect(0,bounds.size.h-24,bounds.size.w,24));
+  if (settings_version) {
+    text_layer_set_text(settings_version,"v" MISSAL_VERSION);
+    text_layer_set_font(settings_version,fonts_get_system_font(FONT_KEY_GOTHIC_18));
+    text_layer_set_text_alignment(settings_version,GTextAlignmentCenter);
+    text_layer_set_background_color(settings_version,GColorClear);
+    text_layer_set_text_color(settings_version,dark_mode ? GColorLightGray : GColorDarkGray);
+    layer_add_child(window_get_root_layer(window),text_layer_get_layer(settings_version));
+  }
+  options_menu=menu_layer_create(GRect(0,0,bounds.size.w,bounds.size.h-24));
   if (!options_menu) return;
   menu_layer_set_callbacks(options_menu,NULL,(MenuLayerCallbacks){.get_num_rows=settings_count,
       .get_cell_height=choice_height,.draw_row=settings_draw,.select_click=settings_select});
@@ -423,6 +435,8 @@ static void options_load(Window *window) {
 }
 static void options_unload(Window *window) {
   if (options_menu) menu_layer_destroy(options_menu);
+  if (settings_version) text_layer_destroy(settings_version);
+  settings_version=NULL;
   options_menu=NULL;
 }
 
@@ -468,13 +482,12 @@ static void load_reading_part(uint8_t part) {
 
 static void reader_load(Window *window) {
   GRect bounds = layer_get_bounds(window_get_root_layer(window));
-  viewport_height = bounds.size.h - FOOTER_HEIGHT;
+  viewport_height = bounds.size.h;
   max_offset = 0;
   reading=malloc(READING_CAPACITY);
   scroll = scroll_layer_create(GRect(0, 0, bounds.size.w, viewport_height));
   body_layer = layer_create(GRect(0, 0, bounds.size.w, 16000));
-  footer = text_layer_create(GRect(0, viewport_height, bounds.size.w, FOOTER_HEIGHT));
-  if (!reading || !scroll || !body_layer || !footer) {
+  if (!reading || !scroll || !body_layer) {
     APP_LOG(APP_LOG_LEVEL_ERROR, "Reader UI allocation failed");
     return;
   }
@@ -482,11 +495,6 @@ static void reader_load(Window *window) {
   scroll_layer_add_child(scroll, body_layer);
   layer_add_child(window_get_root_layer(window), scroll_layer_get_layer(scroll));
   scroll_layer_set_shadow_hidden(scroll, true);
-  text_layer_set_font(footer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  text_layer_set_text_alignment(footer, GTextAlignmentCenter);
-  text_layer_set_background_color(footer, GColorBlack);
-  text_layer_set_text_color(footer, GColorWhite);
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(footer));
   unsigned before=heap_bytes_free();
   ribbon_layer=layer_create(GRect(0,0,bounds.size.w,viewport_height));
   if (ribbon_layer) {
@@ -503,12 +511,10 @@ static void reader_unload(Window *window) {
   ribbon_layer=NULL;
   free(reading);reading=NULL;
   end_card=false;
-  if (footer) text_layer_destroy(footer);
   if (body_layer) layer_destroy(body_layer);
   if (scroll) scroll_layer_destroy(scroll);
   body_layer = NULL;
   scroll = NULL;
-  footer = NULL;
 }
 
 static void select_reading(MenuLayer *layer, MenuIndex *index, void *context) {
@@ -524,7 +530,8 @@ static uint16_t menu_row_count(MenuLayer *layer, uint16_t section, void *context
 }
 
 static int16_t menu_row_height(MenuLayer *layer, MenuIndex *index, void *context) {
-  return font_size ? 60 : 48;
+  int row=(int)index->row-(evening_offer ? 1 : 0);
+  return (font_size ? 60 : 48)+(day.count && row==day.count ? 9 : 0);
 }
 
 static void main_menu_up(ClickRecognizerRef recognizer, void *context) {
@@ -575,7 +582,9 @@ static void menu_draw_row(GContext *ctx, const Layer *cell, MenuIndex *index, vo
   int row=(int)index->row-(evening_offer ? 1 : 0);
   const char *label=row<0 ? "Evening Mass" : row<day.count ? menu_titles[day.readings[row].kind] : row==day.count ? "Day details" : "Settings";
   const char *subtitle=row<0 ? "Tomorrow's readings" : row<day.count ? (citations[row][0] ? citations[row] : "Read text") : row==day.count ? "Full calendar details" : settings_summary;
-  draw_choice(ctx,cell,label,subtitle,row>=0 && row<day.count ? theme.rubric : theme.ink);
+  // Keep the divider in row drawing; the separator callback faults on PT2 4.38.4.
+  draw_choice(ctx,cell,label,subtitle,row>=0 && row<day.count ? theme.rubric : theme.ink,
+      day.count && row==day.count ? 9 : 0);
 }
 
 static size_t read_calendar_resource(void *context, uint32_t offset, uint8_t *out, size_t size) {
@@ -741,7 +750,7 @@ static uint16_t date_count(MenuLayer *layer,uint16_t section,void *context) {
   return planner_evening(calendar,time(NULL))>=0 ? 6 : 5;
 }
 static void date_draw(GContext *ctx,const Layer *cell,MenuIndex *index,void *context) {
-  draw_choice(ctx,cell,date_titles[index->row],index->row==4 ? "Feast or solemnity" : index->row==5 ? "Tomorrow's readings" : "",theme.ink);
+  draw_choice(ctx,cell,date_titles[index->row],index->row==4 ? "Feast or solemnity" : index->row==5 ? "Tomorrow's readings" : "",theme.ink,0);
 }
 static void date_select(MenuLayer *layer,MenuIndex *index,void *context) {choose_date(index->row,NULL);}
 static void date_load(Window *window) {

@@ -23,6 +23,36 @@ Menu startup defers the database
 until a reading is chosen, retaining the validated handle afterward. The physical
 text layout is sorted to improve compression; reading order and wording are unchanged.
 
+## Version 1.3.1 refinements
+
+Settings has a nonselectable `v1.3.1` label centered in the bottom 24 pixels,
+in regular Gothic 18 and quiet gray (light gray in Church mode). `wscript`
+passes `MISSAL_VERSION` from the SDK's `PROJECT_INFO['versionLabel']`, the exact
+metadata used for `appinfo.json`; no version is duplicated in C. An incremental
+build probe changed the package version to 1.3.1, verified both the PBW metadata
+and compiled label, then restored and verified 1.3.0.
+
+The main menu adds nine pixels of padding at the top of Day details: a one-pixel
+crimson rule with four pixels above and below, inset eight pixels. There is no
+selectable blank item. The boundary accounts for the optional Evening Mass row
+and is omitted when the date has no readings. Ordinary row drawing handles it;
+the SDK's native separator callback passed emulator checks but faulted on the
+physical PT2 (4.38.4) at its MenuIndex access. Avoid that callback path here.
+The corrected build passed three physical launches and reading/page navigation;
+normal app exits retained zero allocations. Logs: `artifacts/launch-fix/`.
+
+The reader has no page-counter/Settings footer. Its viewport is now 228 pixels;
+page overlap stays one line or more, and the ribbon reaches 226 pixels at the
+end. Next-reading cards put the Up/Down/Back hints directly on the page. The
+reader's Select shortcut remains, as do the prompt action footers. Content,
+calendar, App Glance and the published 1.3.0 artifact are unchanged.
+
+Build and emulator evidence: `artifacts/settings-version/`. Settings versions,
+font sizes, both themes, evening rows, empty dates, full-height pagination,
+reading transitions and long multi-part readings are checked there. Changes
+are authorized for publication as 1.3.1. The release-specific evidence is in
+`artifacts/release-1.3.1/`; current destination status is in RELEASE.md.
+
 ## Version 1.3.0 UI changes
 
 Version 1.3.0 adds continuous reading, shared Settings and the missal ribbon.
