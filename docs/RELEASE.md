@@ -50,6 +50,12 @@ printed missal while accurately describing selected daily Mass readings. The
 Order of Mass and all its prayers, national calendars, optional choices and
 separate vigil forms are outside this edition. Source attribution is retained.
 
+After publication, the description was updated at the owner’s request to include
+St. Josemaría Escrivá’s quotation on loving the Mass and making it the centre
+of our day, attributed to [Christ Is Passing By, no. 154](https://escriva.org/en/es-cristo-que-pasa/154/).
+The main and Emery catalog descriptions are verified; app bytes and artwork
+are unchanged. Evidence: `artifacts/release-1.2.0/escriva-description/`.
+
 The approved artwork uses a solid engraved-style Chi-Rho, crimson leather,
 a plain gold border and a polished upright silver PT2. Banner: 720×320;
 icons: 80×80 and 144×144. The carousel uses unmodified 200×228 app captures,

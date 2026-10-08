@@ -8,6 +8,14 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
+## Store description update
+
+Owner approved replacing the final promotional sentence with St. Josemaría
+Escrivá’s quotation from Christ Is Passing By, no. 154, on loving the Mass
+and making it the centre of our day. Live dashboard and both public catalogs
+updated and verified. Current copies are in `release/store/`; the frozen release
+inputs remain historical. Verification is in `artifacts/release-1.2.0/escriva-description/`.
+
 ## Release 1.2.0 publication (current)
 
 Owner explicitly authorized publication on both services. Both are live:
