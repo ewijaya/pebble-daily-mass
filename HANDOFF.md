@@ -5,7 +5,8 @@ Updated October 8, 2026 (Asia/Tokyo). Read docs/RELEASE.md and docs/RELEASE-AUDI
 Project-local release skills were adapted from Popeye G&W and Orationes:
 `.agents/skills/missal-release` and `.agents/skills/missal-appstore`.
 Their shared procedure is docs/RELEASING.md; identity is docs/release-config.json.
-This skills-maintenance task did not publish, tag, commit or push anything.
+The original skills-maintenance task made no external changes; release preparation
+subsequently committed and pushed the app and made the repository public.
 
 ## Release 1.2.0 preparation (current)
 
@@ -13,8 +14,20 @@ The owner selected the engraved Chi-Rho master icon and polished upright silver
 watch banner with plain gold corners, and requested release preparation for
 GitHub and Pebble plus a warm nostalgic description. They explicitly requested
 making the existing GitHub repository public. Build/listing/artifact evidence
-is in `artifacts/release-1.2.0/`; frozen package/status will be recorded in
+is in `artifacts/release-1.2.0/`; frozen package/status is recorded in
 `.release/1.2.0/candidate-1/manifest.json`. Read that status before uploading.
+
+Preparation is complete. Source commit `6d49fcaab2ea9a71835c6ac5197f9a2ac519b422`.
+PBW SHA-256 `66b60438b7b0f6d3ee9a46c20d93c75fb2df322a0dfdac7e8c20de3c83ce390f`,
+958,150 bytes. Exact frozen file installed successfully on physical PT2 4.38.4.
+Repository is public. GitHub draft ID `406529715` targets that source commit;
+its downloaded PBW matches. Store draft ID `e381ff18df3c4a9b8ad10319` is hidden
+and unpublished, with updated description, banner, icons and six native captures.
+Store screenshot pixels match exactly; artwork is palette-quantized by the store
+and visually verified. Older drafts unchanged. Anonymous catalogs and draft PBW
+return 404 as recorded; public PBW hash verification remains for publication.
+Do not rebuild or upload duplicates. Promote these drafts after publication review.
+See `release/store/preview.html`, `docs/RELEASE.md` and the frozen notes/manifest.
 
 The old emulator rejects PutBytes storage initialization. Its original flash
 was retained and a separate emulator-state directory created for release QA.

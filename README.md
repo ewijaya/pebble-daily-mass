@@ -32,11 +32,12 @@ After those slices expire, it says “Open for today's readings”; opening
 and exiting replenishes them. Reopen after changing the watch's timezone to
 refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 
-Version 1.2.0 is being prepared for release. Calendar selection uses one
+Version 1.2.0 is prepared as an unpublished release candidate. Calendar selection uses one
 reading set per date; national calendars, separate vigil readings and optional-memorial
 choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
-Earlier candidates were accepted by the Pebble store as hidden, unpublished
-drafts. The legacy SDK size warning did not block those uploads.
+The GitHub repository is public. GitHub and Pebble App Store release drafts
+are prepared; public app downloads are not live yet. The legacy SDK size warning
+did not block the store upload.
 See [release preparation](docs/RELEASE.md) for the candidate and remaining checks.
 
 ## Project layout

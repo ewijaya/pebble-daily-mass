@@ -1,14 +1,23 @@
 # Release preparation — 1.2.0
 
-Daily Roman Missal 1.2.0 is being prepared for GitHub Releases and the Pebble
-App Store. The owner requested that the existing GitHub repository become public.
+Daily Roman Missal 1.2.0 is prepared as a draft on GitHub Releases and the Pebble
+App Store. The existing GitHub repository is now public, as the owner requested.
 App identity remains **Roman Missal**, UUID
 `bfbd18b3-4a25-44b1-99f9-2de4fbe0f076`, for Pebble Time 2 (Emery).
 
-The existing Pebble listing is hidden; versions 1.0.0 and 1.0.1 are unpublished
-older candidates. Preparation will add 1.2.0 as a separate unpublished draft and
-refresh its description, icons, banner and native screenshot carousel.
-No older candidate should be promoted.
+The Pebble listing remains hidden. Version 1.2.0 is a separate unpublished draft
+with the new description, icons, banner and six native screenshots. Versions 1.0.0
+and 1.0.1 remain unchanged and unpublished. Public app downloads are not live yet.
+
+- [Public source repository](https://github.com/ewijaya/pebble-daily-mass)
+- [GitHub draft](https://github.com/ewijaya/pebble-daily-mass/releases/tag/untagged-0d7a5662a1b24f992d11), release ID `406529715`
+- [Pebble dashboard](https://developer.repebble.com/dashboard/apps/9e466762014d4b1ab248219f/edit), release ID `e381ff18df3c4a9b8ad10319`
+- [Listing and carousel preview](../release/store/preview.html)
+
+Frozen source: `6d49fcaab2ea9a71835c6ac5197f9a2ac519b422`; intended tag `v1.2.0`.
+PBW: 958,150 bytes; SHA-256:
+`66b60438b7b0f6d3ee9a46c20d93c75fb2df322a0dfdac7e8c20de3c83ce390f`.
+The GitHub draft download matches this digest. Do not rebuild or upload duplicates.
 
 ## Candidate and checks
 
@@ -30,7 +39,7 @@ installs in the isolated emulator; first menu draw is about 50 ms and observed
 exits retain no app heap allocations. Reader font persistence and reopening to
 Today passed. Native screenshot and navigation evidence is in
 `artifacts/release-1.2.0/`. Frozen identity and destination status are recorded in
-`.release/1.2.0/candidate-1/manifest.json` once preparation is complete.
+`.release/1.2.0/candidate-1/manifest.json`.
 
 ## Listing and artwork
 
@@ -44,11 +53,19 @@ a plain gold border and a polished upright silver PT2. Banner: 720×320;
 icons: 80×80 and 144×144. The carousel uses unmodified 200×228 app captures,
 with the All Saints main menu first. Order is in `release/store/carousel.json`.
 
+Dashboard read-back verifies the main and Emery descriptions, screenshot order,
+hidden state and unpublished releases. Unrelated fields and older releases are
+unchanged. All six served screenshots have identical pixels. The store converts
+artwork to indexed PNGs (mean RGB difference about 1/255); dimensions and visual
+appearance were checked. Anonymous general and Emery catalogs return 404, as
+expected for a hidden draft. The draft PBW URL also returns 404; its public
+download digest must be checked after publication. Upload identity and size match.
+
 ## Remaining physical evidence
 
-The preceding 1.2.0 removal build was installed and its Today/relaunch behavior
-verified on PT2 firmware 4.38.4. The frozen final build must be installed and
-verified separately if its digest differs. Record that outcome in the manifest.
+The exact frozen final PBW installed successfully on PT2 firmware 4.38.4.
+`artifacts/release-1.2.0/physical-install.log` records success and
+`physical-frozen.png` shows the watch's Today menu.
 
 A dedicated disconnected-use, midnight and battery soak has not been established.
 The owner reports substantial gaming last night and active watch development
