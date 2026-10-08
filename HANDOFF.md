@@ -8,7 +8,25 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
-## Release 1.2.0 preparation (current)
+## Release 1.2.0 publication (current)
+
+Owner explicitly authorized publication on both services. Both are live:
+- https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.2.0
+- https://apps.repebble.com/9e466762014d4b1ab248219f
+
+The annotated tag targets frozen source `6d49fcaab2ea9a71835c6ac5197f9a2ac519b422`.
+Anonymous downloads from both destinations match the frozen candidate digest.
+General and Emery catalogs, rendered public page, notes and six screenshots
+verified. Earlier store drafts remain unpublished. No rebuild or duplicate upload.
+See the manifest and `docs/RELEASE.md` for final status. Battery soak and mobile
+My Apps cache remain unobserved.
+
+Current feedback: banner text looks soft to owner. Source store master is
+1881×836; exact store requirement is 720×320 (confirmed in live dashboard
+frontend). Upload is the 720×320 export, then store palette quantization. No
+artwork correction applied yet; preserve the approved design and frozen inputs.
+
+## Release 1.2.0 preparation (historical)
 
 The owner selected the engraved Chi-Rho master icon and polished upright silver
 watch banner with plain gold corners, and requested release preparation for

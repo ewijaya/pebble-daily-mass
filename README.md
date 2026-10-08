@@ -32,13 +32,14 @@ After those slices expire, it says “Open for today's readings”; opening
 and exiting replenishes them. Reopen after changing the watch's timezone to
 refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 
-Version 1.2.0 is prepared as an unpublished release candidate. Calendar selection uses one
+Version 1.2.0 is publicly available. Calendar selection uses one
 reading set per date; national calendars, separate vigil readings and optional-memorial
 choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
-The GitHub repository is public. GitHub and Pebble App Store release drafts
-are prepared; public app downloads are not live yet. The legacy SDK size warning
+Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
+or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.2.0).
+The public PBW downloads have matching checksums. The legacy SDK size warning
 did not block the store upload.
-See [release preparation](docs/RELEASE.md) for the candidate and remaining checks.
+See [release status](docs/RELEASE.md) for the candidate and remaining checks.
 
 ## Project layout
 

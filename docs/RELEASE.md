@@ -1,23 +1,25 @@
-# Release preparation — 1.2.0
+# Public release — 1.2.0
 
-Daily Roman Missal 1.2.0 is prepared as a draft on GitHub Releases and the Pebble
-App Store. The existing GitHub repository is now public, as the owner requested.
+Daily Roman Missal 1.2.0 is published on GitHub Releases and the Pebble
+App Store, as explicitly authorized by the owner on October 8, 2026.
 App identity remains **Roman Missal**, UUID
 `bfbd18b3-4a25-44b1-99f9-2de4fbe0f076`, for Pebble Time 2 (Emery).
 
-The Pebble listing remains hidden. Version 1.2.0 is a separate unpublished draft
-with the new description, icons, banner and six native screenshots. Versions 1.0.0
-and 1.0.1 remain unchanged and unpublished. Public app downloads are not live yet.
+The Pebble listing is public, with version 1.2.0, the new description, icons,
+banner and six native screenshots. Versions 1.0.0 and 1.0.1 remain unchanged
+and unpublished. Public downloads are live and their SHA-256 digests match.
 
 - [Public source repository](https://github.com/ewijaya/pebble-daily-mass)
-- [GitHub draft](https://github.com/ewijaya/pebble-daily-mass/releases/tag/untagged-0d7a5662a1b24f992d11), release ID `406529715`
+- [GitHub release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.2.0), release ID `406529715`
+- [Public Pebble listing](https://apps.repebble.com/9e466762014d4b1ab248219f)
 - [Pebble dashboard](https://developer.repebble.com/dashboard/apps/9e466762014d4b1ab248219f/edit), release ID `e381ff18df3c4a9b8ad10319`
 - [Listing and carousel preview](../release/store/preview.html)
 
-Frozen source: `6d49fcaab2ea9a71835c6ac5197f9a2ac519b422`; intended tag `v1.2.0`.
+Frozen source: `6d49fcaab2ea9a71835c6ac5197f9a2ac519b422`; annotated tag `v1.2.0`.
 PBW: 958,150 bytes; SHA-256:
 `66b60438b7b0f6d3ee9a46c20d93c75fb2df322a0dfdac7e8c20de3c83ce390f`.
-The GitHub draft download matches this digest. Do not rebuild or upload duplicates.
+Authenticated and anonymous GitHub downloads and the public Pebble download
+match this digest. GitHub marks 1.2.0 as Latest. Do not rebuild or upload duplicates.
 
 ## Candidate and checks
 
@@ -54,12 +56,18 @@ icons: 80×80 and 144×144. The carousel uses unmodified 200×228 app captures,
 with the All Saints main menu first. Order is in `release/store/carousel.json`.
 
 Dashboard read-back verifies the main and Emery descriptions, screenshot order,
-hidden state and unpublished releases. Unrelated fields and older releases are
+published 1.2.0 and listed visibility. Unrelated fields and older releases are
 unchanged. All six served screenshots have identical pixels. The store converts
 artwork to indexed PNGs (mean RGB difference about 1/255); dimensions and visual
-appearance were checked. Anonymous general and Emery catalogs return 404, as
-expected for a hidden draft. The draft PBW URL also returns 404; its public
-download digest must be checked after publication. Upload identity and size match.
+appearance were checked. Anonymous general and Emery catalogs return 200 with
+version 1.2.0, matching description, release notes and ordered screenshots. The
+public PBW digest matches. The rendered public page shows the banner, six
+screenshots, description, version and download link. Phone My Apps refresh has
+not been observed. Publication evidence is in `artifacts/release-1.2.0/`.
+
+After publication the owner reported softness in banner lettering. The store
+requires exactly 720×320 pixels; the uploaded image is an export of the
+1881×836 store-format master. No subsequent artwork changes have been made.
 
 ## Remaining physical evidence
 
