@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.2.0
+Version: 1.3.0
 Developer: Edward
 
 ## Description
@@ -19,8 +19,10 @@ The whole reading library is stored on the watch. No account or internet
 connection is needed to read.
 
 Bold Large and Extra Large text, red Scripture references and seasonal colors
-make the pages easy to follow. Turn a page, move to the beginning or end, or
-look ahead to Sunday or the next feast. An evening shortcut offers tomorrow's
+make the pages easy to follow. A little crimson ribbon keeps your place as you
+read. Move from one reading to the next with Down, or return with Up. Settings
+is close at hand, with a dark Church mode for quiet surroundings. Turn a page,
+move to the beginning or end, or look ahead to Sunday or the next feast. An evening shortcut offers tomorrow's
 day readings before Sunday and solemnities. The launcher can show today's
 celebration before you open the app.
 
@@ -42,27 +44,24 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.2.0 brings offline daily Mass readings to Pebble Time 2,
-with automatic date selection and the General Roman Calendar for 2020–2037.
+Daily Roman Missal 1.3.0 makes following the readings during Mass simpler.
 
-Today's season, feasts, memorials and solemnities appear on the main menu.
-Liturgical colors accompany traditional red references and introductory rubrics.
-Extra Large is the default; Large is also available, and your font choice is
-remembered. Page through readings or jump to their beginning and end.
+Continue from the First Reading to the Psalm and onward with Down. A card shows
+what comes next; Up at the beginning returns to the previous reading.
 
-Browse dates with Next Sunday and Next Holy Day shortcuts, or hold Up/Down on
-the main menu. After 4 PM on Saturday or before a solemnity, Evening Mass offers
-tomorrow's day readings with a notice about omitted vigil texts. App Glance
-provides compact daily launcher summaries. Each launch opens today's menu;
-reading positions are not saved.
+Settings is now on the main menu and remains available with Select in the reader.
+Large and Extra Large extend to menus, citations and prompts. Choose Light or
+Church (dark) mode; both text size and theme are remembered.
 
-Includes calendar and citation corrections and the supplied John 8:12–20
-supplement. Supports Pebble Time 2 (Emery).
+A thin crimson missal ribbon shows progress through the entire reading, including
+long readings with several parts. It opens with a gentle drop and stays clear
+of the text and footer. Each launch still opens today's menu; reading positions
+are not saved. All readings and calendar features remain fully offline.
 
 ## Privacy
 
 The watch app collects and transmits no personal data. It stores only the
-chosen font size on the watch. Calendar and reading data are bundled locally;
+chosen font size and theme on the watch. Calendar and reading data are bundled locally;
 launcher summaries are stored by the watch system. The Pebble store and
 companion application have their own privacy practices.
 

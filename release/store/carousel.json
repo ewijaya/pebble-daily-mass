@@ -4,41 +4,41 @@
     "caption": "Today, with the season and solemnity",
     "width": 200,
     "height": 228,
-    "sha256": "8878d0c9a6723c1ce21be41e3661fd1a4cd01e5baa9bafdeaf19828b688bc370"
+    "sha256": "7189600f2c819201f82540dfed86ea0026dab3b5bdcd6e0c5ff010dfd6ce1594"
   },
   {
-    "file": "screenshots/02-gospel-large.png",
-    "caption": "The Gospel, with red rubrics and comfortable Large text",
+    "file": "screenshots/02-gospel-ribbon.png",
+    "caption": "The Gospel, with red rubrics and a crimson progress ribbon",
     "width": 200,
     "height": 228,
-    "sha256": "d201fdfa717442a62dc7b0988fbfc2b280220807933948b381ff6129787d7f9e"
+    "sha256": "5724b54e47970baea3c1c2d85dcf1e0a72b9889ea45a5b3b8dbe048654bdc36e"
   },
   {
-    "file": "screenshots/03-memorial.png",
-    "caption": "Memorials and the familiar rhythm of the calendar",
+    "file": "screenshots/03-church-mode.png",
+    "caption": "Church mode for a dark reading page",
     "width": 200,
     "height": 228,
-    "sha256": "75dd8b29182588f2d59d78fe134eb33545aaf34d0491f15f4f80b2f4cdd6af37"
+    "sha256": "d1cad9df6698c6b62abac29076d2f224bcda8aadad54bf46fd2091245e52d7a7"
   },
   {
-    "file": "screenshots/04-lent.png",
-    "caption": "Liturgical colors, including Lent’s violet",
+    "file": "screenshots/04-next-reading.png",
+    "caption": "Continue through the Mass, one reading after another",
     "width": 200,
     "height": 228,
-    "sha256": "72ad049b81e9b1fc583f753a3241d3b87c930dc1daf1886ea6c61ae1616af540"
+    "sha256": "c45165eead2f9974527cc6a9669f82cd6304076cf208ffbe16edda9d4997c1d6"
   },
   {
-    "file": "screenshots/05-reader-options.png",
-    "caption": "Large and Extra Large fonts, with quick reading navigation",
+    "file": "screenshots/05-settings.png",
+    "caption": "Text size and theme, together in Settings",
     "width": 200,
     "height": 228,
-    "sha256": "9cc1a13c101393ed5d01a829abbe3ae0b1040c01990868df89f32fe73ee27cd2"
+    "sha256": "7992d795a6126b2688592cd8c0db34c21b3e2d2a04d400351b84f95cfd2224d5"
   },
   {
     "file": "screenshots/06-date-shortcuts.png",
     "caption": "Prepare for Sunday or the next feast",
     "width": 200,
     "height": 228,
-    "sha256": "1e92230c483f38f839bb49275584a045d07f96335f19792cc8158abe4f387aba"
+    "sha256": "e552a714be69be192bf9495c86cdb51ae736537b0a3cf737d0acc7a5d5ac24f4"
   }
 ]

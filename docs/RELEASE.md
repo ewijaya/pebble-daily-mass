@@ -1,3 +1,30 @@
+# Release 1.3.0 — candidate prepared
+
+The owner authorized the version bump, updated compatibility banner, and release
+of the latest implementation on GitHub and the Pebble App Store on October 8, 2026.
+Publication is in progress; the historical verified 1.2.0 record remains below.
+
+Version 1.3.0 adds continuous reading with transition cards, shared on-watch
+Settings, larger menus and prompts, Church mode, and the 4-pixel crimson ribbon.
+Reading and calendar resources are unchanged. The banner includes “FOR PEBBLE
+TIME 2”; six native screenshots show the updated interface. The description
+retains the St. Josemaría quotation and existing content scope and attribution.
+
+Clean SDK 4.33.1 build and all four ASan/UBSan host suites pass. Emery captures
+and navigation checks pass, alongside the prior comprehensive UI and ribbon
+checks. Final PBW: 962,125 bytes, SHA-256
+`60770c4a413dd5a6a5683b3784f99a3ecbaee20f49e2742140449f1de20e1d90`.
+Resources: 937,965 bytes; footprint: 59,054 bytes; heap before allocations: 72,018.
+Evidence: `artifacts/release-1.3.0/`; frozen candidate and destination state will
+be recorded in `.release/1.3.0/candidate-1/manifest.json`.
+
+Normal exit retains zero app allocations. Forced exit during native window
+opening retains 148 bytes in both builds with and without the ribbon; ribbon
+cancellation has no stale animation handles. Physical overnight, disconnected
+use and battery soak remain unmeasured. Physical installation is being checked.
+
+---
+
 # Public release — 1.2.0
 
 Daily Roman Missal 1.2.0 is published on GitHub Releases and the Pebble

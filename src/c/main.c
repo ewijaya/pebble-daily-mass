@@ -6,15 +6,17 @@
 
 static Window *menu_window, *reader_window, *options_window;
 static MenuLayer *menu;
-static SimpleMenuLayer *options_menu;
+static MenuLayer *options_menu;
 static TextLayer *title, *season, *celebration, *footer;
-static Layer *body_layer;
+static Layer *body_layer, *ribbon_layer;
+static Animation *ribbon_animation;
+static int ribbon_length, ribbon_target;
 static ScrollLayer *scroll;
 static Pmr db;
 static ResHandle resource, calendar_resource;
 static Calendar *calendar;
 static CalDay day;
-static bool day_valid, details_mode;
+static bool day_valid, details_mode, end_card;
 static uint8_t reading_part;
 static char citations[CAL_MAX_READINGS][CAL_CITATION_SIZE];
 static char date_text[32], season_text[64], celebration_text[160], day_name[128], day_details[1600];
@@ -25,10 +27,12 @@ static bool clock_evening, evening_offer;
 static int32_t evening_date=-1;
 static bool paragraph_rubric[64];
 static Window *date_window;
-static SimpleMenuLayer *date_menu;
+static MenuLayer *date_menu;
 static Window *prompt_window;
 static TextLayer *prompt_text;
-static SimpleMenuLayer *prompt_menu;
+static ScrollLayer *prompt_scroll;
+static TextLayer *prompt_footer;
+static int prompt_max;
 static char prompt_message[192];
 enum { PROMPT_EVENING, PROMPT_NOTICE };
 static uint8_t prompt_mode;
@@ -39,9 +43,12 @@ static void refresh_date(bool force);
 static void open_dates(ClickRecognizerRef recognizer, void *context);
 static void open_evening(void);
 static void step_date(int delta);
+static void layout_menu(void);
+static void open_options(ClickRecognizerRef recognizer, void *context);
 
 // Long readings are split at paragraph boundaries. Overflow is an error.
-static char reading[8192];
+enum { READING_CAPACITY = 8192 };
+static char *reading; // Allocated only while the reader is open.
 // Separate drawing boxes allow a real paragraph gap smaller than one text line.
 static struct { char *text; int16_t y, height; } paragraphs[64];
 static size_t paragraph_count;
@@ -50,16 +57,33 @@ static GFont rubric_font;
 static bool styled_reading;
 static int strip_height;
 static int selected;
-enum { FONT_SIZE_KEY = 1, RETIRED_PLACE_KEY = 2, FOOTER_HEIGHT = 22 };
+enum { FONT_SIZE_KEY = 1, RETIRED_PLACE_KEY = 2, DARK_MODE_KEY = 3, FOOTER_HEIGHT = 22 };
 static int font_size;
+static bool dark_mode;
+static char settings_summary[32];
 static int viewport_height, max_offset, page_step;
 static char footer_text[48];
 static uint32_t startup_ms;
 static bool first_menu_draw;
-static struct { GColor fill, text, ink; } theme;
+static struct { GColor fill, text, ink, paper, body, rubric; } theme;
+
+static GFont text_font(void) {
+  return fonts_get_system_font(font_size ? FONT_KEY_GOTHIC_28_BOLD : FONT_KEY_GOTHIC_24_BOLD);
+}
+static GFont small_font(void) {
+  return fonts_get_system_font(font_size ? FONT_KEY_GOTHIC_24_BOLD : FONT_KEY_GOTHIC_18_BOLD);
+}
+static void style_menu(MenuLayer *layer) {
+  if (!layer) return;
+  menu_layer_set_normal_colors(layer,theme.paper,theme.body);
+  menu_layer_set_highlight_colors(layer,theme.fill,theme.text);
+}
 
 static void refresh_theme(void) {
   // Dark ink on white pages; gold strips need black lettering for contrast.
+  theme.paper=dark_mode ? GColorBlack : GColorWhite;
+  theme.body=dark_mode ? GColorWhite : GColorBlack;
+  theme.rubric=dark_mode ? GColorMelon : GColorDarkCandyAppleRed;
   theme.text=GColorWhite;
   if (!day_valid) theme.fill=GColorDarkGray;
   else switch (day.color) {
@@ -71,16 +95,22 @@ static void refresh_theme(void) {
     default: theme.fill=GColorDarkGray; break;
   }
   theme.ink=day_valid && day.color==CAL_WHITE ? GColorWindsorTan : theme.fill;
+  if (dark_mode) {
+    theme.ink=!day_valid ? GColorLightGray : day.color==CAL_GREEN ? GColorMintGreen :
+        day.color==CAL_PURPLE ? GColorLavenderIndigo : day.color==CAL_WHITE ? GColorPastelYellow : theme.rubric;
+  }
+  Window *windows[]={menu_window,reader_window,options_window,date_window,prompt_window};
+  for (size_t i=0;i<ARRAY_LENGTH(windows);++i)
+    if (windows[i]) window_set_background_color(windows[i],theme.paper);
   if (title) {
     text_layer_set_background_color(title,theme.fill);
     text_layer_set_text_color(title,theme.text);
   }
-  if (season) text_layer_set_text_color(season,theme.ink);
-  if (celebration) text_layer_set_text_color(celebration,theme.ink);
-  if (menu) menu_layer_set_highlight_colors(menu,theme.fill,theme.text);
-  if (date_menu) menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(date_menu),theme.fill,theme.text);
-  if (options_menu) menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(options_menu),theme.fill,theme.text);
-  if (prompt_menu) menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(prompt_menu),theme.fill,theme.text);
+  if (season) {text_layer_set_text_color(season,theme.ink);text_layer_set_background_color(season,GColorClear);}
+  if (celebration) {text_layer_set_text_color(celebration,theme.ink);text_layer_set_background_color(celebration,GColorClear);}
+  style_menu(menu);style_menu(date_menu);style_menu(options_menu);
+  if (body_layer) layer_mark_dirty(body_layer);
+  snprintf(settings_summary,sizeof(settings_summary),"%s text · %s",font_size ? "XL" : "Large",dark_mode ? "Dark" : "Light");
 }
 
 static uint32_t now_ms(void) {
@@ -93,6 +123,8 @@ static const char *reading_titles[] = {"FIRST READING", "PSALM", "SECOND READING
 static const char *menu_titles[] = {"First Reading", "Psalm", "Second Reading", "Sequence", "Acclamation", "Gospel"};
 static const char *season_names[] = {"Ordinary Time", "Advent", "Christmas Time", "Lent", "Paschal Triduum", "Easter Time"};
 static const char *rank_names[] = {"Weekday", "Sunday", "Memorial", "Optional Memorial", "Feast", "Solemnity", "Commemoration"};
+
+static int reading_width(int width) {return width-14;}
 
 static bool is_rubric(size_t index) { return styled_reading && paragraph_rubric[index]; }
 
@@ -127,9 +159,27 @@ static bool split_paragraphs(void) {
 }
 
 static void draw_body(Layer *layer, GContext *ctx) {
-  graphics_context_set_text_color(ctx, GColorBlack);
+  graphics_context_set_text_color(ctx, theme.body);
   int width = layer_get_bounds(layer).size.w;
   int top = -scroll_layer_get_content_offset(scroll).y;
+  if (end_card) {
+    bool next=selected+1<day.count;
+    graphics_context_set_fill_color(ctx,theme.fill);
+    graphics_fill_rect(ctx,GRect(0,0,width,strip_height),0,GCornerNone);
+    graphics_context_set_text_color(ctx,theme.text);
+    graphics_draw_text(ctx,next ? "NEXT READING" : "READINGS COMPLETE",rubric_font,
+        GRect(4,0,width-8,strip_height),GTextOverflowModeTrailingEllipsis,GTextAlignmentCenter,NULL);
+    graphics_context_set_text_color(ctx,theme.body);
+    graphics_draw_text(ctx,next ? menu_titles[day.readings[selected+1].kind] : "End of readings",body_font,
+        GRect(8,strip_height+8,width-16,64),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
+    graphics_context_set_text_color(ctx,theme.rubric);
+    graphics_draw_text(ctx,next ? citations[selected+1] : "Return to the menu with Back.",rubric_font,
+        GRect(8,strip_height+76,width-16,viewport_height-strip_height-102),GTextOverflowModeTrailingEllipsis,GTextAlignmentCenter,NULL);
+    graphics_context_set_text_color(ctx,theme.body);
+    graphics_draw_text(ctx,"Up: return to reading",fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
+        GRect(4,viewport_height-26,width-8,26),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
+    return;
+  }
   if (styled_reading && top < strip_height) {
     graphics_context_set_fill_color(ctx, theme.fill);
     graphics_fill_rect(ctx, GRect(0, 0, width, strip_height), 0, GCornerNone);
@@ -144,9 +194,9 @@ static void draw_body(Layer *layer, GContext *ctx) {
         paragraphs[i].y > top + viewport_height) continue;
     bool rubric = is_rubric(i);
     // Printed-missal rubrics remain red; the title strip carries the day's color.
-    graphics_context_set_text_color(ctx, rubric ? GColorDarkCandyAppleRed : GColorBlack);
+    graphics_context_set_text_color(ctx, rubric ? theme.rubric : theme.body);
     graphics_draw_text(ctx, paragraphs[i].text, rubric ? rubric_font : body_font,
-        GRect(6, paragraphs[i].y, width - 12, paragraphs[i].height + 8),
+        GRect(6, paragraphs[i].y, reading_width(width), paragraphs[i].height + 8),
         GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
@@ -164,16 +214,85 @@ static bool ensure_database(void) {
   return ok;
 }
 
+static void ribbon_draw(Layer *layer,GContext *ctx) {
+  int length=ribbon_length,x=layer_get_bounds(layer).size.w-5;
+  if (length<=0) return;
+  graphics_context_set_fill_color(ctx,GColorBulgarianRose);
+  graphics_fill_rect(ctx,GRect(x,0,1,length),0,GCornerNone);
+  graphics_context_set_fill_color(ctx,GColorDarkCandyAppleRed);
+  // Pixel-exact swallowtail: a narrow stepped V, with no fifth edge pixel.
+  int body=length>3 ? length-3 : length;
+  graphics_fill_rect(ctx,GRect(x+1,0,3,body),0,GCornerNone);
+  if (length>3) {
+    graphics_fill_rect(ctx,GRect(x+1,body,1,1),0,GCornerNone);
+    graphics_fill_rect(ctx,GRect(x+3,body,1,3),0,GCornerNone);
+  }
+}
+static void ribbon_stop(void) {
+  if (!ribbon_animation) return;
+  Animation *animation=ribbon_animation;ribbon_animation=NULL;
+  // SDK 3 owns scheduled animations, including their destruction on cancel.
+  animation_unschedule(animation);
+}
+static void ribbon_update(int offset) {
+  if (!ribbon_layer) return;
+  ribbon_stop();
+  bool visible=styled_reading && !details_mode && !end_card;
+  layer_set_hidden(ribbon_layer,!visible);
+  if (!visible) return;
+  uint32_t height=max_offset+viewport_height;
+  uint32_t parts=day.readings[selected].parts;
+  uint32_t progress=reading_part*height+offset+viewport_height;
+  uint32_t total=parts*height;
+  if (progress>total) progress=total;
+  int minimum=strip_height+12,maximum=viewport_height-2;
+  if (minimum>maximum) minimum=maximum;
+  ribbon_target=minimum+(maximum-minimum)*progress/total;
+  ribbon_length=ribbon_target;layer_mark_dirty(ribbon_layer);
+  APP_LOG(APP_LOG_LEVEL_INFO,"Ribbon part=%u/%u offset=%d height=%lu length=%d",reading_part+1,(unsigned)parts,offset,(unsigned long)height,ribbon_target);
+}
+static void ribbon_animate(Animation *animation,const AnimationProgress progress) {
+  if (!ribbon_layer) return;
+  ribbon_length=(uint32_t)ribbon_target*progress/ANIMATION_NORMALIZED_MAX;
+  layer_mark_dirty(ribbon_layer);
+}
+static void ribbon_finished(Animation *animation,bool finished,void *context) {
+  ribbon_animation=NULL;
+  APP_LOG(APP_LOG_LEVEL_INFO,"Ribbon animation stopped finished=%d",finished);
+}
+static const AnimationImplementation ribbon_implementation={.update=ribbon_animate};
+static void ribbon_open(void) {
+  if (!ribbon_layer || !styled_reading || details_mode) return;
+  unsigned before=heap_bytes_free();ribbon_animation=animation_create();
+  if (!ribbon_animation) return;
+  animation_set_implementation(ribbon_animation,&ribbon_implementation);
+  animation_set_duration(ribbon_animation,200);
+  animation_set_curve(ribbon_animation,AnimationCurveEaseOut);
+  animation_set_handlers(ribbon_animation,(AnimationHandlers){.stopped=ribbon_finished},NULL);
+  ribbon_length=0;layer_mark_dirty(ribbon_layer);
+  APP_LOG(APP_LOG_LEVEL_INFO,"Ribbon animation heap=%u->%u",before,(unsigned)heap_bytes_free());
+  if (!animation_schedule(ribbon_animation)) {
+    animation_destroy(ribbon_animation);ribbon_animation=NULL;
+    ribbon_length=ribbon_target;layer_mark_dirty(ribbon_layer);
+  }
+}
+
 static void move_to(int offset) {
   if (!scroll || !footer || page_step <= 0) return;
   if (offset < 0) offset = 0;
   if (offset > max_offset) offset = max_offset;
-  scroll_layer_set_content_offset(scroll, GPoint(0, -offset), false);
+  scroll_layer_set_content_offset(scroll, GPoint(0, end_card ? 0 : -offset), false);
+  layer_mark_dirty(body_layer);
+  ribbon_update(offset);
+  if (end_card) {
+    text_layer_set_text(footer,selected+1<day.count ? "Down: next reading" : "Back: readings menu");
+    return;
+  }
   int pages = 1 + (max_offset + page_step - 1) / page_step;
   int page = offset == max_offset ? pages : 1 + offset / page_step;
   if (!details_mode && day_valid && selected < day.count && day.readings[selected].parts > 1)
     snprintf(footer_text, sizeof(footer_text), "%d/%d  Part %u/%u", page, pages, reading_part+1, day.readings[selected].parts);
-  else snprintf(footer_text, sizeof(footer_text), "%d/%d  Select: options", page, pages);
+  else snprintf(footer_text, sizeof(footer_text), "%d/%d  Select: settings", page, pages);
   text_layer_set_text(footer, footer_text);
   APP_LOG(APP_LOG_LEVEL_INFO, "Reader size=%s offset=%d/%d page=%d/%d",
           font_size ? "XL" : "L", offset, max_offset, page, pages);
@@ -194,14 +313,14 @@ static void layout_reading(void) {
   for (size_t i = 0; i < paragraph_count; ++i) {
     GSize size = graphics_text_layout_get_content_size(paragraphs[i].text,
         is_rubric(i) ? rubric_font : body_font,
-        GRect(0, 0, bounds.size.w - 12, 16000),
+        GRect(0, 0, reading_width(bounds.size.w), 16000),
         GTextOverflowModeWordWrap, GTextAlignmentLeft);
     paragraphs[i].y = height;
     paragraphs[i].height = size.h;
     height += size.h;
     if (i + 1 < paragraph_count) height += 8;
   }
-  layer_set_frame(body_layer, GRect(0, 0, bounds.size.w, height));
+  layer_set_frame(body_layer, GRect(0, 0, bounds.size.w, height < viewport_height ? viewport_height : height));
   layer_mark_dirty(body_layer);
   if (height < viewport_height) height = viewport_height;
   scroll_layer_set_content_size(scroll, GSize(bounds.size.w, height));
@@ -212,35 +331,46 @@ static void layout_reading(void) {
   move_to(offset == max_offset ? offset : (offset / page_step) * page_step);
 }
 
+static void select_adjacent(int delta) {
+  selected+=delta;
+  if (menu) menu_layer_set_selected_index(menu,(MenuIndex){0,selected+(evening_offer ? 1 : 0)},MenuRowAlignCenter,false);
+  load_reading_part(delta>0 ? 0 : day.readings[selected].parts-1);
+  if (delta<0) move_to(max_offset);
+}
 static void page_up(ClickRecognizerRef recognizer, void *context) {
-  if (scroll && page_step > 0) {
-    int offset = -scroll_layer_get_content_offset(scroll).y;
-    if (offset == 0 && !details_mode && reading_part > 0) {
-      load_reading_part(reading_part-1); move_to(max_offset);
-    } else move_to(offset > 0 ? ((offset - 1) / page_step) * page_step : 0);
-  }
+  if (!scroll || page_step<=0) return;
+  if (end_card) {end_card=false;move_to(max_offset);return;}
+  int offset=-scroll_layer_get_content_offset(scroll).y;
+  if (offset==0 && !details_mode) {
+    if (reading_part>0) {load_reading_part(reading_part-1);move_to(max_offset);}
+    else if (day_valid && selected>0 && selected<day.count) select_adjacent(-1);
+  } else move_to(offset>0 ? ((offset-1)/page_step)*page_step : 0);
 }
-
 static void page_down(ClickRecognizerRef recognizer, void *context) {
-  if (!scroll || page_step <= 0) return;
-  int offset = -scroll_layer_get_content_offset(scroll).y;
-  if (offset == max_offset && !details_mode && reading_part+1 < day.readings[selected].parts)
-    load_reading_part(reading_part+1);
-  else move_to((offset / page_step + 1) * page_step);
+  if (!scroll || page_step<=0) return;
+  if (end_card) {if (selected+1<day.count) select_adjacent(1);return;}
+  int offset=-scroll_layer_get_content_offset(scroll).y;
+  if (offset==max_offset && !details_mode && day_valid && selected<day.count) {
+    if (reading_part+1<day.readings[selected].parts) load_reading_part(reading_part+1);
+    else {
+      end_card=true;move_to(0);
+      APP_LOG(APP_LOG_LEVEL_INFO,"End card reading=%d next=%d",selected,selected+1<day.count);
+    }
+  } else move_to((offset/page_step+1)*page_step);
 }
-
 static void jump_top(ClickRecognizerRef recognizer, void *context) {
+  end_card=false;
   if (!details_mode && reading_part) load_reading_part(0);
   move_to(0);
 }
 static void jump_bottom(ClickRecognizerRef recognizer, void *context) {
-  if (!details_mode && reading_part+1 < day.readings[selected].parts)
+  end_card=false;
+  if (!details_mode && day_valid && selected<day.count && reading_part+1<day.readings[selected].parts)
     load_reading_part(day.readings[selected].parts-1);
   move_to(max_offset);
 }
-
 static void open_options(ClickRecognizerRef recognizer, void *context) {
-  if (scroll && body_layer && footer) window_stack_push(options_window, true);
+  window_stack_push(options_window,true);
 }
 
 static void reader_click_config(void *context) {
@@ -252,49 +382,58 @@ static void reader_click_config(void *context) {
   window_single_click_subscribe(BUTTON_ID_SELECT, open_options);
 }
 
-static void choose_option(int index, void *context) {
-  if (index < 2) {
-    font_size = index;
-    if (persist_write_int(FONT_SIZE_KEY, font_size) < 0)
-      APP_LOG(APP_LOG_LEVEL_ERROR, "Could not save font size");
-    layout_reading();
+static int16_t choice_height(MenuLayer *layer, MenuIndex *index, void *context) {
+  return font_size ? 60 : 48;
+}
+static void draw_choice(GContext *ctx,const Layer *cell,const char *label,const char *subtitle,GColor ink) {
+  GRect bounds=layer_get_bounds(cell);
+  bool highlighted=menu_cell_layer_is_highlighted(cell);
+  graphics_context_set_fill_color(ctx,highlighted ? theme.fill : theme.paper);
+  graphics_fill_rect(ctx,bounds,0,GCornerNone);
+  graphics_context_set_text_color(ctx,highlighted ? theme.text : theme.body);
+  graphics_draw_text(ctx,label,text_font(),GRect(8,0,bounds.size.w-16,font_size ? 32 : 28),
+      GTextOverflowModeTrailingEllipsis,GTextAlignmentLeft,NULL);
+  graphics_context_set_text_color(ctx,highlighted ? theme.text : ink);
+  graphics_draw_text(ctx,subtitle,small_font(),GRect(8,font_size ? 32 : 26,bounds.size.w-16,font_size ? 28 : 22),
+      GTextOverflowModeTrailingEllipsis,GTextAlignmentLeft,NULL);
+}
+static uint16_t settings_count(MenuLayer *layer,uint16_t section,void *context) {return 2;}
+static void settings_draw(GContext *ctx,const Layer *cell,MenuIndex *index,void *context) {
+  draw_choice(ctx,cell,index->row ? "Theme" : "Text size",
+      index->row ? (dark_mode ? "Church (dark)" : "Light") : (font_size ? "Extra Large" : "Large"),theme.ink);
+}
+static void settings_select(MenuLayer *layer,MenuIndex *index,void *context) {
+  if (!index->row) {
+    font_size=!font_size;
+    if (persist_write_int(FONT_SIZE_KEY,font_size)<0) APP_LOG(APP_LOG_LEVEL_ERROR,"Could not save text size");
   } else {
-    if (index == 2) jump_top(NULL, NULL); else jump_bottom(NULL, NULL);
+    dark_mode=!dark_mode;
+    if (persist_write_bool(DARK_MODE_KEY,dark_mode)<0) APP_LOG(APP_LOG_LEVEL_ERROR,"Could not save theme");
   }
-  window_stack_pop(true);
+  refresh_theme();layout_menu();layout_reading();menu_layer_reload_data(options_menu);
+  APP_LOG(APP_LOG_LEVEL_INFO,"Settings text=%s theme=%s",font_size ? "XL" : "L",dark_mode ? "dark" : "light");
 }
-
-static const SimpleMenuItem option_items[] = {
-  {.title = "Large", .subtitle = "24 px bold", .callback = choose_option},
-  {.title = "Extra Large", .subtitle = "28 px bold", .callback = choose_option},
-  {.title = "Jump to top", .subtitle = "Shortcut: hold Up", .callback = choose_option},
-  {.title = "Jump to bottom", .subtitle = "Shortcut: hold Down", .callback = choose_option},
-};
-static const SimpleMenuSection option_section = {.items = option_items, .num_items = 4};
-
 static void options_load(Window *window) {
-  GRect bounds = layer_get_bounds(window_get_root_layer(window));
-  options_menu = simple_menu_layer_create(bounds, window, &option_section, 1, NULL);
-  if (options_menu) {
-    menu_layer_set_normal_colors(simple_menu_layer_get_menu_layer(options_menu), GColorWhite, GColorBlack);
-    menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(options_menu), theme.fill, theme.text);
-    layer_add_child(window_get_root_layer(window), simple_menu_layer_get_layer(options_menu));
-    simple_menu_layer_set_selected_index(options_menu, font_size, false);
-  }
+  options_menu=menu_layer_create(layer_get_bounds(window_get_root_layer(window)));
+  if (!options_menu) return;
+  menu_layer_set_callbacks(options_menu,NULL,(MenuLayerCallbacks){.get_num_rows=settings_count,
+      .get_cell_height=choice_height,.draw_row=settings_draw,.select_click=settings_select});
+  menu_layer_set_click_config_onto_window(options_menu,window);
+  style_menu(options_menu);layer_add_child(window_get_root_layer(window),menu_layer_get_layer(options_menu));
 }
-
 static void options_unload(Window *window) {
-  if (options_menu) simple_menu_layer_destroy(options_menu);
-  options_menu = NULL;
+  if (options_menu) menu_layer_destroy(options_menu);
+  options_menu=NULL;
 }
 
 static void load_reading_part(uint8_t part) {
+  end_card=false;
   uint32_t start_ms = now_ms();
   bool ok = true;
   memset(paragraph_rubric, 0, sizeof(paragraph_rubric));
   reading_part = part;
   if (details_mode) {
-    snprintf(reading, sizeof(reading), "%s\n\n%s\n\nGeneral Roman Calendar\nEpiphany: January 6\nAscension and Corpus Christi: Thursday\nSunday cycle %c; weekday cycle %s\n\nOffline calendar: 2020-2037\nHold Select on the menu to browse dates.",
+    snprintf(reading, READING_CAPACITY, "%s\n\n%s\n\nGeneral Roman Calendar\nEpiphany: January 6\nAscension and Corpus Christi: Thursday\nSunday cycle %c; weekday cycle %s\n\nOffline calendar: 2020-2037\nHold Select on the menu to browse dates.",
         date_text, day_details, day_valid ? 'A'+(day.cycles&3) : '?', day_valid && (day.cycles&4) ? "II" : "I");
   } else {
     uint16_t refs[CAL_MAX_REFS], count=0;
@@ -302,22 +441,22 @@ static void load_reading_part(uint8_t part) {
     size_t used=0, paragraph=0;
     reading[0]=0;
     if (ok && citations[selected][0]) {
-      used=snprintf(reading,sizeof(reading),"%s",citations[selected]);
+      used=snprintf(reading,READING_CAPACITY,"%s",citations[selected]);
       paragraph_rubric[paragraph++]=true;
     }
     for (uint16_t i=0;ok && i<count;i++) {
-      if (paragraph >= ARRAY_LENGTH(paragraph_rubric) || sizeof(reading)-used <= 2) {ok=false;break;}
+      if (paragraph >= ARRAY_LENGTH(paragraph_rubric) || READING_CAPACITY-used <= 2) {ok=false;break;}
       if (used) {reading[used++]='\n';reading[used++]='\n';}
       uint32_t length;
-      ok=pmr_segment(&db,refs[i]&0x7fff,reading+used,sizeof(reading)-used,&length);
+      ok=pmr_segment(&db,refs[i]&0x7fff,reading+used,READING_CAPACITY-used,&length);
       if (ok) {used+=length;paragraph_rubric[paragraph++]=(refs[i]&0x8000)!=0;}
     }
   }
   if (ok) prepare_display_text(reading);
-  else snprintf(reading,sizeof(reading),"Reading unavailable.\n\nThe bundled reading could not be loaded. Press Back to return.");
+  else snprintf(reading,READING_CAPACITY,"Reading unavailable.\n\nThe bundled reading could not be loaded. Press Back to return.");
   if (!split_paragraphs()) {
     ok=false;
-    snprintf(reading,sizeof(reading),"Reading unavailable. Too many paragraphs. Press Back to return.");
+    snprintf(reading,READING_CAPACITY,"Reading unavailable. Too many paragraphs. Press Back to return.");
     split_paragraphs();
   }
   styled_reading=ok && !details_mode;
@@ -331,10 +470,11 @@ static void reader_load(Window *window) {
   GRect bounds = layer_get_bounds(window_get_root_layer(window));
   viewport_height = bounds.size.h - FOOTER_HEIGHT;
   max_offset = 0;
+  reading=malloc(READING_CAPACITY);
   scroll = scroll_layer_create(GRect(0, 0, bounds.size.w, viewport_height));
   body_layer = layer_create(GRect(0, 0, bounds.size.w, 16000));
   footer = text_layer_create(GRect(0, viewport_height, bounds.size.w, FOOTER_HEIGHT));
-  if (!scroll || !body_layer || !footer) {
+  if (!reading || !scroll || !body_layer || !footer) {
     APP_LOG(APP_LOG_LEVEL_ERROR, "Reader UI allocation failed");
     return;
   }
@@ -347,10 +487,22 @@ static void reader_load(Window *window) {
   text_layer_set_background_color(footer, GColorBlack);
   text_layer_set_text_color(footer, GColorWhite);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(footer));
-  load_reading_part(0);
+  unsigned before=heap_bytes_free();
+  ribbon_layer=layer_create(GRect(0,0,bounds.size.w,viewport_height));
+  if (ribbon_layer) {
+    layer_set_update_proc(ribbon_layer,ribbon_draw);
+    layer_add_child(window_get_root_layer(window),ribbon_layer);
+  }
+  APP_LOG(APP_LOG_LEVEL_INFO,"Ribbon layer heap=%u->%u",before,(unsigned)heap_bytes_free());
+  load_reading_part(0);ribbon_open();
 }
 
 static void reader_unload(Window *window) {
+  ribbon_stop();
+  if (ribbon_layer) layer_destroy(ribbon_layer);
+  ribbon_layer=NULL;
+  free(reading);reading=NULL;
+  end_card=false;
   if (footer) text_layer_destroy(footer);
   if (body_layer) layer_destroy(body_layer);
   if (scroll) scroll_layer_destroy(scroll);
@@ -362,16 +514,17 @@ static void reader_unload(Window *window) {
 static void select_reading(MenuLayer *layer, MenuIndex *index, void *context) {
   if (evening_offer && !index->row) {open_evening();return;}
   selected = index->row-(evening_offer ? 1 : 0);
+  if (selected==day.count+1) {open_options(NULL,NULL);return;}
   details_mode = selected >= day.count;
   window_stack_push(reader_window, true);
 }
 
 static uint16_t menu_row_count(MenuLayer *layer, uint16_t section, void *context) {
-  return day.count + 1 + (evening_offer ? 1 : 0);
+  return day.count + 2 + (evening_offer ? 1 : 0);
 }
 
 static int16_t menu_row_height(MenuLayer *layer, MenuIndex *index, void *context) {
-  return 44;
+  return font_size ? 60 : 48;
 }
 
 static void main_menu_up(ClickRecognizerRef recognizer, void *context) {
@@ -419,22 +572,28 @@ static void menu_draw_row(GContext *ctx, const Layer *cell, MenuIndex *index, vo
     first_menu_draw = true;
     APP_LOG(APP_LOG_LEVEL_INFO, "Startup first menu draw: %lu ms", (unsigned long)(now_ms() - startup_ms));
   }
-  GRect bounds = layer_get_bounds(cell);
-  bool highlighted = menu_cell_layer_is_highlighted(cell);
   int row=(int)index->row-(evening_offer ? 1 : 0);
-  graphics_context_set_fill_color(ctx, highlighted ? theme.fill : GColorWhite);
-  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
-  graphics_context_set_text_color(ctx, highlighted ? theme.text : GColorBlack);
-  graphics_draw_text(ctx, row<0 ? "Evening Mass" : row < day.count ? menu_titles[day.readings[row].kind] : "Day details", fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD),
-      GRect(10, 0, bounds.size.w - 20, 24), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-  GColor reference_ink=row>=0 && row<day.count ? GColorDarkCandyAppleRed : theme.ink;
-  graphics_context_set_text_color(ctx, highlighted ? theme.text : reference_ink);
-  graphics_draw_text(ctx, row<0 ? "Tomorrow's readings" : row < day.count ? (citations[row][0] ? citations[row] : "Read text") : "Celebration & calendar", fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
-      GRect(10, 24, bounds.size.w - 20, 20), GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  const char *label=row<0 ? "Evening Mass" : row<day.count ? menu_titles[day.readings[row].kind] : row==day.count ? "Day details" : "Settings";
+  const char *subtitle=row<0 ? "Tomorrow's readings" : row<day.count ? (citations[row][0] ? citations[row] : "Read text") : row==day.count ? "Full calendar details" : settings_summary;
+  draw_choice(ctx,cell,label,subtitle,row>=0 && row<day.count ? theme.rubric : theme.ink);
 }
 
 static size_t read_calendar_resource(void *context, uint32_t offset, uint8_t *out, size_t size) {
   return resource_load_byte_range(calendar_resource, offset, out, size);
+}
+
+static void layout_menu(void) {
+  if (!menu || !title || !season || !celebration) return;
+  GRect bounds=layer_get_bounds(window_get_root_layer(menu_window));
+  int line=font_size ? 28 : 24;
+  text_layer_set_font(title,small_font());text_layer_set_font(season,small_font());text_layer_set_font(celebration,small_font());
+  layer_set_frame(text_layer_get_layer(title),GRect(0,0,bounds.size.w,line));
+  layer_set_frame(text_layer_get_layer(season),GRect(4,line,bounds.size.w-8,line));
+  layer_set_frame(text_layer_get_layer(celebration),GRect(4,2*line,bounds.size.w-8,line));
+  layer_set_hidden(text_layer_get_layer(celebration),!celebration_text[0]);
+  int top=line*(celebration_text[0] ? 3 : 2);
+  layer_set_frame(menu_layer_get_layer(menu),GRect(0,top,bounds.size.w,bounds.size.h-top));
+  menu_layer_reload_data(menu);
 }
 
 static void refresh_date(bool force) {
@@ -478,13 +637,8 @@ static void refresh_date(bool force) {
   if (title) text_layer_set_text(title,date_text);
   if (season) text_layer_set_text(season,season_text);
   if (celebration) text_layer_set_text(celebration,celebration_text);
-  if (menu) {
-    int top=celebration_text[0] ? 94 : 52;
-    GRect bounds=layer_get_bounds(window_get_root_layer(menu_window));
-    layer_set_frame(menu_layer_get_layer(menu),GRect(0,top,bounds.size.w,bounds.size.h-top));
-    menu_layer_reload_data(menu);
-    menu_layer_set_selected_index(menu,(MenuIndex){0,0},MenuRowAlignTop,false);
-  }
+  layout_menu();
+  if (menu) menu_layer_set_selected_index(menu,(MenuIndex){0,0},MenuRowAlignTop,false);
   APP_LOG(APP_LOG_LEVEL_INFO,"Calendar %04d-%02d-%02d: ok=%d readings=%u",shown_year,shown_month,shown_day,day_valid,day.count);
 }
 
@@ -505,39 +659,60 @@ static void step_date(int delta) {
   show_date(number+delta);
 }
 
-static SimpleMenuItem prompt_items[2];
-static const SimpleMenuSection prompt_section={.items=prompt_items,.num_items=2};
-static void choose_prompt(int index, void *context) {
-  if (prompt_mode==PROMPT_EVENING && !index) {
-    // Recheck in case the prompt stayed open over midnight or a clock change.
+static void choose_prompt(void) {
+  if (prompt_mode==PROMPT_EVENING) {
     int32_t target=planner_evening(calendar,time(NULL));
-    if (target>=0) show_date(target);
-    else show_date(-1);
+    show_date(target>=0 ? target : -1);
   }
   window_stack_pop(false);
 }
+static void prompt_move(int offset) {
+  if (!prompt_scroll || !prompt_footer) return;
+  if (offset<0) offset=0;
+  if (offset>prompt_max) offset=prompt_max;
+  scroll_layer_set_content_offset(prompt_scroll,GPoint(0,-offset),false);
+  text_layer_set_text(prompt_footer,offset<prompt_max ? "Down / Select: more" : prompt_mode==PROMPT_EVENING ? "Select: open tomorrow" : "Select: OK");
+}
+static void prompt_down(ClickRecognizerRef recognizer,void *context) {
+  if (prompt_scroll) prompt_move(-scroll_layer_get_content_offset(prompt_scroll).y+150);
+}
+static void prompt_up(ClickRecognizerRef recognizer,void *context) {
+  if (prompt_scroll) prompt_move(-scroll_layer_get_content_offset(prompt_scroll).y-150);
+}
+static void prompt_select(ClickRecognizerRef recognizer,void *context) {
+  if (!prompt_scroll) return;
+  if (-scroll_layer_get_content_offset(prompt_scroll).y<prompt_max) prompt_down(NULL,NULL);
+  else choose_prompt();
+}
+static void prompt_click_config(void *context) {
+  window_single_click_subscribe(BUTTON_ID_UP,prompt_up);
+  window_single_click_subscribe(BUTTON_ID_DOWN,prompt_down);
+  window_single_click_subscribe(BUTTON_ID_SELECT,prompt_select);
+}
 static void prompt_load(Window *window) {
-  Layer *root=window_get_root_layer(window);
-  GRect bounds=layer_get_bounds(root);
-  prompt_text=text_layer_create(GRect(6,3,bounds.size.w-12,120));
-  if (prompt_text) {
-    text_layer_set_font(prompt_text,fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-    text_layer_set_text(prompt_text,prompt_message);
-    text_layer_set_text_color(prompt_text,GColorBlack);
-    layer_add_child(root,text_layer_get_layer(prompt_text));
-  }
-  prompt_items[0]=(SimpleMenuItem){.title=prompt_mode==PROMPT_EVENING ? "Open tomorrow" : "OK",.callback=choose_prompt};
-  prompt_items[1]=(SimpleMenuItem){.title="Back",.callback=choose_prompt};
-  prompt_menu=simple_menu_layer_create(GRect(0,126,bounds.size.w,bounds.size.h-126),window,&prompt_section,1,NULL);
-  if (prompt_menu) {
-    menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(prompt_menu),theme.fill,theme.text);
-    layer_add_child(root,simple_menu_layer_get_layer(prompt_menu));
-  }
+  Layer *root=window_get_root_layer(window);GRect bounds=layer_get_bounds(root);
+  int view=bounds.size.h-FOOTER_HEIGHT;
+  GSize size=graphics_text_layout_get_content_size(prompt_message,text_font(),GRect(0,0,bounds.size.w-12,1000),GTextOverflowModeWordWrap,GTextAlignmentLeft);
+  int height=size.h+10;prompt_max=height>view ? height-view : 0;
+  prompt_scroll=scroll_layer_create(GRect(0,0,bounds.size.w,view));
+  prompt_text=text_layer_create(GRect(6,0,bounds.size.w-12,height));
+  prompt_footer=text_layer_create(GRect(0,view,bounds.size.w,FOOTER_HEIGHT));
+  if (!prompt_scroll || !prompt_text || !prompt_footer) return;
+  text_layer_set_font(prompt_text,text_font());text_layer_set_text(prompt_text,prompt_message);
+  text_layer_set_text_color(prompt_text,theme.body);text_layer_set_background_color(prompt_text,GColorClear);
+  scroll_layer_set_content_size(prompt_scroll,GSize(bounds.size.w,height));
+  scroll_layer_add_child(prompt_scroll,text_layer_get_layer(prompt_text));
+  layer_add_child(root,scroll_layer_get_layer(prompt_scroll));
+  text_layer_set_font(prompt_footer,fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_text_alignment(prompt_footer,GTextAlignmentCenter);
+  text_layer_set_text_color(prompt_footer,GColorWhite);text_layer_set_background_color(prompt_footer,GColorBlack);
+  layer_add_child(root,text_layer_get_layer(prompt_footer));prompt_move(0);
 }
 static void prompt_unload(Window *window) {
-  if (prompt_menu) simple_menu_layer_destroy(prompt_menu);
+  if (prompt_footer) text_layer_destroy(prompt_footer);
   if (prompt_text) text_layer_destroy(prompt_text);
-  prompt_menu=NULL;prompt_text=NULL;
+  if (prompt_scroll) scroll_layer_destroy(prompt_scroll);
+  prompt_footer=NULL;prompt_text=NULL;prompt_scroll=NULL;
 }
 static void open_evening(void) {
   struct tm tomorrow;
@@ -561,24 +736,22 @@ static void choose_date(int index, void *context) {
   }
   window_stack_pop(true);
 }
-static const SimpleMenuItem date_items[] = {
-  {.title="Today",.subtitle="Main menu: hold Up/Down",.callback=choose_date},
-  {.title="Previous day",.callback=choose_date},
-  {.title="Next day",.callback=choose_date},
-  {.title="Next Sunday",.callback=choose_date},
-  {.title="Next Holy Day",.subtitle="Feast or solemnity",.callback=choose_date},
-  {.title="Evening Mass",.subtitle="Tomorrow's readings",.callback=choose_date},
-};
-static SimpleMenuSection date_section={.title="Date shortcuts",.items=date_items,.num_items=5};
-static void date_load(Window *window) {
-  date_section.num_items=planner_evening(calendar,time(NULL))>=0 ? 6 : 5;
-  date_menu=simple_menu_layer_create(layer_get_bounds(window_get_root_layer(window)),window,&date_section,1,NULL);
-  if (date_menu) {
-    menu_layer_set_highlight_colors(simple_menu_layer_get_menu_layer(date_menu),theme.fill,theme.text);
-    layer_add_child(window_get_root_layer(window),simple_menu_layer_get_layer(date_menu));
-  }
+static const char *date_titles[]={"Today","Previous day","Next day","Next Sunday","Next Holy Day","Evening Mass"};
+static uint16_t date_count(MenuLayer *layer,uint16_t section,void *context) {
+  return planner_evening(calendar,time(NULL))>=0 ? 6 : 5;
 }
-static void date_unload(Window *window) { if (date_menu) simple_menu_layer_destroy(date_menu);date_menu=NULL; }
+static void date_draw(GContext *ctx,const Layer *cell,MenuIndex *index,void *context) {
+  draw_choice(ctx,cell,date_titles[index->row],index->row==4 ? "Feast or solemnity" : index->row==5 ? "Tomorrow's readings" : "",theme.ink);
+}
+static void date_select(MenuLayer *layer,MenuIndex *index,void *context) {choose_date(index->row,NULL);}
+static void date_load(Window *window) {
+  date_menu=menu_layer_create(layer_get_bounds(window_get_root_layer(window)));
+  if (!date_menu) return;
+  menu_layer_set_callbacks(date_menu,NULL,(MenuLayerCallbacks){.get_num_rows=date_count,.get_cell_height=choice_height,.draw_row=date_draw,.select_click=date_select});
+  menu_layer_set_click_config_onto_window(date_menu,window);style_menu(date_menu);
+  layer_add_child(window_get_root_layer(window),menu_layer_get_layer(date_menu));
+}
+static void date_unload(Window *window) {if (date_menu) menu_layer_destroy(date_menu);date_menu=NULL;}
 static void open_dates(ClickRecognizerRef recognizer, void *context) { window_stack_push(date_window,true); }
 
 static void menu_load(Window *window) {
@@ -595,6 +768,7 @@ static void menu_load(Window *window) {
   if (season) {
     text_layer_set_font(season, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
     text_layer_set_text_alignment(season, GTextAlignmentCenter);
+    text_layer_set_overflow_mode(season,GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(season, season_text);
     layer_add_child(root, text_layer_get_layer(season));
   }
@@ -667,6 +841,7 @@ int main(void) {
   // Remove bookmarks left by the retired resume feature; keep the font preference.
   if (persist_exists(RETIRED_PLACE_KEY)) persist_delete(RETIRED_PLACE_KEY);
   font_size = persist_exists(FONT_SIZE_KEY) && persist_read_int(FONT_SIZE_KEY) == 0 ? 0 : 1;
+  dark_mode=persist_exists(DARK_MODE_KEY) && persist_read_bool(DARK_MODE_KEY);
   // The small offline calendar opens first; the scripture database stays lazy.
   calendar = calloc(1, sizeof(*calendar));
   menu_window = window_create();
@@ -681,7 +856,7 @@ int main(void) {
     window_set_window_handlers(date_window,(WindowHandlers){.load=date_load,.unload=date_unload});
     window_set_window_handlers(prompt_window,(WindowHandlers){.load=prompt_load,.unload=prompt_unload});
     tick_timer_service_subscribe(MINUTE_UNIT,minute_tick);
-    window_set_background_color(reader_window, GColorWhite);
+    window_set_click_config_provider(prompt_window,prompt_click_config);
     window_set_click_config_provider(reader_window, reader_click_config);
     window_stack_push(menu_window, true);
     app_event_loop();

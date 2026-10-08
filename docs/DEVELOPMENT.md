@@ -7,8 +7,10 @@ lists full names and optional memorials. Hold Select for date shortcuts, or hold
 Up/Down on the main menu to step through days. Each launch opens today's menu. Evening preparation offers tomorrow's day readings.
 See [CALENDAR.md](CALENDAR.md) for mapping rules, scope and reproduction.
 Up/Down page through text; holds jump to the whole reading's beginning/end.
-Select opens Large/Extra Large fonts and jump commands. The font preference
-persists, with Extra Large as the default. Source paragraphs retain an 8-pixel gap. Midnight updates the menu;
+Select opens the same Settings screen as the row below Day details. Large/Extra
+Large and Light/Church (dark) preferences persist on-watch; holds retain the jump
+commands. Extra Large remains the default. Menus use 24/28 bold titles and 18/24
+bold subtitles; prompts use 24/28 bold and can page if needed. Source paragraphs retain an 8-pixel gap. Midnight updates the menu;
 an open reading stays unchanged until the menu reappears.
 
 The project is branded **Daily Roman Missal**. Installed app metadata uses
@@ -21,7 +23,60 @@ Menu startup defers the database
 until a reading is chosen, retaining the validated handle afterward. The physical
 text layout is sorted to improve compression; reading order and wording are unchanged.
 
-## Current measurements
+## Version 1.3.0 UI changes
+
+Version 1.3.0 adds continuous reading, shared Settings and the missal ribbon.
+At the last page, Down opens an end card, then the following Down loads the next
+reading. Up on the first page loads the previous reading's final part/page.
+The menu selection follows the active reading. Day details, the first reading,
+and the last reading remain bounded. Multi-part navigation stays within the
+reading before transitioning to the next. No reading position is persisted.
+
+The reader's 8 KiB text buffer is now allocated on open and freed on unload,
+keeping the expanded UI below the SDK's 65,535-byte static metadata limit.
+Preference key 3 stores the dark theme; key 1 retains text size. Neither the
+navigation nor the ribbon writes a bookmark or adds a resume prompt.
+
+The ribbon is a separate root Layer above the ScrollLayer, clipped to the
+206-pixel viewport. It occupies x=195..198: a Bulgarian Rose shading pixel and
+three Dark Candy Apple Red body pixels. Its three-pixel stepped V notch uses
+pixel-exact rectangles. A shared `reading_width()` uses w−14 for measurement
+and drawing, preserving the six-pixel left margin and adding a three-pixel gap.
+Length runs from `strip_height+12` to `viewport_height−2` using
+`(part + (offset+viewport)/content_height) / parts`, clamped by page bounds.
+One-page readings and the final page reach full length. Day details, errors and
+transition cards hide the ribbon.
+
+`move_to()` updates it immediately. `reader_load()` alone starts a 200 ms
+custom ease-out Animation; page turns and unload cancel it. SDK 3 destroys
+scheduled animations on completion/cancellation; the stopped handler only clears
+the handle. An animation that fails to schedule is explicitly destroyed.
+See the [SDK migration note](https://developer.rebble.io/guides/migration/migration-guide-3/).
+
+Ribbon-only build comparison: static footprint 57,822 → 59,054 bytes (+1,232),
+available heap before allocations 73,250 → 72,018. Logged allocations are
+64 bytes for the layer and 80 bytes for the temporary animation object. Resource
+bytes remain 937,965. `artifacts/ribbon/` contains both build logs, heap logs,
+raw screenshots, 10× tail enlargements, pixel checks and all four host test logs.
+Navigation/settings evidence is in `artifacts/continuous-reader/`.
+
+Three forced exits during the opening animation cancel the ribbon without stale
+handles or app faults. They retain the same 148 bytes as the build without the
+ribbon; this occurs during the native window transition and is not an added
+ribbon allocation. Normal reader closure and app exit report zero retained bytes.
+The comparison logs are `lifecycle-control.log` and `lifecycle-verified.log`.
+
+Pixel checks confirm exactly four columns, unchanged crimson/shade colors,
+a clear three-pixel text gap and an untouched footer. Captured progress lengths:
+75/129/204 pixels (first/middle/last), 204 for a one-page acclamation, and 96→97
+across Passion parts 1→2. The narrow notch is necessarily stepped; against black
+its dark shading is subtle. Inspect the actual 200×228 captures as well as zooms.
+
+The owner subsequently authorized a version bump and publication on both
+services. Release preparation uses version 1.3.0 and the same tested UI code;
+publication status is recorded in RELEASE.md.
+
+## Published 1.2.0 measurements
 
 Version 1.2.0. Tested with Pebble Tool 5.0.40, SDK 4.33.1, on arm64 macOS, 2026-10-08.
 
@@ -73,10 +128,11 @@ are documented here rather than manually appended to the generated report.
 The date strip, season/celebration text, highlights and reading title strips use the
 selected celebration's liturgical color. White days use gold with black lettering;
 other colors use dark fills with white lettering. The reader and date options
-menus share this palette. References and introductory rubrics stay red, with
+menus share this palette. Church mode uses black pages, white body text and
+brighter rubric/season ink; its ribbon remains the specified crimson. References and introductory rubrics stay red, with
 black Scripture on white pages. Selected menu references use contrasting text.
 See [CALENDAR.md](CALENDAR.md) for the color policy. The main menu scrolls to accommodate Sunday readings and
-Day details. Date and celebration update automatically. A 25×25 transparent black Chi-Rho
+Day details and Settings. Date and celebration update automatically. A 25×25 transparent black Chi-Rho
 launcher icon is declared as MENU_ICON. Its original SVG and PNG are in
 `resources/images`; regenerate with `python3 tools/make_icon.py`
 (requires Pillow). No new font or online asset dependency is added to the app.
@@ -102,7 +158,8 @@ response sign `℟` is displayed as `R` (retaining its following period); databa
 text remains unchanged. Curly quotation marks, apostrophes and en dashes are
 preserved. Other source-wide glyph coverage has not been audited.
 
-The 8 KiB display buffer holds one bounded part of a reading. The calendar
+The 8 KiB display buffer holds one bounded part of a reading; the local UI
+allocates it only while the reader is open. The calendar
 compiler splits longer readings between source paragraphs and preserves the full
 selected form. Navigation crosses part boundaries; the footer shows the part.
 The earlier Rosary sample audit (`text/part0519.html`) remains as historical evidence.

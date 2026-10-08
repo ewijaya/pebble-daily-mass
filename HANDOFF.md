@@ -8,6 +8,25 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
+## Version 1.3.0 publication in progress
+
+Owner explicitly authorized the new banner, version bump and release of the latest
+implementation on both services. This supersedes the earlier local-only constraint.
+Version 1.3.0 adds continuous Mass reading, shared Settings, scalable menus/prompts,
+Church mode and the crimson ribbon. The reading/calendar resources are unchanged.
+No saved-place restoration is added. Shared body layout/draw width loses two pixels.
+
+The banner now includes “FOR PEBBLE TIME 2” beneath the title. Native screenshots
+are being refreshed. Evidence is in artifacts/release-1.3.0/, with earlier extensive
+UI/pixel checks in artifacts/continuous-reader/ and artifacts/ribbon/.
+All four host suites and a clean SDK build are being checked for the final version.
+Normal closure frees all allocations; forced exit during native window opening
+retains the same 148 bytes with and without the ribbon. No invalid ribbon handles.
+
+Freeze one candidate, install those exact bytes, commit/tag the source and publish
+GitHub first, then the existing store listing. Preserve older release versions.
+Update this section with verified destination state when complete.
+
 ## Store description update
 
 Owner approved replacing the final promotional sentence with St. Josemaría

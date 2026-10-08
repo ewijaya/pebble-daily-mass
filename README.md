@@ -18,12 +18,23 @@ From 4 PM on Saturdays or the eve of a solemnity, an
 **Evening Mass** option offers tomorrow's day readings with a notice that separate
 vigil texts are not included.
 
-Up/Down page through readings; hold Up/Down to jump to the beginning/end. Long
-readings continue across sections without truncation. Select offers Large and
-Extra Large bold fonts; Extra Large is the default and your choice persists. Liturgical-color title strips and traditional red references and introductory
-rubrics distinguish the headings from black Scripture text, with
-8-pixel paragraph gaps. Colors follow the selected celebration: green, violet,
-white/gold, red or rose. A Chi-Rho icon identifies **Roman Missal** in the launcher.
+In version 1.3.0, Up/Down page through readings; hold
+Up/Down to jump to the beginning/end. At the end, Down shows the next reading's
+name and citation; another Down opens it. Up at the start returns to the previous
+reading's last page. Long readings continue across all their parts.
+
+Settings is below Day details and also opens with Select in the reader. Large
+and Extra Large apply to reading text, menu labels, citations and prompts; Extra
+Large is the default. Text size and the Light/Church (dark) theme persist on the
+watch. Navigation shortcuts remain on hold-Up/Down. Compact headers leave more
+room for larger rows, with full celebration names in Day details.
+
+A quiet 4-pixel crimson ribbon at the reader's right edge grows with progress
+through the whole reading, including every part. It drops in over 200 ms when
+opened and updates immediately on page turns. It stops above the footer and
+adds no saved-place or resume behavior. Liturgical-color strips and red rubrics
+remain, with 8-pixel paragraph gaps. A Chi-Rho identifies **Roman Missal** in the
+launcher. These UI changes are included in the 1.3.0 candidate.
 
 Opening and exiting the app saves seven days of offline App Glance subtitles.
 The launcher shows the day's celebration or season/week, advancing at local
@@ -32,7 +43,8 @@ After those slices expire, it says “Open for today's readings”; opening
 and exiting replenishes them. Reopen after changing the watch's timezone to
 refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 
-Version 1.2.0 is publicly available. Calendar selection uses one
+Version 1.3.0 is prepared for publication; 1.2.0 remains publicly available until
+the new downloads are verified. Calendar selection uses one
 reading set per date; national calendars, separate vigil readings and optional-memorial
 choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
 Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
