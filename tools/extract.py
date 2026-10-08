@@ -7,10 +7,10 @@ import hashlib
 import json
 import pathlib
 import re
-import struct
 import xml.etree.ElementTree as ET
 import zipfile
-import zlib
+import pmr
+from audit import audit_sample, audit_october8, review_candidate
 
 NS = {'h': 'http://www.w3.org/1999/xhtml'}
 READING = re.compile(r'^(?:First reading|Second reading|Gospel(?:\s|$)|Responsorial Psalm)', re.I)
@@ -43,25 +43,18 @@ def segments(node):
     for child in node:
         yield from segments(child)
 
-def unpack(blob):
-    magic, chunk_size, count, raw_size = struct.unpack_from('<4sIII', blob)
-    assert magic == b'PMR1'
-    out = bytearray()
-    for i in range(count):
-        offset, length = struct.unpack_from('<II', blob, 16 + i * 8)
-        raw = zlib.decompress(blob[offset:offset + length])
-        assert len(raw) <= chunk_size
-        out.extend(raw)
-    assert len(out) == raw_size
-    return bytes(out)
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('epub', type=pathlib.Path)
-    parser.add_argument('--out', type=pathlib.Path, default=pathlib.Path('output'))
+    parser.add_argument('--out', type=pathlib.Path, default=pathlib.Path(__file__).resolve().parents[1] / 'artifacts')
+    parser.add_argument('--compression', choices=['zlib', 'zopfli'], default='zlib',
+                        help='zopfli builds a smaller compatible resource; requires the zopfli package')
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     pages, inventory, unique, ids, expected = [], [], [], {}, []
+    reviews = []
+    sample_audit = None
+    october8_audit = None
     with zipfile.ZipFile(args.epub) as archive:
         for name in sorted(archive.namelist()):
             if not re.fullmatch(r'text/part\d+\.html', name):
@@ -78,7 +71,13 @@ def main():
                      'links': links}
             inventory.append(entry)
             if not any(READING.match(h) for h in headings):
+                if re.search(r"First reading|Second reading|Responsorial Psalm", "\n".join(parts), re.I):
+                    reviews.append(review_candidate(name, parts, links))
                 continue
+            if name == "text/part0519.html":
+                sample_audit = audit_sample(body, parts)
+            if name == "text/part1549.html":
+                october8_audit = audit_october8(body, parts)
             refs = []
             for part in parts:
                 if part not in ids:
@@ -87,49 +86,28 @@ def main():
                 refs.append(ids[part])
             pages.append({'source': name, 'segments': refs})
             expected.append(parts)
-    # Every extracted paragraph, heading, and instruction is represented; no
-    # lossy typography replacements or paragraph truncation are applied.
-    meta = json.dumps({'pages': pages}, ensure_ascii=False, separators=(',', ':')).encode()
-    data = bytearray(struct.pack('<I', len(meta)) + meta + struct.pack('<I', len(unique)))
-    for part in unique:
-        encoded = part.encode()
-        data.extend(struct.pack('<I', len(encoded)))
-        data.extend(encoded)
-    chunk_size = 16384
-    chunks = [zlib.compress(data[i:i+chunk_size], 9) for i in range(0, len(data), chunk_size)]
-    pack = bytearray(struct.pack('<4sIII', b'PMR1', chunk_size, len(chunks), len(data)))
-    offset = 16 + len(chunks) * 8
-    for chunk in chunks:
-        pack.extend(struct.pack('<II', offset, len(chunk)))
-        offset += len(chunk)
-    pack.extend(b''.join(chunks))
-    recovered = unpack(pack)
-    assert recovered == bytes(data)
-    meta_len = struct.unpack_from('<I', recovered)[0]
-    decoded_meta = json.loads(recovered[4:4+meta_len])
-    pos = 4 + meta_len
-    count = struct.unpack_from('<I', recovered, pos)[0]
-    pos += 4
-    decoded = []
-    for _ in range(count):
-        length = struct.unpack_from('<I', recovered, pos)[0]
-        pos += 4
-        decoded.append(recovered[pos:pos+length].decode())
-        pos += length
-    assert pos == len(recovered)
-    for page, original in zip(decoded_meta['pages'], expected, strict=True):
+    pack, raw_size, chunk_count = pmr.pack(pages, unique, args.compression)
+    decoded_pages, decoded = pmr.unpack(pack)
+    assert len(decoded_pages) == len(expected)
+    for page, original in zip(decoded_pages, expected):
         assert [decoded[i] for i in page['segments']] == original
+    assert sample_audit is not None
+    assert october8_audit is not None
     report = {'source': args.epub.name, 'source_sha256': hashlib.sha256(args.epub.read_bytes()).hexdigest(),
               'html_pages_inspected': len(inventory), 'detected_reading_pages': len(pages),
-              'unique_segments': len(unique), 'uncompressed_payload_bytes': len(data),
-              'packed_bytes': len(pack), 'chunk_bytes': chunk_size, 'chunks': len(chunks),
+              'unique_segments': len(unique), 'uncompressed_payload_bytes': raw_size,
+              'packed_bytes': len(pack), 'format': 'PMR2', 'compression': args.compression,
+              'chunk_bytes': pmr.CHUNK_SIZE, 'chunks': chunk_count,
               'sdk_emery_resource_limit_bytes': 1048576, 'remaining_bytes_before_resource_wrapper': 1048576-len(pack),
               'roundtrip_verified_pages': len(pages),
               'limitations': ['Reading page detection is heuristic, not a completeness certification.',
                              'English-side extraction also retains surrounding headings, navigation and instructions.',
                              'Inventory records source dates/ranks/links; it is not a resolved liturgical calendar.',
-                             'Watch decoder and runtime memory/performance not yet tested.',
+                             'Calendar selection and general reading boundaries remain unvalidated.',
                              'SDK App Store resource allowance is 262144 bytes.']}
+    (args.out/'sample-audit.json').write_text(json.dumps(sample_audit, ensure_ascii=False, indent=2))
+    (args.out/'october8-audit.json').write_text(json.dumps(october8_audit, ensure_ascii=False, indent=2))
+    (args.out/'review-candidates.json').write_text(json.dumps(reviews, ensure_ascii=False, indent=2))
     (args.out/'readings.pmr').write_bytes(pack)
     (args.out/'readings.json').write_text(json.dumps({'pages': pages, 'segments': unique}, ensure_ascii=False, indent=2))
     (args.out/'calendar-inventory.json').write_text(json.dumps(inventory, ensure_ascii=False, indent=2))

@@ -1,5 +1,5 @@
 {
-  "name": "storage-probe",
+  "name": "daily-roman-missal",
   "author": "",
   "version": "1.0.0",
   "keywords": [
@@ -8,7 +8,7 @@
   "private": true,
   "dependencies": {},
   "pebble": {
-    "displayName": "Daily Mass",
+    "displayName": "Daily Roman Missal",
     "uuid": "bfbd18b3-4a25-44b1-99f9-2de4fbe0f076",
     "sdkVersion": "3",
     "enableMultiJS": true,
@@ -23,6 +23,14 @@
     ],
     "resources": {
       "media": [
+        {
+          "type": "bitmap",
+          "name": "MENU_ICON",
+          "file": "images/chi-rho.png",
+          "menuIcon": true,
+          "memoryFormat": "Smallest",
+          "storageFormat": "png"
+        },
         {
           "type": "raw",
           "name": "READINGS_DB",

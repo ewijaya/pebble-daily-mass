@@ -10,5 +10,6 @@ node_modules/
 build/
 .waf-*
 .lock-waf*
-offline-prototype/output/
-offline-prototype/storage-probe/resources/readings.pmr
+/artifacts/
+/data/source/
+/resources/readings.pmr

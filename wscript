@@ -21,6 +21,8 @@ def configure(ctx):
     Universal configuration: add your change prior to calling ctx.load('pebble_sdk').
     """
     ctx.load('pebble_sdk')
+    # Keep the distributable name stable regardless of the checkout directory.
+    ctx.env.BUNDLE_NAME = 'daily-roman-missal.pbw'
 
 
 def build(ctx):
@@ -34,7 +36,11 @@ def build(ctx):
         ctx.env = ctx.all_envs[platform]
         ctx.set_group(ctx.env.PLATFORM_NAME)
         app_elf = '{}/pebble-app.elf'.format(ctx.env.BUILD_DIR)
-        ctx.pbl_build(source=ctx.path.ant_glob('src/c/**/*.c'), target=app_elf, bin_type='app')
+        # tinf's internal invariant assertions use hosted libc abort(), which is
+        # unavailable on Pebble. Its explicit malformed-input checks remain on.
+        # Host tests retain harness assertions. Keep ARM stack-usage evidence.
+        ctx.pbl_build(source=ctx.path.ant_glob('src/c/**/*.c'), target=app_elf,
+                      bin_type='app', defines=['NDEBUG'], cflags=['-fstack-usage'])
 
         if build_worker:
             worker_elf = '{}/pebble-worker.elf'.format(ctx.env.BUILD_DIR)
