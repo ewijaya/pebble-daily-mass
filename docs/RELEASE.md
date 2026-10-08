@@ -1,18 +1,60 @@
-# Release candidate — 1.3.1
+# Public release — 1.3.1
 
-Owner authorized publication to GitHub and the existing Pebble App Store listing.
-This patch adds full-height reading pages, a thin crimson menu divider and an
-automatic, subtle version label in Settings. The divider uses ordinary row drawing,
-verified on PT2 firmware 4.38.4 after a native separator callback caused a startup
-fault during development. Reading and calendar resources are unchanged.
+Daily Roman Missal 1.3.1 is published on both services, as authorized
+by the owner on October 8, 2026.
 
-Clean SDK 4.33.1 build and all four ASan/UBSan host suites pass.
-PBW: 962,242 bytes; SHA-256:
-`ad66f1a57e2e26b7eeba89f3c6fe6ac6849eb94cc702c18e87edd2a238b8c58b`.
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.3.1) — Latest, release ID `406651126`.
+- [Pebble App Store](https://apps.repebble.com/roman-missal_9e466762014d4b1ab248219f) — listed, release ID `c7b3f04025f445109a33fba0`.
+- Source commit: `dcb6745a386460c6f2a09679849305676b924721`; annotated tag `v1.3.1`.
+- PBW: 962,242 bytes; SHA-256:
+  `ad66f1a57e2e26b7eeba89f3c6fe6ac6849eb94cc702c18e87edd2a238b8c58b`.
+
+Authenticated and anonymous GitHub downloads and the public store download match
+the frozen digest. Both public catalogs show 1.3.1 with the correct notes, six
+native screenshots and download URL. Served screenshot pixels match exactly.
+Banner, icons, description, identity, unrelated metadata and all older releases
+were preserved. The rendered GitHub release is verified.
+
+The canonical store web page still shows cached 1.3.0 version information and its
+old PBW link after three bounded checks, including a hard reload. Its cache refresh
+is pending; no extra upload or republish was attempted. Use the GitHub release for
+a verified direct download while that surface catches up.
+
+## Changes
+
+Readings now use the full 228-pixel screen, reclaiming the former 22-pixel black
+footer. The crimson ribbon still shows progress, and Select still opens Settings.
+A fine crimson rule and small gap separate the readings from Day details and
+Settings. A quiet `v1.3.1` label in Settings comes from the SDK build metadata.
+
+The menu divider uses ordinary row drawing. An earlier local native separator
+callback caused a startup fault on PT2 firmware 4.38.4; that development fault
+was corrected and verified before this release. Reading/calendar resources and
+App Glance are unchanged. Saved reading position remains deliberately absent.
+
+## Verification and limitations
+
+Clean SDK 4.33.1 build and all four ASan/UBSan host suites pass. The final build
+was installed in an isolated Emery emulator; native carousel captures, forward
+and backward reading transitions and real-clock restoration passed. Earlier
+full-height, font/theme, divider, empty-date, evening and multi-part checks remain
+in `artifacts/settings-version/` and `artifacts/launch-fix/`.
+
+The exact frozen 1.3.1 PBW installed successfully on physical PT2 firmware 4.38.4.
+Its launch was verified through the running-app UUID, startup logs without faults
+and a screenshot of today's Missal menu. The owner had already confirmed the
+same corrected UI before the version bump. No physical watch clock was changed.
+
 Resources: 937,965 bytes; static RAM: 59,122 bytes; heap before allocations: 71,950.
-The six native store screenshots are refreshed; banner, icons and description stay
-unchanged. Current evidence: `artifacts/release-1.3.1/`. Freeze candidate 1 before
-physical installation and publication. Version 1.3.0 remains public until verified.
+Compared with 1.3.0, resources are unchanged, static RAM rises 68 bytes and the
+bundle grows 117 bytes. Emulator normal exit retains zero app allocations.
+The legacy SDK resource warning is unchanged; the store accepted these exact bytes.
+Dedicated overnight, disconnected-use and battery soak remain unmeasured.
+Phone My Apps cache refresh is not claimed.
+
+Evidence: `artifacts/release-1.3.1/`; frozen package, checksums, provenance and
+publication state: `.release/1.3.1/candidate-1/manifest.json`. Do not recreate or
+overwrite these releases. Further app changes require a new candidate/version.
 
 ---
 

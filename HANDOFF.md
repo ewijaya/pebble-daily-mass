@@ -8,21 +8,29 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
-## Release 1.3.1 in progress
+## Version 1.3.1 published; store web-page cache pending
 
-Owner authorized “great! now release and bump the version”. Both GitHub and the
-existing Pebble listing are in scope. Version 1.3.1 includes the full-height
-reader, subtle automatic version label and thin crimson menu divider. The
-initial local divider callback faulted on physical PT2 4.38.4 at PC 0x7ca; it was
-replaced by ordinary row padding/drawing. The corrected UI passed three physical
-launches and reading navigation, and the owner confirmed it works.
+Owner authorized “great! now release and bump the version”. Source commit
+`dcb6745a386460c6f2a09679849305676b924721`, tag `v1.3.1`, is public on GitHub and
+the existing Pebble App Store listing. Both downloads match SHA-256
+`ad66f1a57e2e26b7eeba89f3c6fe6ac6849eb94cc702c18e87edd2a238b8c58b`.
 
-Current release evidence: artifacts/release-1.3.1/. Existing UI/geometry and
-physical-fix evidence: artifacts/settings-version/ and artifacts/launch-fix/.
-Build a clean 1.3.1 once, freeze the bytes, install that exact candidate on PT2,
-then publish GitHub first and the store second. Banner, icons and description
-are unchanged; refresh the six native screenshots in the established order.
-Do not overwrite v1.3.0 or its frozen candidate. Record verified final state here.
+Includes full-height readings, the quiet automatic Settings version label and
+thin crimson menu divider. The initial local separator callback faulted on PT2
+4.38.4; ordinary row drawing fixed it. The exact frozen 1.3.1 file installed and
+launched successfully on the physical PT2, verified by app state, logs and screenshot.
+All four host suites, clean build and emulator checks passed. Refreshed six native
+screenshots are live; banner, icons, description and older releases are unchanged.
+
+Both catalogs, downloaded bytes and rendered GitHub release were verified. The
+store web page still shows cached 1.3.0 version information and download link after
+three checks; record this as pending, without another upload or republish. Evidence:
+`artifacts/release-1.3.1/`; frozen inputs/state:
+`.release/1.3.1/candidate-1/manifest.json`. UI/geometry and original physical-fix
+checks remain in `artifacts/settings-version/` and `artifacts/launch-fix/`.
+Dedicated overnight/offline/battery soak and phone cache refresh remain unobserved.
+See docs/RELEASE.md for metrics and links. Publication is complete; only the store
+web-page cache refresh remains unverified.
 
 ## Version 1.3.0 published and verified
 

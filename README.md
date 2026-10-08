@@ -40,7 +40,7 @@ Version 1.3.1 adds a quiet version label at the bottom of Settings,
 read automatically from the SDK's build metadata, and a thin crimson rule
 between the readings and Day details/Settings. The reader's black page-counter
 footer is removed, giving the text the full screen height; the ribbon still
-shows progress and Select still opens Settings. The 1.3.1 release is being prepared.
+shows progress and Select still opens Settings.
 
 Opening and exiting the app saves seven days of offline App Glance subtitles.
 The launcher shows the day's celebration or season/week, advancing at local
@@ -49,14 +49,14 @@ After those slices expire, it says “Open for today's readings”; opening
 and exiting replenishes them. Reopen after changing the watch's timezone to
 refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 
-Version 1.3.0 is publicly available. Calendar selection uses one
+Version 1.3.1 is publicly available. Calendar selection uses one
 reading set per date; national calendars, separate vigil readings and optional-memorial
 choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
 Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
-or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.3.0).
+or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.3.1).
 The public PBW downloads have matching checksums. The legacy SDK size warning
 did not block the store upload.
-See [release status](docs/RELEASE.md) for the candidate and remaining checks.
+See [release status](docs/RELEASE.md) for verification and remaining checks.
 
 ## Project layout
 
