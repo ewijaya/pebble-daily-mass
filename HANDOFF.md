@@ -29,10 +29,12 @@ verified. Earlier store drafts remain unpublished. No rebuild or duplicate uploa
 See the manifest and `docs/RELEASE.md` for final status. Battery soak and mobile
 My Apps cache remain unobserved.
 
-Current feedback: banner text looks soft to owner. Source store master is
-1881×836; exact store requirement is 720×320 (confirmed in live dashboard
-frontend). Upload is the 720×320 export, then store palette quantization. No
-artwork correction applied yet; preserve the approved design and frozen inputs.
+Banner sharpness fix completed: new built-in image_gen revision with larger watch
+face and cleaner solid gold title. Current master/export at `release/store/`;
+exact prompt in `banner-generation-prompt.md`. Store-served 720×320 image was
+visually checked; both catalogs reference the replacement. Other listing fields,
+icons, screenshot order and app releases unchanged. Evidence and original assets
+retained under `artifacts/banner-sharpness/`; frozen candidate inputs untouched.
 
 ## Release 1.2.0 preparation (historical)
 

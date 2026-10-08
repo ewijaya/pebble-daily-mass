@@ -71,9 +71,12 @@ public PBW digest matches. The rendered public page shows the banner, six
 screenshots, description, version and download link. Phone My Apps refresh has
 not been observed. Publication evidence is in `artifacts/release-1.2.0/`.
 
-After publication the owner reported softness in banner lettering. The store
-requires exactly 720×320 pixels; the uploaded image is an export of the
-1881×836 store-format master. No subsequent artwork changes have been made.
+After publication the owner requested a sharper banner. The replacement keeps
+the approved crimson-and-gold design, enlarges the watch face, and uses cleaner
+gold lettering. It was generated with the built-in image_gen tool, checked at
+the required 720×320 size, uploaded, and visually checked after store conversion.
+Both public catalogs serve the new banner. The description, icons, six screenshots
+and release bytes remain unchanged. Evidence: `artifacts/banner-sharpness/`.
 
 ## Remaining physical evidence
 
