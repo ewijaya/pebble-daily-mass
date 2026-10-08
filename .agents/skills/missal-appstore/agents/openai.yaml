@@ -1,0 +1,4 @@
+interface:
+  display_name: "Daily Roman Missal App Store"
+  short_description: "Manage and verify the existing Missal store listing"
+  default_prompt: "Use $missal-appstore to inspect the Daily Roman Missal listing and verify its release status."

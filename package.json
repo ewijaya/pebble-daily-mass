@@ -1,14 +1,15 @@
 {
   "name": "daily-roman-missal",
-  "author": "",
-  "version": "1.0.0",
+  "description": "Daily Roman Missal \u2014 offline Catholic Mass readings for Pebble Time 2",
+  "author": "Edward",
+  "version": "1.2.0",
   "keywords": [
     "pebble-app"
   ],
   "private": true,
   "dependencies": {},
   "pebble": {
-    "displayName": "Daily Roman Missal",
+    "displayName": "Roman Missal",
     "uuid": "bfbd18b3-4a25-44b1-99f9-2de4fbe0f076",
     "sdkVersion": "3",
     "enableMultiJS": true,
@@ -35,6 +36,21 @@
           "type": "raw",
           "name": "READINGS_DB",
           "file": "readings.pmr"
+        },
+        {
+          "type": "raw",
+          "name": "CALENDAR_DB",
+          "file": "calendar.bin"
+        },
+        {
+          "type": "raw",
+          "name": "ROMCAL_LICENSE",
+          "file": "licenses/romcal.txt"
+        },
+        {
+          "type": "raw",
+          "name": "CONTENT_NOTICES",
+          "file": "licenses/content-notices.txt"
         }
       ]
     }

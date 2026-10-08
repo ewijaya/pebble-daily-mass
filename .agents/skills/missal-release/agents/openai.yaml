@@ -1,0 +1,4 @@
+interface:
+  display_name: "Daily Roman Missal Release"
+  short_description: "Release one tested Missal build to selected stores"
+  default_prompt: "Use $missal-release to prepare the next Daily Roman Missal release for GitHub and the Pebble App Store."

@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 import pmr
 from audit import audit_sample, audit_october8, review_candidate
+from supplements import john_8
 
 NS = {'h': 'http://www.w3.org/1999/xhtml'}
 READING = re.compile(r'^(?:First reading|Second reading|Gospel(?:\s|$)|Responsorial Psalm)', re.I)
@@ -86,6 +87,13 @@ def main():
                 refs.append(ids[part])
             pages.append({'source': name, 'segments': refs})
             expected.append(parts)
+    # Keep EPUB page/segment identities stable; append the explicitly supplied
+    # missing Gospel as standalone segments referenced by the calendar.
+    supplement = john_8()
+    for paragraph in supplement['paragraphs']:
+        if paragraph not in ids:
+            ids[paragraph] = len(unique)
+            unique.append(paragraph)
     pack, raw_size, chunk_count = pmr.pack(pages, unique, args.compression)
     decoded_pages, decoded = pmr.unpack(pack)
     assert len(decoded_pages) == len(expected)
@@ -97,6 +105,8 @@ def main():
               'html_pages_inspected': len(inventory), 'detected_reading_pages': len(pages),
               'unique_segments': len(unique), 'uncompressed_payload_bytes': raw_size,
               'packed_bytes': len(pack), 'format': 'PMR2', 'compression': args.compression,
+              'supplements': [{'id': supplement['id'], 'source_url': supplement['source_url'],
+                               'paragraphs': len(supplement['paragraphs'])}],
               'chunk_bytes': pmr.CHUNK_SIZE, 'chunks': chunk_count,
               'sdk_emery_resource_limit_bytes': 1048576, 'remaining_bytes_before_resource_wrapper': 1048576-len(pack),
               'roundtrip_verified_pages': len(pages),

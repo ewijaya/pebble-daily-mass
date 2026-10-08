@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "brand": "Daily Roman Missal",
+  "display_name": "Roman Missal",
+  "uuid": "bfbd18b3-4a25-44b1-99f9-2de4fbe0f076",
+  "app_type": "watchapp",
+  "platforms": ["emery"],
+  "artifact_name": "daily-roman-missal.pbw",
+  "github_repo": "ewijaya/pebble-daily-mass",
+  "branch": "main",
+  "tag_prefix": "v",
+  "release_dir": ".release",
+  "listing_file": "release/store/listing.md",
+  "listing_assets_dir": "release/store",
+  "store_app_id": "9e466762014d4b1ab248219f",
+  "store_category": "daily",
+  "dashboard": "https://developer.repebble.com",
+  "appstore_api": "https://appstore-api.repebble.com",
+  "store_listing_url": "https://apps.repebble.com/9e466762014d4b1ab248219f",
+  "public_catalog_path": "/api/v1/apps/uuid/{uuid}",
+  "firmware_resource_limit_bytes": 1048576,
+  "baseline_evidence": "docs/RELEASE-AUDIT.md"
+}

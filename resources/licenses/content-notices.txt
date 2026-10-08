@@ -1,0 +1,24 @@
+Daily Roman Missal — content and software notices
+
+English reading text supplied by the user from Pocket Missal
+[v.04.X.2026], Pocket Missal Project. The source identifies its English
+readings as based on the New American Bible. Source metadata also credits
+the English Roman Missal translation to ICEL Corporation, copyright 2010.
+Those credits do not imply endorsement of this app. No Latin text or cover
+art from the EPUB is included.
+
+Supplement: John 8:12–20, supplied directly by the app owner from USCCB,
+Monday of the Fifth Week of Lent, March 14, 2016:
+https://bible.usccb.org/bible/readings/031416.cfm
+Lectionary for Mass for Use in the Dioceses of the United States, second
+typical edition, Copyright © 2001, 1998, 1997, 1986, 1970 Confraternity of
+Christian Doctrine. All rights reserved.
+
+Calendar: romcal and @romcal/calendar.general-roman 3.0.0-dev.140.
+MIT license included separately as ROMCAL_LICENSE.
+
+tinf decompressor — Copyright (c) 2003-2019 Joergen Ibsen.
+See the retained license in the source distribution's src/c/vendor/tinf/.
+
+This edition is an offline reading aid for the General Roman Calendar.
+It is not a complete Roman Missal or an official liturgical publication.

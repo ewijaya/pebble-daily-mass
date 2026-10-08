@@ -11,5 +11,8 @@ build/
 .waf-*
 .lock-waf*
 /artifacts/
+/.release/
 /data/source/
 /resources/readings.pmr
+/resources/calendar.bin
+/release/store/design/

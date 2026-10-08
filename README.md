@@ -1,32 +1,43 @@
 # Daily Roman Missal
 
-An offline Catholic Mass readings app in development for Pebble Time 2 (Emery).
+An offline Catholic Mass readings app for Pebble Time 2 (Emery).
 English readings are extracted from a locally supplied Pocket Missal EPUB and
-bundled on the watch.
+bundled on the watch, with an owner-supplied John 8:12–20 supplement.
 
 ## Status
 
-The first reader milestone works in the Emery emulator: choose the First Reading,
-Psalm, acclamation, or Gospel for the pinned October 8, 2026 weekday preview,
-then page through the complete text with Up/Down. Hold Up/Down to jump to the
-top/bottom. Select opens reading options: Large (24 px bold), Extra Large
-(28 px bold), and jump commands. Font size is saved; paragraphs have an 8-pixel gap.
-Reading titles use a deep red strip; citations and introductory summaries use
-smaller red text, with the scripture body in bold black. The main menu matches:
-a red date strip, red season/reference text, and white-on-red selection.
-A monochrome Chi-Rho symbol identifies the app in the watch launcher.
-Back returns to the reading menu.
-The date is manually verified against USCCB. The app uses indexed retrieval and bounded-memory decompression of the bundled
-library. It does not yet select readings by date.
+The app automatically selects readings using the watch's local date and the
+**General Roman Calendar (2020–2037)**. The menu shows the season/week and
+celebration name and rank; Day details includes full names and optional memorials.
+Hold Select for Today, Previous/Next day, Next Sunday or Next Holy Day (the next
+feast or solemnity). Hold Up/Down on the main menu to step backward/forward
+through dates; short presses select readings.
 
-Menu initialization on the PT2 measured 12 ms, down from 203 ms; this excludes
-firmware loading before the app runs. The database opens when the first reading
-is chosen. Repacking preserves all readings while reducing the resource pack
-from 950,989 to 803,312 bytes.
+Each launch opens today's menu; reading positions and browsed dates are not saved.
+From 4 PM on Saturdays or the eve of a solemnity, an
+**Evening Mass** option offers tomorrow's day readings with a notice that separate
+vigil texts are not included.
 
-The resource pack is 803,312 bytes. Physical PT2 installation and opening the First Reading are verified;
-responsiveness and broader device testing are still being evaluated. The pack
-exceeds the SDK’s App Store allowance.
+Up/Down page through readings; hold Up/Down to jump to the beginning/end. Long
+readings continue across sections without truncation. Select offers Large and
+Extra Large bold fonts; Extra Large is the default and your choice persists. Liturgical-color title strips and traditional red references and introductory
+rubrics distinguish the headings from black Scripture text, with
+8-pixel paragraph gaps. Colors follow the selected celebration: green, violet,
+white/gold, red or rose. A Chi-Rho icon identifies **Roman Missal** in the launcher.
+
+Opening and exiting the app saves seven days of offline App Glance subtitles.
+The launcher shows the day's celebration or season/week, advancing at local
+midnight. Compact labels include “OT · Wk 27” and “Mem. St. Teresa of Jesus”.
+After those slices expire, it says “Open for today's readings”; opening
+and exiting replenishes them. Reopen after changing the watch's timezone to
+refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
+
+Version 1.2.0 is being prepared for release. Calendar selection uses one
+reading set per date; national calendars, separate vigil readings and optional-memorial
+choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
+Earlier candidates were accepted by the Pebble store as hidden, unpublished
+drafts. The legacy SDK size warning did not block those uploads.
+See [release preparation](docs/RELEASE.md) for the candidate and remaining checks.
 
 ## Project layout
 
@@ -36,35 +47,54 @@ resources/         Chi-Rho icon and generated reading database
 tools/             EPUB extraction, packing, auditing and icon generation
 tests/             Portable C reader validation
 docs/              Development guide, format, audits and release checklist
-data/source/       Local source EPUB (ignored by Git)
+data/source/       Local source EPUB and Gospel supplement (ignored by Git)
+release/store/     Listing, icons and native store screenshots
 artifacts/         Generated data, screenshots and measurement records (ignored)
 build/             Pebble build output (ignored)
 ```
 
 The Pebble project lives at the repository root. Its package name is
-`daily-roman-missal`; the watch app name is **Daily Roman Missal**. The existing
+`daily-roman-missal`; the project is branded **Daily Roman Missal**. Installed
+app metadata uses **Roman Missal** for both short and full names so the PT2
+launcher and phone installer consistently use the compact label. The existing
 UUID is preserved so updates replace the same installed app.
 
 ## Build and verify
 
-Place the source EPUB in `data/source/`, then run from the repository root:
+Place the source EPUB and owner-supplied `john-8-12-20.json` in `data/source/`,
+then run from the repository root. The supplement contains five paragraphs,
+citation and provenance; it fills a documented omission in the EPUB.
 
 ```sh
 uv run --with zopfli==0.4.3 python tools/extract.py data/source/*.epub --compression zopfli
 python3 tests/test_reader.py
 cp artifacts/readings.pmr resources/readings.pmr
+npm ci --prefix tools/calendar --ignore-scripts
+node tools/calendar/generate.cjs
+python3 tools/build_calendar.py
+cp artifacts/calendar.bin resources/calendar.bin
+python3 tests/test_calendar.py
+python3 tests/test_glance.py
+python3 tests/test_planner.py
 pebble build
 pebble install --emulator emery build/daily-roman-missal.pbw
 ```
 
-Requires Python 3.9+, `uv`, a C compiler with ASan/UBSan, and the Pebble SDK.
+Requires Python 3.9+, Node.js/npm, `uv`, a C compiler with ASan/UBSan, and the Pebble SDK.
 See [the development guide](docs/DEVELOPMENT.md) for validation and memory
 measurements, [release work](docs/RELEASE.md) for remaining milestones, and
 [HANDOFF.md](HANDOFF.md) for continuation notes.
 
-The source EPUB, extracted texts, screenshots and build outputs stay local and
-are excluded from Git. A fresh clone requires the EPUB to reproduce the build.
+Release workflows live in [missal-release](.agents/skills/missal-release/SKILL.md)
+and [missal-appstore](.agents/skills/missal-appstore/SKILL.md), with the maintained
+[release procedure](docs/RELEASING.md). They cover GitHub Releases, existing
+Pebble drafts, artifact verification and recovery without rebuilding on upload.
 
-Near-term goal: a Pebble App Store release while preserving offline readings.
-Store-compatible packaging and automatic calendar selection remain release work.
+The source EPUB, supplement, extracted text and build outputs stay local and
+are excluded from Git. A fresh clone requires both source files to reproduce
+the build. Selected store screenshots are retained in `release/store/`.
+
+Release preparation covers GitHub and the Pebble App Store. The citation and
+selection audit is complete; dedicated physical battery and offline soak
+measurements remain unverified.
 The user confirmed reading-text distribution approval on October 8, 2026.
