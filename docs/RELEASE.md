@@ -1,27 +1,55 @@
-# Release 1.3.0 — candidate prepared
+# Public release — 1.3.0
 
-The owner authorized the version bump, updated compatibility banner, and release
-of the latest implementation on GitHub and the Pebble App Store on October 8, 2026.
-Publication is in progress; the historical verified 1.2.0 record remains below.
+Daily Roman Missal 1.3.0 is published and verified on both services, as authorized
+by the owner on October 8, 2026.
+
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.3.0) — Latest, release ID `406602907`.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f) — listed, release ID `be8a71e0aa7248a9ae6607aa`.
+- Source commit: `270f8fa69e209b6a6ad4ea578ac09be29f571d6b`; annotated tag `v1.3.0`.
+- PBW: 962,125 bytes; SHA-256:
+  `60770c4a413dd5a6a5683b3784f99a3ecbaee20f49e2742140449f1de20e1d90`.
+
+Authenticated and anonymous GitHub downloads and the public store download match
+this frozen digest. General and Emery catalogs show 1.3.0, matching release notes,
+description, banner and screenshot order. The rendered public page shows the new
+compatibility imprint, six screenshots, version and correct PBW link. Icons,
+identity, unrelated fields and every older release were preserved.
+
+## Features and artwork
 
 Version 1.3.0 adds continuous reading with transition cards, shared on-watch
 Settings, larger menus and prompts, Church mode, and the 4-pixel crimson ribbon.
-Reading and calendar resources are unchanged. The banner includes “FOR PEBBLE
-TIME 2”; six native screenshots show the updated interface. The description
-retains the St. Josemaría quotation and existing content scope and attribution.
+Reading and calendar resources are unchanged. Text size and theme persist;
+reading position and browsed date do not. Each launch opens today's menu.
 
-Clean SDK 4.33.1 build and all four ASan/UBSan host suites pass. Emery captures
-and navigation checks pass, alongside the prior comprehensive UI and ribbon
-checks. Final PBW: 962,125 bytes, SHA-256
-`60770c4a413dd5a6a5683b3784f99a3ecbaee20f49e2742140449f1de20e1d90`.
+The banner now includes “FOR PEBBLE TIME 2” beneath the main title. It was edited
+with the built-in image_gen tool, exported at 720×320 and inspected after store
+conversion. Master, exact prompt and export are in `release/store/`. The six
+native 200×228 screenshots show All Saints, Gospel/ribbon, Church mode, the
+next-reading card, Settings and date shortcuts. Served screenshot pixels match
+exactly. The description retains the St. Josemaría quotation and scope/attribution.
+
+## Validation and limitations
+
+A clean SDK 4.33.1 build and all four ASan/UBSan host suites pass. Emery installation,
+new carousel captures and reading transitions pass, together with the extensive
+Settings, multi-part, font, ribbon geometry and cancellation evidence recorded
+in `artifacts/continuous-reader/` and `artifacts/ribbon/`.
 Resources: 937,965 bytes; footprint: 59,054 bytes; heap before allocations: 72,018.
-Evidence: `artifacts/release-1.3.0/`; frozen candidate and destination state will
-be recorded in `.release/1.3.0/candidate-1/manifest.json`.
 
 Normal exit retains zero app allocations. Forced exit during native window
 opening retains 148 bytes in both builds with and without the ribbon; ribbon
-cancellation has no stale animation handles. Physical overnight, disconnected
-use and battery soak remain unmeasured. Physical installation is being checked.
+cancellation has no invalid animation handles. The legacy SDK resource warning
+is unchanged, and this exact bundle was accepted and published by the store.
+
+The attempt to install the frozen 1.3.0 candidate through the phone developer
+connection timed out after 100 seconds. Physical installation is unconfirmed;
+no successful physical update or phone My Apps refresh is claimed. Dedicated
+physical overnight, disconnected-use and battery soak remain unmeasured.
+
+Evidence: `artifacts/release-1.3.0/`. Frozen app, assets, notes, source provenance,
+checksums and destination results: `.release/1.3.0/candidate-1/manifest.json`.
+Do not rebuild to upload again or overwrite the existing tag/release.
 
 ---
 

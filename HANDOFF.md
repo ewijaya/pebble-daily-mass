@@ -8,24 +8,27 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
-## Version 1.3.0 publication in progress
+## Version 1.3.0 published and verified
 
-Owner explicitly authorized the new banner, version bump and release of the latest
-implementation on both services. This supersedes the earlier local-only constraint.
-Version 1.3.0 adds continuous Mass reading, shared Settings, scalable menus/prompts,
-Church mode and the crimson ribbon. The reading/calendar resources are unchanged.
-No saved-place restoration is added. Shared body layout/draw width loses two pixels.
+Owner authorized the new banner, version bump and release of the latest code on
+both services. The earlier local-only constraint was superseded. Source commit
+`270f8fa69e209b6a6ad4ea578ac09be29f571d6b`, tag `v1.3.0`, is published on GitHub and
+the existing Pebble listing. Both public downloads match SHA-256
+`60770c4a413dd5a6a5683b3784f99a3ecbaee20f49e2742140449f1de20e1d90`.
 
-The banner now includes “FOR PEBBLE TIME 2” beneath the title. Native screenshots
-are being refreshed. Evidence is in artifacts/release-1.3.0/, with earlier extensive
-UI/pixel checks in artifacts/continuous-reader/ and artifacts/ribbon/.
-All four host suites and a clean SDK build are being checked for the final version.
-Normal closure frees all allocations; forced exit during native window opening
-retains the same 148 bytes with and without the ribbon. No invalid ribbon handles.
+Includes continuous Mass reading, shared Settings, scalable menus/prompts,
+Church mode and the crimson ribbon. Content resources are unchanged; no saved
+reading place. The banner's “FOR PEBBLE TIME 2” imprint and six new native
+screenshots are live. Icons and old releases were preserved. Both public
+catalogs, served assets, notes, downloads and rendered store page were verified.
 
-Freeze one candidate, install those exact bytes, commit/tag the source and publish
-GitHub first, then the existing store listing. Preserve older release versions.
-Update this section with verified destination state when complete.
+All four host suites and clean SDK build pass. Frozen candidate/state:
+`.release/1.3.0/candidate-1/manifest.json`; evidence: `artifacts/release-1.3.0/`.
+The phone developer connection timed out on the frozen 1.3.0 install attempt;
+physical update is unconfirmed. Overnight/offline/battery soak remains unmeasured.
+See docs/RELEASE.md for exact metrics and the inherited forced-exit heap note.
+Do not recreate releases or overwrite the tag. Further code changes need a new
+candidate/version. No release work remains for this request.
 
 ## Store description update
 
