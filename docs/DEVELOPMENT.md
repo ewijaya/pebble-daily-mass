@@ -6,12 +6,59 @@ Calendar, 2020–2037. It shows season/week and celebration names/ranks. Day det
 lists full names and optional memorials. Hold Select for date shortcuts, or hold
 Up/Down on the main menu to step through days. Each launch opens today's menu. Evening preparation offers tomorrow's day readings.
 See [CALENDAR.md](CALENDAR.md) for mapping rules, scope and reproduction.
-Up/Down page through text; holds jump to the whole reading's beginning/end.
+Tap Up/Down to scroll using the SDK's default step. After 500 ms, a held button
+pages by 80% of the reader viewport (182 pixels on Emery), repeating every 325 ms.
+Release, reader disappearance and opening Settings cancel the timer. The former
+whole-reading start/end holds are replaced. Main-menu date holds remain at 700 ms.
 Select opens the same Settings screen as the row below Day details. Large/Extra
-Large and Light/Church (dark) preferences persist on-watch; holds retain the jump
-commands. Extra Large remains the default. Menus use 24/28 bold titles and 18/24
-bold subtitles; prompts use 24/28 bold and can page if needed. Source paragraphs retain an 8-pixel gap. Midnight updates the menu;
+Large and Light/Church (dark) preferences persist; Extra Large is the default.
+Menus use 24/28 bold titles and 18/24 bold subtitles; prompts use 24/28 bold.
+Source paragraphs retain an 8-pixel gap. Midnight updates the menu;
 an open reading stays unchanged until the menu reappears.
+
+## Version 1.4.0 navigation (October 9, 2026)
+
+Main-menu button taps select rows modulo the current row count, including Evening
+Mass when present and the two utility rows on dates without readings. Up wraps
+to the last row; Down wraps to the first. No native separator callback is used.
+
+`app_touch_navigation_enable(true)` opts into the SDK/system gesture bridge,
+the same approach used in Orationes. Touch must be enabled on the watch. The
+reader registers its click provider and offset-change callback with ScrollLayer;
+native tap scrolling updates text culling and the crimson ribbon throughout the
+scroll animation. There is no additional raw-touch subscription or polling timer.
+
+A reader-only AppTimer handles page holds. Each step is relative to the current
+offset, clamped to bounds. Multi-part readings continue across parts. Held paging
+stops at either boundary of a whole reading. A fresh Down tap from the last page
+opens the next reading directly; Up from the first page opens the previous
+reading's final page. The intermediate and completion cards are removed, so the
+Gospel remains on its final text. Font changes preserve
+approximate relative position without snapping to the old page grid.
+
+Build and reader ASan/UBSan checks pass. Emery checks verified 32-pixel SDK taps,
+182-pixel held pages, first jump at 506 ms and second at 835 ms, release cancellation,
+Settings cancellation, both wrap directions, empty-day utilities, reading transitions
+and held paging into Passion part 2. Large-font paging, Back cancellation and
+Sunday wrapping also passed. Native screenshots and logs:
+`artifacts/touch-scroll/`. Exact-build installation and launch on PT2 firmware
+4.38.4 passed. The owner confirmed vertical swipes scroll correctly in both the
+main menu and the reader on the physical watch.
+
+The subsequent card-removal build and reader host suite also pass. Evidence in
+`artifacts/direct-readings/` verifies direct next/previous reading navigation,
+held-stop boundaries, the Gospel's final text, all three Passion parts, and
+backward part navigation. The first multipart assertion was a harness error
+(it held Up across the boundary before checking a cleared log); the corrected
+isolated run completes successfully. Normal app exit retains zero allocations.
+This exact build installed and launched on the physical PT2 4.38.4 as well.
+
+Removing the transition cards reduces the static footprint from 59,654 to 58,592
+bytes and raises heap before allocations from 71,418 to 72,480 (+1,062 bytes).
+Resource pack remains byte-identical at 937,965 bytes. The owner approved
+release preparation/publication as 1.4.0 after testing these
+controls on the PT2. Never replace the published 1.3.1 bytes. Destination and
+exact frozen-build verification status is recorded in RELEASE.md and HANDOFF.md.
 
 The project is branded **Daily Roman Missal**. Installed app metadata uses
 **Roman Missal** for displayName, shortName and longName. The phone installer
@@ -174,9 +221,9 @@ requested page-segment range. It never loads the full database into RAM.
 
 The decoder uses [tinf](../src/c/vendor/tinf/README.md), with license,
 pinned source revision and two compiler portability casts documented locally.
-The UI uses a ScrollLayer with explicit page/jump button handlers and
-GOTHIC_24_BOLD / GOTHIC_28_BOLD. Page overlap exceeds one line; offsets clamp
-at both ends. A footer shows the page count and Select shortcut. Source paragraphs are
+The UI uses a ScrollLayer with native short steps and custom held paging, with
+GOTHIC_24_BOLD / GOTHIC_28_BOLD. Held pages overlap by 20%; offsets clamp
+at both ends. The reader uses the full screen without a footer. Source paragraphs are
 measured and drawn separately with 8-pixel gaps; internal single line breaks
 are preserved. A liturgical-color title strip and smaller red citations/summaries distinguish
 reading roles from the black scripture body. Roles follow the source
@@ -191,7 +238,7 @@ preserved. Other source-wide glyph coverage has not been audited.
 The 8 KiB display buffer holds one bounded part of a reading; the local UI
 allocates it only while the reader is open. The calendar
 compiler splits longer readings between source paragraphs and preserves the full
-selected form. Navigation crosses part boundaries; the footer shows the part.
+selected form. Navigation crosses part boundaries; the ribbon covers the entire reading.
 The earlier Rosary sample audit (`text/part0519.html`) remains as historical evidence.
 
 The October 8 EPUB acclamation reads “Open your hearts” where USCCB reads

@@ -11,22 +11,28 @@ The app automatically selects readings using the watch's local date and the
 celebration name and rank; Day details includes full names and optional memorials.
 Hold Select for Today, Previous/Next day, Next Sunday or Next Holy Day (the next
 feast or solemnity). Hold Up/Down on the main menu to step backward/forward
-through dates; short presses select readings.
+through dates; short presses select readings. The main-menu selector wraps in
+both directions, and touch navigation is enabled.
 
 Each launch opens today's menu; reading positions and browsed dates are not saved.
 From 4 PM on Saturdays or the eve of a solemnity, an
 **Evening Mass** option offers tomorrow's day readings with a notice that separate
 vigil texts are not included.
 
-In version 1.3.0, Up/Down page through readings; hold
-Up/Down to jump to the beginning/end. At the end, Down shows the next reading's
-name and citation; another Down opens it. Up at the start returns to the previous
-reading's last page. Long readings continue across all their parts.
+Tap Up/Down for the SDK's short scrolling step
+(32 pixels on the tested firmware). Hold either button for 0.5 seconds to page
+by 80% of the viewport, repeating every 325 ms until release. Touch swipes use
+the watch's native navigation when touch is enabled in system settings.
+At the end, a fresh Down tap opens the next reading directly. Up at the start
+returns to the previous reading's last page. Held paging stops at each reading's
+boundary; release and tap to continue. Long readings continue across all their
+parts. The Gospel ends on its final text; Back returns to the menu. There are no
+intermediate or completion cards.
 
 Settings is below Day details and also opens with Select in the reader. Large
 and Extra Large apply to reading text, menu labels, citations and prompts; Extra
 Large is the default. Text size and the Light/Church (dark) theme persist on the
-watch. Navigation shortcuts remain on hold-Up/Down. Compact headers leave more
+watch. Compact headers leave more
 room for larger rows, with full celebration names in Day details.
 
 A quiet 4-pixel crimson ribbon at the reader's right edge grows with progress
@@ -49,7 +55,10 @@ After those slices expire, it says “Open for today's readings”; opening
 and exiting replenishes them. Reopen after changing the watch's timezone to
 refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 
-Version 1.3.1 is publicly available. Calendar selection uses one
+Version 1.4.0 is prepared for release with direct reading navigation and the
+wrap, touch and tap/hold controls above. Version 1.3.1 remains the public download
+until publication is verified.
+Calendar selection uses one
 reading set per date; national calendars, separate vigil readings and optional-memorial
 choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
 Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)

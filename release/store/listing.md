@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.3.1
+Version: 1.4.0
 Developer: Edward
 
 ## Description
@@ -21,8 +21,9 @@ connection is needed to read.
 Bold Large and Extra Large text, red Scripture references and seasonal colors
 make the pages easy to follow. A little crimson ribbon keeps your place as you
 read. Move from one reading to the next with Down, or return with Up. Settings
-is close at hand, with a dark Church mode for quiet surroundings. Turn a page,
-move to the beginning or end, or look ahead to Sunday or the next feast. An evening shortcut offers tomorrow's
+is close at hand, with a dark Church mode for quiet surroundings. Swipe to
+scroll, tap for a few lines, or hold to turn pages. Look ahead to Sunday or
+the next feast. An evening shortcut offers tomorrow's
 day readings before Sunday and solemnities. The launcher can show today's
 celebration before you open the app.
 
@@ -44,17 +45,17 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.3.1 gives the readings more room.
+Daily Roman Missal 1.4.0 makes following the readings easier.
 
-The black page-counter strip is removed, so reading text uses the full screen.
-The crimson ribbon continues to show progress; Select still opens Settings.
+Swipe to scroll the menu and readings. Tap Up or Down for a short scroll;
+hold for half a second to turn pages, repeating until you release.
 
-A thin crimson rule separates the readings from Day details and Settings.
-A quiet version label appears at the bottom of Settings and follows the app's
-build version automatically.
+The main menu wraps from its last item back to its first. At the end of a
+reading, tap Down to open the next reading directly; tap Up at its beginning
+to return to the previous reading. Held paging stops at reading boundaries.
+The transition cards are removed, and the Gospel ends on its final text.
 
-Verified on Pebble Time 2, including successful launches and reading navigation.
-All readings, liturgical-calendar selection and offline behavior are unchanged.
+Readings, liturgical-calendar selection and offline operation are unchanged.
 
 ## Privacy
 

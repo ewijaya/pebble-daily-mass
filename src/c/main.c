@@ -17,7 +17,7 @@ static Pmr db;
 static ResHandle resource, calendar_resource;
 static Calendar *calendar;
 static CalDay day;
-static bool day_valid, details_mode, end_card;
+static bool day_valid, details_mode;
 static uint8_t reading_part;
 static char citations[CAL_MAX_READINGS][CAL_CITATION_SIZE];
 static char date_text[32], season_text[64], celebration_text[160], day_name[128], day_details[1600];
@@ -39,6 +39,8 @@ enum { PROMPT_EVENING, PROMPT_NOTICE };
 static uint8_t prompt_mode;
 static AppTimer *date_repeat_timer;
 static int date_repeat_direction;
+static AppTimer *reader_repeat_timer;
+static int reader_repeat_direction;
 static void load_reading_part(uint8_t part);
 static void refresh_date(bool force);
 static void open_dates(ClickRecognizerRef recognizer, void *context);
@@ -163,26 +165,6 @@ static void draw_body(Layer *layer, GContext *ctx) {
   graphics_context_set_text_color(ctx, theme.body);
   int width = layer_get_bounds(layer).size.w;
   int top = -scroll_layer_get_content_offset(scroll).y;
-  if (end_card) {
-    bool next=selected+1<day.count;
-    graphics_context_set_fill_color(ctx,theme.fill);
-    graphics_fill_rect(ctx,GRect(0,0,width,strip_height),0,GCornerNone);
-    graphics_context_set_text_color(ctx,theme.text);
-    graphics_draw_text(ctx,next ? "NEXT READING" : "READINGS COMPLETE",rubric_font,
-        GRect(4,0,width-8,strip_height),GTextOverflowModeTrailingEllipsis,GTextAlignmentCenter,NULL);
-    graphics_context_set_text_color(ctx,theme.body);
-    graphics_draw_text(ctx,next ? menu_titles[day.readings[selected+1].kind] : "End of readings",body_font,
-        GRect(8,strip_height+8,width-16,64),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
-    graphics_context_set_text_color(ctx,theme.rubric);
-    graphics_draw_text(ctx,next ? citations[selected+1] : "Return to the menu with Back.",rubric_font,
-        GRect(8,strip_height+76,width-16,viewport_height-strip_height-124),GTextOverflowModeTrailingEllipsis,GTextAlignmentCenter,NULL);
-    graphics_context_set_text_color(ctx,theme.body);
-    graphics_draw_text(ctx,"Up: return to reading",fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
-        GRect(4,viewport_height-48,width-8,22),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
-    graphics_draw_text(ctx,next ? "Down: next reading" : "Back: readings menu",fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
-        GRect(4,viewport_height-26,width-8,26),GTextOverflowModeWordWrap,GTextAlignmentCenter,NULL);
-    return;
-  }
   if (styled_reading && top < strip_height) {
     graphics_context_set_fill_color(ctx, theme.fill);
     graphics_fill_rect(ctx, GRect(0, 0, width, strip_height), 0, GCornerNone);
@@ -240,7 +222,7 @@ static void ribbon_stop(void) {
 static void ribbon_update(int offset) {
   if (!ribbon_layer) return;
   ribbon_stop();
-  bool visible=styled_reading && !details_mode && !end_card;
+  bool visible=styled_reading && !details_mode;
   layer_set_hidden(ribbon_layer,!visible);
   if (!visible) return;
   uint32_t height=max_offset+viewport_height;
@@ -284,10 +266,9 @@ static void move_to(int offset) {
   if (!scroll || !body_layer || page_step <= 0) return;
   if (offset < 0) offset = 0;
   if (offset > max_offset) offset = max_offset;
-  scroll_layer_set_content_offset(scroll, GPoint(0, end_card ? 0 : -offset), false);
+  scroll_layer_set_content_offset(scroll, GPoint(0, -offset), false);
   layer_mark_dirty(body_layer);
   ribbon_update(offset);
-  if (end_card) return;
   int pages = 1 + (max_offset + page_step - 1) / page_step;
   int page = offset == max_offset ? pages : 1 + offset / page_step;
   APP_LOG(APP_LOG_LEVEL_INFO, "Reader size=%s offset=%d/%d page=%d/%d",
@@ -321,10 +302,9 @@ static void layout_reading(void) {
   if (height < viewport_height) height = viewport_height;
   scroll_layer_set_content_size(scroll, GSize(bounds.size.w, height));
   max_offset = height - viewport_height;
-  // Overlap by more than one line so clipped edge text is readable next page.
-  page_step = viewport_height - (font_size ? 36 : 32);
+  page_step = viewport_height * 80 / 100;
   int offset = previous_max ? previous_offset * max_offset / previous_max : 0;
-  move_to(offset == max_offset ? offset : (offset / page_step) * page_step);
+  move_to(offset);
 }
 
 static void select_adjacent(int delta) {
@@ -333,49 +313,64 @@ static void select_adjacent(int delta) {
   load_reading_part(delta>0 ? 0 : day.readings[selected].parts-1);
   if (delta<0) move_to(max_offset);
 }
-static void page_up(ClickRecognizerRef recognizer, void *context) {
+static void stop_reader_repeat(ClickRecognizerRef recognizer, void *context) {
+  if (reader_repeat_timer) app_timer_cancel(reader_repeat_timer);
+  reader_repeat_timer=NULL;reader_repeat_direction=0;
+}
+static void reader_offset_changed(ScrollLayer *layer, void *context) {
+  if (body_layer) layer_mark_dirty(body_layer);
+  ribbon_update(-scroll_layer_get_content_offset(layer).y);
+}
+static void reader_step(int direction, bool page, ClickRecognizerRef recognizer) {
   if (!scroll || page_step<=0) return;
-  if (end_card) {end_card=false;move_to(max_offset);return;}
   int offset=-scroll_layer_get_content_offset(scroll).y;
-  if (offset==0 && !details_mode) {
+  if (direction<0 && offset==0 && !details_mode) {
     if (reading_part>0) {load_reading_part(reading_part-1);move_to(max_offset);}
-    else if (day_valid && selected>0 && selected<day.count) select_adjacent(-1);
-  } else move_to(offset>0 ? ((offset-1)/page_step)*page_step : 0);
-}
-static void page_down(ClickRecognizerRef recognizer, void *context) {
-  if (!scroll || page_step<=0) return;
-  if (end_card) {if (selected+1<day.count) select_adjacent(1);return;}
-  int offset=-scroll_layer_get_content_offset(scroll).y;
-  if (offset==max_offset && !details_mode && day_valid && selected<day.count) {
+    else if (!page && day_valid && selected>0 && selected<day.count) select_adjacent(-1);
+  } else if (direction>0 && offset==max_offset && !details_mode && day_valid && selected<day.count) {
     if (reading_part+1<day.readings[selected].parts) load_reading_part(reading_part+1);
-    else {
-      end_card=true;move_to(0);
-      APP_LOG(APP_LOG_LEVEL_INFO,"End card reading=%d next=%d",selected,selected+1<day.count);
-    }
-  } else move_to((offset/page_step+1)*page_step);
+    else if (!page && selected+1<day.count) select_adjacent(1);
+  } else if (page) move_to(offset+direction*page_step);
+  else if (direction<0) scroll_layer_scroll_up_click_handler(recognizer,scroll);
+  else scroll_layer_scroll_down_click_handler(recognizer,scroll);
 }
-static void jump_top(ClickRecognizerRef recognizer, void *context) {
-  end_card=false;
-  if (!details_mode && reading_part) load_reading_part(0);
-  move_to(0);
+static void reader_up(ClickRecognizerRef recognizer, void *context) {
+  stop_reader_repeat(NULL,NULL);reader_step(-1,false,recognizer);
 }
-static void jump_bottom(ClickRecognizerRef recognizer, void *context) {
-  end_card=false;
-  if (!details_mode && day_valid && selected<day.count && reading_part+1<day.readings[selected].parts)
-    load_reading_part(day.readings[selected].parts-1);
-  move_to(max_offset);
+static void reader_down(ClickRecognizerRef recognizer, void *context) {
+  stop_reader_repeat(NULL,NULL);reader_step(1,false,recognizer);
 }
+static void repeat_reader(void *context) {
+  reader_repeat_timer=NULL;
+  if (!scroll || !reader_repeat_direction || window_stack_get_top_window()!=reader_window) {
+    stop_reader_repeat(NULL,NULL);return;
+  }
+  int offset=-scroll_layer_get_content_offset(scroll).y,previous=selected,part=reading_part;
+  reader_step(reader_repeat_direction,true,NULL);
+  // Held paging crosses parts, but never crosses into another reading.
+  if (offset==-scroll_layer_get_content_offset(scroll).y &&
+      previous==selected && part==reading_part) {
+    stop_reader_repeat(NULL,NULL);return;
+  }
+  reader_repeat_timer=app_timer_register(325,repeat_reader,NULL);
+}
+static void hold_reader_up(ClickRecognizerRef recognizer, void *context) {
+  stop_reader_repeat(NULL,NULL);reader_repeat_direction=-1;repeat_reader(NULL);
+}
+static void hold_reader_down(ClickRecognizerRef recognizer, void *context) {
+  stop_reader_repeat(NULL,NULL);reader_repeat_direction=1;repeat_reader(NULL);
+}
+static void reader_disappear(Window *window) {stop_reader_repeat(NULL,NULL);}
 static void open_options(ClickRecognizerRef recognizer, void *context) {
-  window_stack_push(options_window,true);
+  stop_reader_repeat(NULL,NULL);window_stack_push(options_window,true);
 }
 
 static void reader_click_config(void *context) {
-  // Own Up/Down explicitly: native ScrollLayer repeats would conflict with jumps.
-  window_single_click_subscribe(BUTTON_ID_UP, page_up);
-  window_single_click_subscribe(BUTTON_ID_DOWN, page_down);
-  window_long_click_subscribe(BUTTON_ID_UP, 700, jump_top, NULL);
-  window_long_click_subscribe(BUTTON_ID_DOWN, 700, jump_bottom, NULL);
-  window_single_click_subscribe(BUTTON_ID_SELECT, open_options);
+  window_single_click_subscribe(BUTTON_ID_UP,reader_up);
+  window_single_click_subscribe(BUTTON_ID_DOWN,reader_down);
+  window_long_click_subscribe(BUTTON_ID_UP,500,hold_reader_up,stop_reader_repeat);
+  window_long_click_subscribe(BUTTON_ID_DOWN,500,hold_reader_down,stop_reader_repeat);
+  window_single_click_subscribe(BUTTON_ID_SELECT,open_options);
 }
 
 static int16_t choice_height(MenuLayer *layer, MenuIndex *index, void *context) {
@@ -441,7 +436,6 @@ static void options_unload(Window *window) {
 }
 
 static void load_reading_part(uint8_t part) {
-  end_card=false;
   uint32_t start_ms = now_ms();
   bool ok = true;
   memset(paragraph_rubric, 0, sizeof(paragraph_rubric));
@@ -495,6 +489,9 @@ static void reader_load(Window *window) {
   scroll_layer_add_child(scroll, body_layer);
   layer_add_child(window_get_root_layer(window), scroll_layer_get_layer(scroll));
   scroll_layer_set_shadow_hidden(scroll, true);
+  scroll_layer_set_callbacks(scroll,(ScrollLayerCallbacks){
+      .click_config_provider=reader_click_config,.content_offset_changed_handler=reader_offset_changed});
+  scroll_layer_set_click_config_onto_window(scroll,window);
   unsigned before=heap_bytes_free();
   ribbon_layer=layer_create(GRect(0,0,bounds.size.w,viewport_height));
   if (ribbon_layer) {
@@ -506,11 +503,10 @@ static void reader_load(Window *window) {
 }
 
 static void reader_unload(Window *window) {
-  ribbon_stop();
+  stop_reader_repeat(NULL,NULL);ribbon_stop();
   if (ribbon_layer) layer_destroy(ribbon_layer);
   ribbon_layer=NULL;
   free(reading);reading=NULL;
-  end_card=false;
   if (body_layer) layer_destroy(body_layer);
   if (scroll) scroll_layer_destroy(scroll);
   body_layer = NULL;
@@ -535,11 +531,15 @@ static int16_t menu_row_height(MenuLayer *layer, MenuIndex *index, void *context
 }
 
 static void main_menu_up(ClickRecognizerRef recognizer, void *context) {
-  menu_layer_set_selected_next(menu, true, MenuRowAlignCenter, false);
+  MenuIndex index=menu_layer_get_selected_index(menu);
+  index.row=index.row ? index.row-1 : menu_row_count(menu,0,NULL)-1;
+  menu_layer_set_selected_index(menu,index,MenuRowAlignCenter,false);
 }
 
 static void main_menu_down(ClickRecognizerRef recognizer, void *context) {
-  menu_layer_set_selected_next(menu, false, MenuRowAlignCenter, false);
+  MenuIndex index=menu_layer_get_selected_index(menu);
+  index.row=(index.row+1)%menu_row_count(menu,0,NULL);
+  menu_layer_set_selected_index(menu,index,MenuRowAlignCenter,false);
 }
 
 static void repeat_date(void *context) {
@@ -860,18 +860,19 @@ int main(void) {
   prompt_window = window_create();
   if (menu_window && reader_window && options_window && date_window && prompt_window) {
     window_set_window_handlers(menu_window, (WindowHandlers){.load = menu_load, .unload = menu_unload, .appear = menu_appear});
-    window_set_window_handlers(reader_window, (WindowHandlers){.load = reader_load, .unload = reader_unload});
+    window_set_window_handlers(reader_window, (WindowHandlers){.load = reader_load, .unload = reader_unload, .disappear = reader_disappear});
     window_set_window_handlers(options_window, (WindowHandlers){.load = options_load, .unload = options_unload});
     window_set_window_handlers(date_window,(WindowHandlers){.load=date_load,.unload=date_unload});
     window_set_window_handlers(prompt_window,(WindowHandlers){.load=prompt_load,.unload=prompt_unload});
     tick_timer_service_subscribe(MINUTE_UNIT,minute_tick);
     window_set_click_config_provider(prompt_window,prompt_click_config);
-    window_set_click_config_provider(reader_window, reader_click_config);
+    app_touch_navigation_enable(true);
     window_stack_push(menu_window, true);
     app_event_loop();
   }
   tick_timer_service_unsubscribe();
   stop_date_repeat(NULL,NULL);
+  stop_reader_repeat(NULL,NULL);
   // Refresh on exit using the real clock, not the date-browsing selection.
   // The system advances the saved slices even while this app is closed.
   app_glance_reload(glance_reload,NULL);

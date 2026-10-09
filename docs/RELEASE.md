@@ -1,3 +1,22 @@
+# Release 1.4.0 — preparation in progress
+
+The owner requested release on October 9 after approving the PT2 reading flow.
+Destinations: public GitHub Releases and the existing Pebble App Store listing.
+Includes wrapping menus, native touch scrolling, SDK short taps, 80%-viewport
+held paging and direct reading transitions. Intermediate/completion cards are
+removed. The reading/calendar resource pack remains unchanged.
+
+Clean SDK build and all four host suites pass. The final 1.4.0 Emery build
+passes direct-reading, Gospel-end and all three Passion-part checks. Six native
+carousel images were captured and inspected, including the Psalm replacing the
+obsolete card and Settings showing v1.4.0. Resources remain 937,965 bytes; static
+RAM is 58,592 bytes and linker free heap 72,480 bytes. Publication and exact frozen
+PT2-install verification are pending. Frozen inputs:
+`.release/1.4.0/candidate-1/`; evidence: `artifacts/release-1.4.0/`.
+Do not claim 1.4.0 availability before checking its public downloads.
+
+---
+
 # Public release — 1.3.1
 
 Daily Roman Missal 1.3.1 is published on both services, as authorized

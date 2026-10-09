@@ -21,18 +21,18 @@
     "sha256": "79cf0fa8c357b65ff1b9199c4f9fc6abf7b2bffc2edc341275d9dcc116adc6a2"
   },
   {
-    "file": "screenshots/04-next-reading.png",
-    "caption": "Continue through the Mass, one reading after another",
+    "file": "screenshots/04-psalm.png",
+    "caption": "Continue directly from the First Reading to the Psalm",
     "width": 200,
     "height": 228,
-    "sha256": "d5643ef845ed53cc323d9c899f3a98d9a5f551e6cc31de2b7f92d564a10cd226"
+    "sha256": "ec800645f2f6ce8308eaffe5b17da1414c1c364717a79878c135317e86278fa1"
   },
   {
     "file": "screenshots/05-settings.png",
     "caption": "Text size and theme, together in Settings",
     "width": 200,
     "height": 228,
-    "sha256": "6bc30aa60d1ffcca8b00d23b409873241e7c7a90275586109a0d1bc0c181f279"
+    "sha256": "fe9d239ce2b653886603e6f26c92b1fe93f0371c7da816566649d9ce248f735c"
   },
   {
     "file": "screenshots/06-date-shortcuts.png",

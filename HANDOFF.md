@@ -1,12 +1,77 @@
 # Daily Roman Missal — current handoff
 
-Updated October 8, 2026 (Asia/Tokyo). Read docs/RELEASE.md and docs/RELEASE-AUDIT.md next.
+Updated October 9, 2026 (Asia/Tokyo). Read docs/RELEASE.md and docs/RELEASE-AUDIT.md next.
 
 Project-local release skills were adapted from Popeye G&W and Orationes:
 `.agents/skills/missal-release` and `.agents/skills/missal-appstore`.
 Their shared procedure is docs/RELEASING.md; identity is docs/release-config.json.
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
+
+## Release 1.4.0 in progress — October 9
+
+Owner confirmed the revised navigation “looks good!” and invoked `$missal-release`.
+Existing session scope is public GitHub Releases and the Pebble App Store.
+Version 1.4.0 adds wrapping menus, touch scrolling, short-tap/repeating-hold
+scrolling, and direct reading navigation without transition cards. Update the
+stale card/Settings screenshots and control description; preserve banner/icons.
+Use `.release/1.4.0/candidate-1/` frozen inputs once prepared. Verification and
+remote state belong in `artifacts/release-1.4.0/`. Preserve unrelated Reddit work.
+The local-only restrictions below are historical and superseded by this request.
+
+## Local direct-reading update — October 9
+
+Owner approved removing the intermediate “Next Reading” and final “Readings
+Complete” cards. A fresh Down tap at a reading's end now opens the next reading;
+Up at its start returns to the previous reading's final part/page. Held paging
+continues within multipart readings but stops at whole-reading boundaries in
+both directions. The Gospel ends on its final Scripture text, with the ribbon
+still visible. Back returns to the menu. No reading text, calendar, Glance,
+preferences or saved-place behavior changed.
+
+Build and reader ASan/UBSan suite pass (13,168 segments / 1,006 complete pages).
+Resource pack is byte-identical to the previous local build. Static footprint
+58,592 bytes; initial heap 72,480, a 1,062-byte improvement over the preceding
+local build. Local PBW: 961,702 bytes, SHA-256
+`3b439466f380ecd24e38ca241686dd27f4c85e70d153d15a52a0a661ec8f00a0`.
+Verification evidence: `artifacts/direct-readings/`.
+
+Emery checks pass: direct First Reading/Psalm round trip, held-stop boundaries,
+short Acclamation, bounded Gospel final text and all three Palm Sunday Passion
+parts (including backward part navigation). Screenshots confirm the final text
+and ribbon replace cards. `ui.log` contains passing ordinary-reading checks
+followed by a harness assertion: the script held Up across a part boundary,
+then cleared its load event before checking it. Corrected isolated multipart
+checks pass in `ui-parts.log`. Normal exit retains zero app allocations.
+The exact PBW above installed and launched successfully on the physical PT2
+4.38.4; running UUID, screenshot and log are recorded in that evidence directory.
+
+Version remains 1.3.1; no release, commit or push requested. Public downloads
+remain unchanged. Preserve all preceding local wrap/touch changes and the
+untracked `release/reddit/` image pack.
+
+## Preceding local wrap, touch and scrolling update — October 9
+
+Owner requested main-menu wrapping, screen touch scrolling, SDK-default short
+steps on Up/Down taps, and 80%-viewport paging after a 500 ms hold with 325 ms
+repeat. Implemented in main.c. Native touch navigation is enabled app-wide;
+reader offset callbacks redraw body and ribbon during SDK scrolling. Hold timers
+stop on release, disappearance, Settings and transition cards. Main-menu date
+holds remain unchanged. No saved place, content, calendar or Glance changes.
+
+Build and reader host suite pass. Emulator measured native taps at 32 pixels,
+held jumps at 182 pixels, first at 506 ms and repeat at 835 ms; verified release,
+Settings interruption, wrap directions, empty dates, adjacent readings and Palm
+Sunday part crossings. Resources match public 1.3.1 exactly. Static footprint
+59,654, initial heap 71,418. Evidence: artifacts/touch-scroll/. This exact local
+build installed successfully on physical PT2 4.38.4; running-app UUID, startup
+log and screenshot confirm launch. The owner then confirmed “Both scroll
+correctly” for real touch swipes in the readings menu and inside a reading.
+
+Local PBW SHA-256 3a7cd5a35acdd9a580cd7499e427caa1e337e070ca0806dc244c46c82782a271,
+962,766 bytes. Version remains 1.3.1 locally; public release bytes are untouched.
+No commit, push, version bump or publication was requested. Preserve the untracked
+release/reddit/ image pack from the previous task.
 
 ## Version 1.3.1 published; store web-page cache pending
 
