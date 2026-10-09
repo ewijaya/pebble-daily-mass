@@ -1,19 +1,64 @@
-# Release 1.4.0 — preparation in progress
+# Public release — 1.4.0
 
-The owner requested release on October 9 after approving the PT2 reading flow.
-Destinations: public GitHub Releases and the existing Pebble App Store listing.
-Includes wrapping menus, native touch scrolling, SDK short taps, 80%-viewport
-held paging and direct reading transitions. Intermediate/completion cards are
-removed. The reading/calendar resource pack remains unchanged.
+Daily Roman Missal 1.4.0 is published and verified on both services. The owner
+requested release on October 9, 2026 after approving the revised PT2 reading flow.
 
-Clean SDK build and all four host suites pass. The final 1.4.0 Emery build
-passes direct-reading, Gospel-end and all three Passion-part checks. Six native
-carousel images were captured and inspected, including the Psalm replacing the
-obsolete card and Settings showing v1.4.0. Resources remain 937,965 bytes; static
-RAM is 58,592 bytes and linker free heap 72,480 bytes. Publication and exact frozen
-PT2-install verification are pending. Frozen inputs:
-`.release/1.4.0/candidate-1/`; evidence: `artifacts/release-1.4.0/`.
-Do not claim 1.4.0 availability before checking its public downloads.
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.4.0) — Latest, release ID `407383762`.
+- [Pebble App Store](https://apps.repebble.com/roman-missal_9e466762014d4b1ab248219f) — listed, release ID `2dd7571bc4614c55b10c5672`.
+- Source commit: `d8ae12c85f8953fd866261f77b42fa1b71967fa7`; annotated tag `v1.4.0`.
+- PBW: 961,701 bytes; SHA-256:
+  `1e6d345db5e97be23026a2ab293b42b55536e119e956501bd8fb2f80e0f5be39`.
+
+Authenticated and anonymous GitHub downloads, the store draft and public store
+download all match the frozen digest. General and Emery catalogs show 1.4.0,
+correct notes and description, and the updated six-image carousel. The rendered
+GitHub page is Latest. The store main page shows 1.4.0 and its correct download;
+the separate changelog updated on the second bounded check. No web cache issue
+remains pending. Phone My Apps refresh has not been observed.
+
+## Changes
+
+The main menu wraps in both directions, and native touch scrolling is enabled.
+Tap Up/Down for the SDK's short scrolling step. Hold for 500 ms to page by 80%
+of the viewport, repeating every 325 ms until release. Held paging continues
+through parts of a reading and stops at whole-reading boundaries.
+
+A fresh Down tap at the end opens the next reading directly; Up at the start
+returns to the preceding reading's last page. Intermediate/completion cards are
+removed. The Gospel ends on its final text. Back returns to the menu. The
+reading/calendar resource pack, App Glance and saved-preference behavior are
+unchanged; no saved reading position is introduced.
+
+The store description now describes swipes and tap/hold controls. The obsolete
+transition-card screenshot is replaced by the Psalm; Settings shows v1.4.0.
+All six native 200×228 screenshots were captured from the release build; served
+pixels/order match. Banner, icons, quotation, content scope, attribution,
+unrelated listing fields and every older release were preserved.
+
+## Verification and limitations
+
+A clean SDK 4.33.1 build and all four ASan/UBSan host suites pass: 13,168 reading
+segments, 1,006 complete pages, 6,575 calendar dates, 2,523 complete reading parts,
+Glance and planner regressions. The final Emery build passes direct next/previous
+reading navigation, held-stop boundaries, bounded Gospel end and all three
+Passion parts. Native carousel captures pass, and emulator time was restored.
+Earlier tap timing, menu wrapping, theme/font and cancellation checks remain in
+`artifacts/touch-scroll/` and `artifacts/direct-readings/`.
+
+The exact frozen 1.4.0 PBW installed and launched successfully on physical PT2
+firmware 4.38.4, verified by app UUID, fault-free startup log and screenshot.
+The owner confirmed real touch scrolling and the direct reading flow before the
+version bump. Physical clock changes were not used. Dedicated overnight,
+disconnected-use and battery soak remain unmeasured.
+
+Resources: 937,965 bytes (unchanged); static RAM: 58,592 bytes; linker free heap:
+72,480 bytes, 530 more than public 1.3.1. Normal emulator exit retains zero app
+allocations. The legacy resource warning remains; the store accepted the PBW.
+
+Evidence: `artifacts/release-1.4.0/`; frozen bytes, provenance, hashes and state:
+`.release/1.4.0/candidate-1/manifest.json`. Never rebuild or overwrite this version.
+The source and tag are pushed; the unrelated `release/reddit/` pack remains
+untracked and excluded from the release commits.
 
 ---
 

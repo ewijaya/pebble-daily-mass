@@ -8,16 +8,33 @@ Their shared procedure is docs/RELEASING.md; identity is docs/release-config.jso
 The original skills-maintenance task made no external changes; release preparation
 subsequently committed and pushed the app and made the repository public.
 
-## Release 1.4.0 in progress — October 9
+## Version 1.4.0 published and verified — October 9
 
 Owner confirmed the revised navigation “looks good!” and invoked `$missal-release`.
-Existing session scope is public GitHub Releases and the Pebble App Store.
-Version 1.4.0 adds wrapping menus, touch scrolling, short-tap/repeating-hold
-scrolling, and direct reading navigation without transition cards. Update the
-stale card/Settings screenshots and control description; preserve banner/icons.
-Use `.release/1.4.0/candidate-1/` frozen inputs once prepared. Verification and
-remote state belong in `artifacts/release-1.4.0/`. Preserve unrelated Reddit work.
-The local-only restrictions below are historical and superseded by this request.
+Published to both previously authorized public destinations. Source commit
+`d8ae12c85f8953fd866261f77b42fa1b71967fa7`, tag `v1.4.0`; GitHub release
+`407383762`, store release `2dd7571bc4614c55b10c5672`.
+PBW 961,701 bytes, SHA-256
+`1e6d345db5e97be23026a2ab293b42b55536e119e956501bd8fb2f80e0f5be39`.
+
+Includes menu wrapping, native touch scrolling, SDK short taps, 500 ms held
+paging at 80% viewport/325 ms repeat, direct next/previous readings, and removal
+of transition/completion cards. Held scrolling stops at whole-reading boundaries.
+All four host suites, clean build, final-version Emery navigation and six native
+captures pass. Exact frozen PBW installed and launched on physical PT2 4.38.4.
+Owner touch/flow approval preceded the metadata-only version bump.
+
+GitHub authenticated/anonymous downloads and store draft/public downloads match.
+Both catalogs and rendered public pages verify 1.4.0; changelog refreshed on the
+second check. Updated description/control wording and carousel (Psalm replacing
+card, Settings version) verify, while banner/icons and unrelated fields remain.
+No cache issue remains on the web surfaces. Phone My Apps refresh and dedicated
+overnight/disconnected-use/battery soak remain unobserved.
+
+Evidence: `artifacts/release-1.4.0/`; immutable inputs and verification status:
+`.release/1.4.0/candidate-1/manifest.json`. See docs/RELEASE.md for full details.
+Source/tag pushed; preserve unrelated untracked `release/reddit/`. Historical
+local-only restrictions below were superseded by this release request.
 
 ## Local direct-reading update — October 9
 
