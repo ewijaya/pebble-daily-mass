@@ -1,15 +1,17 @@
-## Prepared 1.4.1 — hold Select to exit (October 12, 2026)
+## Published 1.4.1 — hold Select to exit (October 12, 2026)
 
-Source commit `98a4e21` adds the reader's 700 ms Select hold; tap Select opens
-Settings on release. All four host suites, clean build and final emulator
-checks passed. Exit returns to launcher, then Back reaches the watchface.
-Frozen `.release/1.4.1/candidate-1/` PBW installed and launched on PT2 4.38.4;
-first reported failure was reconciled, then one retry succeeded. Evidence is
-in `artifacts/release-1.4.1/`; exact digest and metrics are in docs/RELEASE.md.
-Notes and listing description are prepared; artwork is unchanged. Publication
-to GitHub/store awaits destination approval. No push, tag or upload has occurred.
-Physical gesture feedback and longer soak tests remain unobserved. Preserve
-untracked `release/reddit/`. Never rebuild the frozen PBW to upload it.
+Owner tested the exact frozen candidate and approved both destinations.
+GitHub v1.4.1 is public/Latest; store release `c5fc68e6ec7048eba5e53681` is
+published/listed. All downloaded PBWs match frozen SHA-256
+`2f25a5891f5862e4930f95c0b940c823c434b8dcaf6f933cad934da6cb631034`.
+Source/tag: `98a4e21` / `v1.4.1`. All four host suites, clean build, emulator
+checks and physical PT2 install/owner test passed. Both catalogs, store page
+and changelog verify. Full evidence/status: docs/RELEASE.md and
+`.release/1.4.1/candidate-1/manifest.json`. Preserve unrelated `release/reddit/`.
+
+During publication the owner asked about discoverability. Suggested an on-watch
+Settings hint, “In reader: hold Select to exit,” above the version, as a future
+update. No implementation was requested or included in frozen 1.4.1.
 
 # Daily Roman Missal — current handoff
 
