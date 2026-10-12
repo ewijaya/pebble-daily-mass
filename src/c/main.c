@@ -17,7 +17,7 @@ static Pmr db;
 static ResHandle resource, calendar_resource;
 static Calendar *calendar;
 static CalDay day;
-static bool day_valid, details_mode;
+static bool day_valid, info_mode;
 static uint8_t reading_part;
 static char citations[CAL_MAX_READINGS][CAL_CITATION_SIZE];
 static char date_text[32], season_text[64], celebration_text[160], day_name[128], day_details[1600];
@@ -222,7 +222,7 @@ static void ribbon_stop(void) {
 static void ribbon_update(int offset) {
   if (!ribbon_layer) return;
   ribbon_stop();
-  bool visible=styled_reading && !details_mode;
+  bool visible=styled_reading && !info_mode;
   layer_set_hidden(ribbon_layer,!visible);
   if (!visible) return;
   uint32_t height=max_offset+viewport_height;
@@ -247,7 +247,7 @@ static void ribbon_finished(Animation *animation,bool finished,void *context) {
 }
 static const AnimationImplementation ribbon_implementation={.update=ribbon_animate};
 static void ribbon_open(void) {
-  if (!ribbon_layer || !styled_reading || details_mode) return;
+  if (!ribbon_layer || !styled_reading || info_mode) return;
   unsigned before=heap_bytes_free();ribbon_animation=animation_create();
   if (!ribbon_animation) return;
   animation_set_implementation(ribbon_animation,&ribbon_implementation);
@@ -324,10 +324,10 @@ static void reader_offset_changed(ScrollLayer *layer, void *context) {
 static void reader_step(int direction, bool page, ClickRecognizerRef recognizer) {
   if (!scroll || page_step<=0) return;
   int offset=-scroll_layer_get_content_offset(scroll).y;
-  if (direction<0 && offset==0 && !details_mode) {
+  if (direction<0 && offset==0 && !info_mode) {
     if (reading_part>0) {load_reading_part(reading_part-1);move_to(max_offset);}
     else if (!page && day_valid && selected>0 && selected<day.count) select_adjacent(-1);
-  } else if (direction>0 && offset==max_offset && !details_mode && day_valid && selected<day.count) {
+  } else if (direction>0 && offset==max_offset && !info_mode && day_valid && selected<day.count) {
     if (reading_part+1<day.readings[selected].parts) load_reading_part(reading_part+1);
     else if (!page && selected+1<day.count) select_adjacent(1);
   } else if (page) move_to(offset+direction*page_step);
@@ -416,16 +416,16 @@ static void settings_select(MenuLayer *layer,MenuIndex *index,void *context) {
 }
 static void options_load(Window *window) {
   GRect bounds=layer_get_bounds(window_get_root_layer(window));
-  settings_footer=text_layer_create(GRect(0,bounds.size.h-64,bounds.size.w,64));
+  settings_footer=text_layer_create(GRect(0,bounds.size.h-24,bounds.size.w,24));
   if (settings_footer) {
-    text_layer_set_text(settings_footer,"In reader:\nHold Select to exit\nv" MISSAL_VERSION);
+    text_layer_set_text(settings_footer,"v" MISSAL_VERSION);
     text_layer_set_font(settings_footer,fonts_get_system_font(FONT_KEY_GOTHIC_18));
     text_layer_set_text_alignment(settings_footer,GTextAlignmentCenter);
     text_layer_set_background_color(settings_footer,GColorClear);
     text_layer_set_text_color(settings_footer,dark_mode ? GColorLightGray : GColorDarkGray);
     layer_add_child(window_get_root_layer(window),text_layer_get_layer(settings_footer));
   }
-  options_menu=menu_layer_create(GRect(0,0,bounds.size.w,bounds.size.h-64));
+  options_menu=menu_layer_create(GRect(0,0,bounds.size.w,bounds.size.h-24));
   if (!options_menu) return;
   menu_layer_set_callbacks(options_menu,NULL,(MenuLayerCallbacks){.get_num_rows=settings_count,
       .get_cell_height=choice_height,.draw_row=settings_draw,.select_click=settings_select});
@@ -444,8 +444,20 @@ static void load_reading_part(uint8_t part) {
   bool ok = true;
   memset(paragraph_rubric, 0, sizeof(paragraph_rubric));
   reading_part = part;
-  if (details_mode) {
-    snprintf(reading, READING_CAPACITY, "%s\n\n%s\n\nGeneral Roman Calendar\nEpiphany: January 6\nAscension and Corpus Christi: Thursday\nSunday cycle %c; weekday cycle %s\n\nOffline calendar: 2020-2037\nHold Select on the menu to browse dates.",
+  if (info_mode && selected==day.count+2) {
+    snprintf(reading,READING_CAPACITY,
+        "Controls\n\nWhile reading\n\n"
+        "Tap Up/Down: scroll.\n\n"
+        "Hold Up/Down: turn pages.\n\n"
+        "Tap Select: text size and theme.\n\n"
+        "Hold Select: exit to launcher. Press Back there for your watchface.\n\n"
+        "Back: return to reading list.\n\n"
+        "On the reading list\n\n"
+        "Hold Up/Down: change date.\n\n"
+        "Hold Select: date shortcuts.\n\n"
+        "Swipe to scroll when touch is enabled.");
+  } else if (info_mode) {
+    snprintf(reading, READING_CAPACITY, "%s\n\n%s\n\nGeneral Roman Calendar\nEpiphany: January 6\nAscension and Corpus Christi: Thursday\nSunday cycle %c; weekday cycle %s\n\nOffline calendar: 2020-2037",
         date_text, day_details, day_valid ? 'A'+(day.cycles&3) : '?', day_valid && (day.cycles&4) ? "II" : "I");
   } else {
     uint16_t refs[CAL_MAX_REFS], count=0;
@@ -471,7 +483,7 @@ static void load_reading_part(uint8_t part) {
     snprintf(reading,READING_CAPACITY,"Reading unavailable. Too many paragraphs. Press Back to return.");
     split_paragraphs();
   }
-  styled_reading=ok && !details_mode;
+  styled_reading=ok && !info_mode;
   max_offset=0;
   if (scroll) scroll_layer_set_content_offset(scroll,GPointZero,false);
   layout_reading();
@@ -521,12 +533,12 @@ static void select_reading(MenuLayer *layer, MenuIndex *index, void *context) {
   if (evening_offer && !index->row) {open_evening();return;}
   selected = index->row-(evening_offer ? 1 : 0);
   if (selected==day.count+1) {open_options(NULL,NULL);return;}
-  details_mode = selected >= day.count;
+  info_mode = selected >= day.count;
   window_stack_push(reader_window, true);
 }
 
 static uint16_t menu_row_count(MenuLayer *layer, uint16_t section, void *context) {
-  return day.count + 2 + (evening_offer ? 1 : 0);
+  return day.count + 3 + (evening_offer ? 1 : 0);
 }
 
 static int16_t menu_row_height(MenuLayer *layer, MenuIndex *index, void *context) {
@@ -584,8 +596,8 @@ static void menu_draw_row(GContext *ctx, const Layer *cell, MenuIndex *index, vo
     APP_LOG(APP_LOG_LEVEL_INFO, "Startup first menu draw: %lu ms", (unsigned long)(now_ms() - startup_ms));
   }
   int row=(int)index->row-(evening_offer ? 1 : 0);
-  const char *label=row<0 ? "Evening Mass" : row<day.count ? menu_titles[day.readings[row].kind] : row==day.count ? "Day details" : "Settings";
-  const char *subtitle=row<0 ? "Tomorrow's readings" : row<day.count ? (citations[row][0] ? citations[row] : "Read text") : row==day.count ? "Full calendar details" : settings_summary;
+  const char *label=row<0 ? "Evening Mass" : row<day.count ? menu_titles[day.readings[row].kind] : row==day.count ? "Day details" : row==day.count+1 ? "Settings" : "Controls";
+  const char *subtitle=row<0 ? "Tomorrow's readings" : row<day.count ? (citations[row][0] ? citations[row] : "Read text") : row==day.count ? "Full calendar details" : row==day.count+1 ? settings_summary : "Buttons and shortcuts";
   // Keep the divider in row drawing; the separator callback faults on PT2 4.38.4.
   draw_choice(ctx,cell,label,subtitle,row>=0 && row<day.count ? theme.rubric : theme.ink,
       day.count && row==day.count ? 9 : 0);

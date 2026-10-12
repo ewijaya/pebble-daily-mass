@@ -32,8 +32,9 @@ intermediate or completion cards.
 Settings is below Day details and also opens with a Select tap in the reader.
 Hold Select in the reader for 0.7 seconds to exit the app; a hold does not open
 Settings first. The tested Emery emulator returns to the launcher, where Back
-returns to the watchface. A short tap opens Settings on release. Settings shows “In reader: Hold Select
-to exit” above the version number. Large
+returns to the watchface. A short tap opens Settings on release. Controls, after Settings on the main menu, collects reading and date-navigation
+help in the normal bold reading font. Day details contains calendar information;
+Settings shows only the version beneath its controls. Large
 and Extra Large apply to reading text, menu labels, citations and prompts; Extra
 Large is the default. Text size and the Light/Church (dark) theme persist on the
 watch. Compact headers leave more
