@@ -1,3 +1,17 @@
+## Published 1.4.2 — Settings shortcut hint (October 12, 2026)
+
+Added “In reader: Hold Select to exit” above the Settings version using the
+existing footer TextLayer. Large/XL/light/dark emulator captures are verified;
+all host suites, clean build and tap/hold/Back checks pass. Exact frozen PBW
+installed and launched on PT2 4.38.4. Physical hint readability is unobserved.
+
+Owner requested this follow-up release to established destinations. GitHub
+v1.4.2 is public/Latest; Pebble release `4158bc94e43d443084c27915` is listed and
+published. Both downloads match the frozen SHA-256; catalogs, canonical page
+and changelog verify. Existing artwork is preserved. Source: `b5a6b79`.
+Full digest/evidence: docs/RELEASE.md and `.release/1.4.2/candidate-1/manifest.json`.
+Preserve unrelated `release/reddit/`; never rebuild the released PBW to upload.
+
 ## Published 1.4.1 — hold Select to exit (October 12, 2026)
 
 Owner tested the exact frozen candidate and approved both destinations.

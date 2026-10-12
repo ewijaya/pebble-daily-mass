@@ -1,3 +1,47 @@
+# Public release — 1.4.2
+
+Daily Roman Missal 1.4.2 is published and verified on both services, following
+the owner's October 12 request to release the new Settings hint.
+
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.4.2) — public, Latest.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f) — listed, release ID `4158bc94e43d443084c27915`.
+- Source commit: `b5a6b791d0c61927a55079fa7da3ffc7e089fb6d`; annotated tag `v1.4.2`.
+- PBW: 961,782 bytes; SHA-256:
+  `bbe17e01f2c0512440706528245e1be4783ffc662717b754f4603b8c1fb851e4`.
+
+Settings now shows “In reader: Hold Select to exit” above the version. The
+existing footer layer reserves space for the hint and follows the selected
+theme. Font/theme controls remain visible in both Large and Extra Large.
+Reader button behavior is unchanged from 1.4.1.
+
+All four ASan/UBSan host suites and a clean SDK 4.33.1 build passed. Final
+emulator captures verify the footer in Large, Extra Large and Church mode;
+tap/sub-threshold Select, font/theme toggles, Back and hold-to-exit checks pass.
+Normal exit retains zero app allocations. An unresponsive emulator was restarted
+without wiping its data. A test harness startup-timing assumption was corrected
+before the successful run in `emulator-qa-verified.log`.
+
+The exact frozen PBW installed successfully on PT2 firmware 4.38.4. Running UUID,
+fault-free startup logs and menu screenshot verify its launch. Physical hint
+readability, dedicated offline/overnight and battery soak remain unobserved;
+phone My Apps cache refresh is not claimed.
+
+Resources remain byte-identical to 1.4.1: 937,965 bytes. Static RAM is 58,670
+bytes (+30); linker free heap is 72,402 bytes. Existing SDK resource/linker
+warnings remain. No resource/text regeneration was needed.
+
+GitHub tag, notes, Latest and authenticated/anonymous downloads verify. Store
+draft/public downloads match the frozen digest. General/Emery catalogs, canonical
+page, linked PBW and changelog verify 1.4.2. Main/Emery descriptions, artwork,
+screenshot order, older releases and unrelated listing fields are preserved.
+
+Frozen candidate/provenance: `.release/1.4.2/candidate-1/manifest.json`.
+Evidence: `artifacts/release-1.4.2/`. Source/tag are pushed; unrelated
+`release/reddit/` remains untracked and excluded. Never rebuild or overwrite
+this released version.
+
+---
+
 # Public release — 1.4.1
 
 Daily Roman Missal 1.4.1 is published and verified on both services. The owner
