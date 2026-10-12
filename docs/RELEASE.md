@@ -32,7 +32,9 @@ warnings remain. No resource/text regeneration was needed.
 
 GitHub tag, notes, Latest and authenticated/anonymous downloads verify. Store
 draft/public downloads match the frozen digest. General/Emery catalogs, canonical
-page, linked PBW and changelog verify 1.4.2. Main/Emery descriptions, artwork,
+page and linked PBW verify 1.4.2. The separate web changelog still shows cached
+1.4.1 after three bounded read-only checks; its refresh remains pending.
+Main/Emery descriptions, artwork,
 screenshot order, older releases and unrelated listing fields are preserved.
 
 Frozen candidate/provenance: `.release/1.4.2/candidate-1/manifest.json`.
