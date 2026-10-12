@@ -1,3 +1,14 @@
+## Published 1.4.3 — Controls help page (October 12, 2026)
+
+Controls now follows Settings, with bold reading/date/touch help. Settings footer
+returns to version only; Day details loses its navigation hint. All four host
+suites, clean build and final emulator UI/bounds/no-readings checks pass. Exact
+frozen PBW installed and launched on PT2 4.38.4 after one reconciled retry.
+GitHub v1.4.3 is public/Latest; store release `f9f3900b32344831b9d2b12d` is
+published/listed. Download hashes match. Canonical page version, description and linked PBW verified; separate changelog remains cached at 1.4.2 after three read-only checks.
+Source: `84bb608`. Full evidence/digest: docs/RELEASE.md and
+`.release/1.4.3/candidate-1/manifest.json`. Preserve unrelated `release/reddit/`.
+
 ## Published 1.4.2 — Settings shortcut hint (October 12, 2026)
 
 Added “In reader: Hold Select to exit” above the Settings version using the

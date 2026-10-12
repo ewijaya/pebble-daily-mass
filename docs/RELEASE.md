@@ -1,3 +1,46 @@
+# Public release — 1.4.3
+
+Daily Roman Missal 1.4.3 is published on both services, following the owner's
+request to release the implemented Controls page on October 12, 2026.
+
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.4.3) — public, Latest.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f) — listed, release ID `f9f3900b32344831b9d2b12d`.
+- Source commit: `84bb608a5ead218f481e706af3f388fe091c5967`; annotated tag `v1.4.3`.
+- PBW: 962,130 bytes; SHA-256:
+  `852671cd3537ae6ac914f869651470f62569c78e0f77dce67575e195e7875e34`.
+
+Controls appears after Settings on the main menu. It collects reading, date
+and touch instructions in the normal bold reading font and selected theme.
+The faint Settings hint and date-shortcut instruction in Day details are removed.
+Controls scrolls without advancing into readings, including on dates with no Mass.
+
+All four ASan/UBSan host suites and a clean SDK 4.33.1 build passed. Final-build
+emulator captures/checks verify Large/XL, light/dark, bounded scrolling, Settings,
+Back, menu wrapping, reading exit and Holy Saturday access. Real time was restored.
+Normal exit retains zero app allocations. An emulator installer failure cleared
+after restarting without wiping saved data. The no-readings test's date setup
+was corrected and its final successful log is `empty-day-verified.log`.
+
+The exact frozen PBW installed and launched on PT2 firmware 4.38.4, verified by
+running UUID, startup log and screenshot. Initial phone installation reported
+failure; after reconciling watch state, one retry with Missal closed succeeded.
+Physical Controls readability/navigation, dedicated offline/overnight and battery
+soak remain unobserved. Phone My Apps refresh is not claimed.
+
+Resources are byte-identical to 1.4.2 at 937,965 bytes. Static RAM is 59,020 bytes
+(+350); linker free heap is 72,052 bytes. Existing SDK warnings remain.
+
+GitHub tag, notes, Latest and authenticated/anonymous downloads verify. Store
+draft/public downloads match the frozen digest. General/Emery catalogs verify
+1.4.3 and the updated description. Canonical page version, description and linked PBW verified; separate changelog remains cached at 1.4.2 after three read-only checks.
+Artwork, screenshot order, prior releases and unrelated listing fields are preserved.
+
+Frozen candidate/provenance: `.release/1.4.3/candidate-1/manifest.json`.
+Evidence: `artifacts/release-1.4.3/`. Source/tag are pushed. Unrelated
+`release/reddit/` remains untracked and excluded. Never rebuild these released bytes.
+
+---
+
 # Public release — 1.4.2
 
 Daily Roman Missal 1.4.2 is published and verified on both services, following
