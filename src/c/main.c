@@ -8,7 +8,7 @@ static Window *menu_window, *reader_window, *options_window;
 static MenuLayer *menu;
 static MenuLayer *options_menu;
 static TextLayer *title, *season, *celebration;
-static TextLayer *settings_version;
+static TextLayer *settings_footer;
 static Layer *body_layer, *ribbon_layer;
 static Animation *ribbon_animation;
 static int ribbon_length, ribbon_target;
@@ -111,7 +111,7 @@ static void refresh_theme(void) {
   if (season) {text_layer_set_text_color(season,theme.ink);text_layer_set_background_color(season,GColorClear);}
   if (celebration) {text_layer_set_text_color(celebration,theme.ink);text_layer_set_background_color(celebration,GColorClear);}
   style_menu(menu);style_menu(date_menu);style_menu(options_menu);
-  if (settings_version) text_layer_set_text_color(settings_version,dark_mode ? GColorLightGray : GColorDarkGray);
+  if (settings_footer) text_layer_set_text_color(settings_footer,dark_mode ? GColorLightGray : GColorDarkGray);
   if (body_layer) layer_mark_dirty(body_layer);
   snprintf(settings_summary,sizeof(settings_summary),"%s text · %s",font_size ? "XL" : "Large",dark_mode ? "Dark" : "Light");
 }
@@ -416,16 +416,16 @@ static void settings_select(MenuLayer *layer,MenuIndex *index,void *context) {
 }
 static void options_load(Window *window) {
   GRect bounds=layer_get_bounds(window_get_root_layer(window));
-  settings_version=text_layer_create(GRect(0,bounds.size.h-24,bounds.size.w,24));
-  if (settings_version) {
-    text_layer_set_text(settings_version,"v" MISSAL_VERSION);
-    text_layer_set_font(settings_version,fonts_get_system_font(FONT_KEY_GOTHIC_18));
-    text_layer_set_text_alignment(settings_version,GTextAlignmentCenter);
-    text_layer_set_background_color(settings_version,GColorClear);
-    text_layer_set_text_color(settings_version,dark_mode ? GColorLightGray : GColorDarkGray);
-    layer_add_child(window_get_root_layer(window),text_layer_get_layer(settings_version));
+  settings_footer=text_layer_create(GRect(0,bounds.size.h-64,bounds.size.w,64));
+  if (settings_footer) {
+    text_layer_set_text(settings_footer,"In reader:\nHold Select to exit\nv" MISSAL_VERSION);
+    text_layer_set_font(settings_footer,fonts_get_system_font(FONT_KEY_GOTHIC_18));
+    text_layer_set_text_alignment(settings_footer,GTextAlignmentCenter);
+    text_layer_set_background_color(settings_footer,GColorClear);
+    text_layer_set_text_color(settings_footer,dark_mode ? GColorLightGray : GColorDarkGray);
+    layer_add_child(window_get_root_layer(window),text_layer_get_layer(settings_footer));
   }
-  options_menu=menu_layer_create(GRect(0,0,bounds.size.w,bounds.size.h-24));
+  options_menu=menu_layer_create(GRect(0,0,bounds.size.w,bounds.size.h-64));
   if (!options_menu) return;
   menu_layer_set_callbacks(options_menu,NULL,(MenuLayerCallbacks){.get_num_rows=settings_count,
       .get_cell_height=choice_height,.draw_row=settings_draw,.select_click=settings_select});
@@ -434,8 +434,8 @@ static void options_load(Window *window) {
 }
 static void options_unload(Window *window) {
   if (options_menu) menu_layer_destroy(options_menu);
-  if (settings_version) text_layer_destroy(settings_version);
-  settings_version=NULL;
+  if (settings_footer) text_layer_destroy(settings_footer);
+  settings_footer=NULL;
   options_menu=NULL;
 }
 

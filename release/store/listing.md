@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.4.1
+Version: 1.4.2
 Developer: Edward
 
 ## Description
@@ -47,11 +47,11 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.4.1 adds a quicker way to leave the reader.
+Daily Roman Missal 1.4.2 adds a reminder above the version in Settings:
+“In reader: Hold Select to exit.”
 
-Hold Select for 0.7 seconds to exit the app to the launcher, then press Back
-for your watchface. Tap Select to open font size and theme settings as usual;
-a short tap opens Settings when you release the button.
+While reading, hold Select for 0.7 seconds to exit to the launcher, then press
+Back for your watchface. Tap Select to open font size and theme settings.
 
 ## Privacy
 
