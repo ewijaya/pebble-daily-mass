@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.4.0
+Version: 1.4.1
 Developer: Edward
 
 ## Description
@@ -21,7 +21,9 @@ connection is needed to read.
 Bold Large and Extra Large text, red Scripture references and seasonal colors
 make the pages easy to follow. A little crimson ribbon keeps your place as you
 read. Move from one reading to the next with Down, or return with Up. Settings
-is close at hand, with a dark Church mode for quiet surroundings. Swipe to
+opens with a Select tap in the reader, with a dark Church mode for quiet
+surroundings. Hold Select for 0.7 seconds to exit to the launcher, then press
+Back to return to your watchface. Swipe to
 scroll, tap for a few lines, or hold to turn pages. Look ahead to Sunday or
 the next feast. An evening shortcut offers tomorrow's
 day readings before Sunday and solemnities. The launcher can show today's
@@ -45,17 +47,11 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.4.0 makes following the readings easier.
+Daily Roman Missal 1.4.1 adds a quicker way to leave the reader.
 
-Swipe to scroll the menu and readings. Tap Up or Down for a short scroll;
-hold for half a second to turn pages, repeating until you release.
-
-The main menu wraps from its last item back to its first. At the end of a
-reading, tap Down to open the next reading directly; tap Up at its beginning
-to return to the previous reading. Held paging stops at reading boundaries.
-The transition cards are removed, and the Gospel ends on its final text.
-
-Readings, liturgical-calendar selection and offline operation are unchanged.
+Hold Select for 0.7 seconds to exit the app to the launcher, then press Back
+for your watchface. Tap Select to open font size and theme settings as usual;
+a short tap opens Settings when you release the button.
 
 ## Privacy
 

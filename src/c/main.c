@@ -364,6 +364,9 @@ static void reader_disappear(Window *window) {stop_reader_repeat(NULL,NULL);}
 static void open_options(ClickRecognizerRef recognizer, void *context) {
   stop_reader_repeat(NULL,NULL);window_stack_push(options_window,true);
 }
+static void exit_reader(ClickRecognizerRef recognizer, void *context) {
+  stop_reader_repeat(NULL,NULL);window_stack_pop_all(false);
+}
 
 static void reader_click_config(void *context) {
   window_single_click_subscribe(BUTTON_ID_UP,reader_up);
@@ -371,6 +374,7 @@ static void reader_click_config(void *context) {
   window_long_click_subscribe(BUTTON_ID_UP,500,hold_reader_up,stop_reader_repeat);
   window_long_click_subscribe(BUTTON_ID_DOWN,500,hold_reader_down,stop_reader_repeat);
   window_single_click_subscribe(BUTTON_ID_SELECT,open_options);
+  window_long_click_subscribe(BUTTON_ID_SELECT,700,exit_reader,NULL);
 }
 
 static int16_t choice_height(MenuLayer *layer, MenuIndex *index, void *context) {
