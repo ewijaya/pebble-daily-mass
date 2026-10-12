@@ -1,3 +1,16 @@
+## Prepared 1.4.1 — hold Select to exit (October 12, 2026)
+
+Source commit `98a4e21` adds the reader's 700 ms Select hold; tap Select opens
+Settings on release. All four host suites, clean build and final emulator
+checks passed. Exit returns to launcher, then Back reaches the watchface.
+Frozen `.release/1.4.1/candidate-1/` PBW installed and launched on PT2 4.38.4;
+first reported failure was reconciled, then one retry succeeded. Evidence is
+in `artifacts/release-1.4.1/`; exact digest and metrics are in docs/RELEASE.md.
+Notes and listing description are prepared; artwork is unchanged. Publication
+to GitHub/store awaits destination approval. No push, tag or upload has occurred.
+Physical gesture feedback and longer soak tests remain unobserved. Preserve
+untracked `release/reddit/`. Never rebuild the frozen PBW to upload it.
+
 # Daily Roman Missal — current handoff
 
 Updated October 9, 2026 (Asia/Tokyo). Read docs/RELEASE.md and docs/RELEASE-AUDIT.md next.

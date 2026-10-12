@@ -1,3 +1,30 @@
+# Prepared candidate — 1.4.1
+
+Version 1.4.1 adds hold-Select (700 ms) to exit from the reader. Tap Select
+opens Settings on release. The verified Emery exit destination is the launcher;
+Back there returns to the watchface. Main-menu date shortcuts still work.
+
+- Source commit: `98a4e21c43a6f089f88f705767dac925fead71b9`; tag `v1.4.1` is not created.
+- Frozen candidate: `.release/1.4.1/candidate-1/manifest.json`.
+- PBW: 961,750 bytes; SHA-256:
+  `2f25a5891f5862e4930f95c0b940c823c434b8dcaf6f933cad934da6cb631034`.
+- All four ASan/UBSan host suites and clean SDK build passed. Final emulator
+  checks cover tap/hold, font/theme settings, Back, date shortcuts and normal
+  exit with zero remaining app allocations.
+- Resources remain byte-identical to 1.4.0 at 937,965 bytes. Static RAM is
+  58,640 bytes (+48); linker free heap is 72,432 bytes.
+- Exact frozen candidate installed successfully on PT2 firmware 4.38.4.
+  Running UUID, startup logs without app faults and physical menu screenshot
+  verified. First transfer reported failure; after reconciliation, one retry
+  with Missal closed succeeded. Evidence: `artifacts/release-1.4.1/`.
+- Proposed destinations: public GitHub and existing Pebble listing. Neither
+  has been updated; destination/publication approval is pending. Public 1.4.0
+  remains current. Proposed notes and description are frozen; no artwork changes.
+- Physical gesture confirmation, offline/overnight and battery soak remain
+  unobserved. Unrelated `release/reddit/` remains untracked and excluded.
+
+---
+
 # Public release — 1.4.0
 
 Daily Roman Missal 1.4.0 is published and verified on both services. The owner
