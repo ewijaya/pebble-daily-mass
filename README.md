@@ -59,8 +59,8 @@ and exiting replenishes them. Reopen after changing the watch's timezone to
 refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 
 Version 1.4.1 is publicly available on GitHub Releases and the Pebble App Store,
-adding hold-Select to exit the reader. Version 1.4.0 introduced with direct reading navigation and the
-wrap, touch and tap/hold controls above.
+adding hold-Select to exit the reader. Version 1.4.0 introduced direct
+reading navigation and the wrap, touch and tap/hold controls above.
 Calendar selection uses one
 reading set per date; national calendars, separate vigil readings and optional-memorial
 choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
