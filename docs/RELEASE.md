@@ -1,3 +1,39 @@
+# Prepared candidate — 1.5.2 (October 14, 2026)
+
+The date shortcut menu wraps in both directions, including Evening Mass when
+available. Held Up/Down repeats through the rows. Calendar search and reading
+selections are unchanged. GitHub and the existing Pebble App Store listing are
+approved destinations; the owner tested the wraparound behavior successfully
+and approved this candidate on October 14, 2026.
+
+Frozen candidate: `.release/1.5.2/candidate-1/`; PBW: 972,536 bytes; SHA-256:
+`68358b5c780658161f4c84667c59d03336a5b723da53d130ca311448ba86620d`.
+Source base: `1127d18b80c2af4f81afff423b8261b20d542797`. The manifest records the uncommitted source patch
+and code hashes; no source commit or tag exists for 1.5.2 yet.
+
+All four ASan/UBSan host suites and a clean SDK build passed. Embedded version,
+identity and PBW integrity verify. Final-version Emery checks cover five/six-row
+wrapping in both directions, Today/Next Feast selection, Evening Mass, Back and
+held navigation. Screenshots were inspected and real emulator time restored.
+The first emulator transfer failed; restarting without clearing state recovered
+installation. Static footprint: 61,080 bytes (+216 from 1.5.1, below 65,535);
+linker free heap: 69,992 bytes. Resources are unchanged at 945,316 bytes.
+Existing SDK resource-size and linker warnings remain.
+
+The exact frozen PBW installed and launched on PT2 4.40.0 through CloudPebble.
+Running UUID, fault-free logs and a native screenshot verify launch. Owner
+confirmed the physical wraparound behavior works well and approved release.
+Dedicated offline/overnight/battery checks and phone My Apps refresh are unobserved.
+
+Notes: `release/github/v1.5.2.md` and the frozen `release-notes-store.txt`.
+The intended listing changes are version and release notes only. Description,
+artwork, screenshot order, visibility and older releases will be preserved.
+No remote upload, branch, commit, tag or push has been made for this candidate.
+Evidence: `artifacts/release-1.5.2/` and `artifacts/date-menu-wrap/`.
+Unrelated `docs/RELEASING.md` and `release/reddit/` edits remain untouched.
+
+---
+
 # Public release — 1.5.1
 
 Daily Roman Missal 1.5.1 is published on GitHub and the Pebble App Store.

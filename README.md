@@ -14,8 +14,9 @@ The app automatically selects readings using the watch's local date and the
 **General Roman Calendar (2020–2037)**. The menu shows the season/week and
 celebration name and rank; Day details includes full names and optional memorials.
 Hold Select for Today, Previous/Next day, Next Sunday or Next Feast (the next
-feast or solemnity). Hold Up/Down on the main menu to step backward/forward
-through dates; short presses select readings. The main-menu selector wraps in
+feast or solemnity). The date shortcut selector wraps in both directions,
+including Evening Mass when available. Hold Up/Down on the main menu to step
+backward/forward through dates; short presses select readings. The main-menu selector wraps in
 both directions, and touch navigation is enabled.
 
 Each launch opens today's menu; reading positions and browsed dates are not saved.

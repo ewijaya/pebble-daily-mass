@@ -843,12 +843,29 @@ static uint16_t date_count(MenuLayer *layer,uint16_t section,void *context) {
 static void date_draw(GContext *ctx,const Layer *cell,MenuIndex *index,void *context) {
   draw_choice(ctx,cell,date_titles[index->row],index->row==4 ? "Feast or solemnity" : index->row==5 ? "Tomorrow's readings" : "",theme.ink,0);
 }
-static void date_select(MenuLayer *layer,MenuIndex *index,void *context) {choose_date(index->row,NULL);}
+static void date_up(ClickRecognizerRef recognizer,void *context) {
+  MenuIndex index=menu_layer_get_selected_index(date_menu);
+  index.row=index.row ? index.row-1 : date_count(date_menu,0,NULL)-1;
+  menu_layer_set_selected_index(date_menu,index,MenuRowAlignCenter,false);
+}
+static void date_down(ClickRecognizerRef recognizer,void *context) {
+  MenuIndex index=menu_layer_get_selected_index(date_menu);
+  index.row=(index.row+1)%date_count(date_menu,0,NULL);
+  menu_layer_set_selected_index(date_menu,index,MenuRowAlignCenter,false);
+}
+static void date_select(ClickRecognizerRef recognizer,void *context) {
+  choose_date(menu_layer_get_selected_index(date_menu).row,NULL);
+}
+static void date_click_config(void *context) {
+  window_single_repeating_click_subscribe(BUTTON_ID_UP,300,date_up);
+  window_single_repeating_click_subscribe(BUTTON_ID_DOWN,300,date_down);
+  window_single_click_subscribe(BUTTON_ID_SELECT,date_select);
+}
 static void date_load(Window *window) {
   date_menu=menu_layer_create(layer_get_bounds(window_get_root_layer(window)));
   if (!date_menu) return;
-  menu_layer_set_callbacks(date_menu,NULL,(MenuLayerCallbacks){.get_num_rows=date_count,.get_cell_height=choice_height,.draw_row=date_draw,.select_click=date_select});
-  menu_layer_set_click_config_onto_window(date_menu,window);style_menu(date_menu);
+  menu_layer_set_callbacks(date_menu,NULL,(MenuLayerCallbacks){.get_num_rows=date_count,.get_cell_height=choice_height,.draw_row=date_draw});
+  window_set_click_config_provider(window,date_click_config);style_menu(date_menu);
   layer_add_child(window_get_root_layer(window),menu_layer_get_layer(date_menu));
 }
 static void date_unload(Window *window) {if (date_menu) menu_layer_destroy(date_menu);date_menu=NULL;}

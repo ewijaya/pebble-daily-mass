@@ -1,3 +1,40 @@
+# Prepared 1.5.2 — October 14, 2026
+
+The owner invoked `missal-release` for date-menu wraparound. Candidate
+`.release/1.5.2/candidate-1/` is frozen at 972,536 bytes; SHA-256
+`68358b5c780658161f4c84667c59d03336a5b723da53d130ca311448ba86620d`.
+All four ASan/UBSan suites, clean build and final-version Emery checks pass.
+Five/six-row wrapping, selection, Back and held navigation verify; emulator
+clock restored. Static footprint: 61,080 bytes; resources unchanged.
+
+The exact frozen PBW installed and launched on PT2 4.40.0 through CloudPebble.
+Running UUID, fault-free logs and a native screenshot verify launch. Owner
+confirmed the physical wraparound behavior works well and approved release.
+GitHub and the existing Pebble listing are approved destinations. Notes are ready;
+store description and artwork stay as observed. The owner approved a new-branch
+commit and publication of this candidate. Base `1127d18` plus source patch
+and hashes identify the uncommitted source. No upload, branch, commit, tag or
+push was made. Preserve unrelated `docs/RELEASING.md` and `release/reddit/` edits.
+See docs/RELEASE.md and `artifacts/release-1.5.2/` for evidence.
+
+---
+
+# Date menu wraparound — October 14, 2026
+
+The date shortcut selector now wraps in both directions: Down from the last
+item selects Today; Up from Today selects the last item. Evening Mass remains
+reachable as the last row when offered. Held Up/Down repeats every 300 ms.
+
+Build and planner ASan/UBSan checks pass. Emery verifies five/six-row wrapping,
+Today and Next Feast selection after wrapping, the Evening Mass prompt, Back
+and held navigation. Screenshots were inspected; real emulator time restored.
+Static footprint: 61,080 bytes (below 65,535); resources and version unchanged.
+Evidence: `artifacts/date-menu-wrap/`. This is uncommitted development work,
+not installed on PT2 or released. Published 1.5.1 bytes and unrelated
+`docs/RELEASING.md` / `release/reddit/` edits remain untouched.
+
+---
+
 # Published 1.5.1 — October 14, 2026
 
 Next Feast is released on GitHub (public/Latest) and the existing listed Pebble

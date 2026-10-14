@@ -5,7 +5,9 @@ midnight/date change; an open reading keeps its original text until Back returns
 to the menu. Hold Select for Today, Previous/Next day, Next Sunday and Next Feast.
 The latter searches for the next feast or solemnity in this General Roman
 Calendar; it is not a national list of holy days of obligation. Next Sunday is
-strictly the following Sunday, even when browsing a Sunday. Hold Up/Down on the
+strictly the following Sunday, even when browsing a Sunday. The date shortcut
+selector wraps from the last item to Today with Down, and from Today to the last
+item with Up. Evening Mass is the last item when available. Hold Up/Down on the
 main menu to step backward/forward through days; continued holds repeat. Short
 presses still select readings. Browsed dates are absolute and stay fixed across
 midnight, until Today is selected or the app closes.

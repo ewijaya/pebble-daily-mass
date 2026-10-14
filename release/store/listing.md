@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.5.1
+Version: 1.5.2
 Developer: Edward
 
 ## Description
@@ -58,9 +58,9 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.5.1 renames the date shortcut to “Next Feast,” keeping the “Feast or solemnity” subtitle.
+Daily Roman Missal 1.5.2 adds wraparound navigation to the date shortcut menu.
 
-It still finds the next feast or solemnity in the General Roman Calendar, not a national list of holy days of obligation. Reading selections and navigation are unchanged.
+Press Down on the last item to return to Today, or Up on Today to reach the last item. Evening Mass remains the last item when available. Hold Up or Down to keep moving through the shortcuts. Reading selections and calendar search are unchanged.
 
 ## Privacy
 
