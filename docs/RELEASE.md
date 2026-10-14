@@ -1,36 +1,47 @@
-# Prepared candidate — 1.5.2 (October 14, 2026)
+# Public release — 1.5.2
 
-The date shortcut menu wraps in both directions, including Evening Mass when
-available. Held Up/Down repeats through the rows. Calendar search and reading
-selections are unchanged. GitHub and the existing Pebble App Store listing are
-approved destinations; the owner tested the wraparound behavior successfully
-and approved this candidate on October 14, 2026.
+Daily Roman Missal 1.5.2 is published on GitHub and the Pebble App Store.
+On October 14, 2026, the owner confirmed successful PT2 testing and approved
+publication to both destinations and the proposed new-branch commit.
 
-Frozen candidate: `.release/1.5.2/candidate-1/`; PBW: 972,536 bytes; SHA-256:
-`68358b5c780658161f4c84667c59d03336a5b723da53d130ca311448ba86620d`.
-Source base: `1127d18b80c2af4f81afff423b8261b20d542797`. The manifest records the uncommitted source patch
-and code hashes; no source commit or tag exists for 1.5.2 yet.
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.2) — public, Latest, release ID `412322671`.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f) — listed and published, release ID `29a2a665ac00417a993583e4`.
+- Source commit: `47fd5db0b29124746340c9ce14db10812b568fa6`; annotated tag `v1.5.2`, pushed and verified.
+- PBW: 972,536 bytes; SHA-256:
+  `68358b5c780658161f4c84667c59d03336a5b723da53d130ca311448ba86620d`.
 
-All four ASan/UBSan host suites and a clean SDK build passed. Embedded version,
-identity and PBW integrity verify. Final-version Emery checks cover five/six-row
-wrapping in both directions, Today/Next Feast selection, Evening Mass, Back and
+The date shortcut selector now wraps in both directions. Down from the last
+item returns to Today; Up from Today selects the last item. Evening Mass
+remains reachable as the last row when offered. Held Up/Down repeats every
+300 ms. Calendar search and reading selections are unchanged.
+
+All four ASan/UBSan host suites passed. A clean SDK 4.33.1 build and embedded
+identity/version checks passed. Final-version Emery checks verify five/six-row
+wraparound, Today and Next Feast selection, the Evening Mass prompt, Back and
 held navigation. Screenshots were inspected and real emulator time restored.
 The first emulator transfer failed; restarting without clearing state recovered
-installation. Static footprint: 61,080 bytes (+216 from 1.5.1, below 65,535);
-linker free heap: 69,992 bytes. Resources are unchanged at 945,316 bytes.
+installation. Resources remain byte-identical at 945,316 bytes. Static footprint
+is 61,080 bytes (+216 from 1.5.1, below 65,535); linker free heap is 69,992 bytes.
 Existing SDK resource-size and linker warnings remain.
 
 The exact frozen PBW installed and launched on PT2 4.40.0 through CloudPebble.
-Running UUID, fault-free logs and a native screenshot verify launch. Owner
-confirmed the physical wraparound behavior works well and approved release.
-Dedicated offline/overnight/battery checks and phone My Apps refresh are unobserved.
+Running UUID, fault-free logs and a native screenshot verify launch. The owner
+then tested wraparound successfully and approved release. Dedicated physical
+offline/overnight/battery measurements and phone My Apps refresh remain unobserved.
 
-Notes: `release/github/v1.5.2.md` and the frozen `release-notes-store.txt`.
-The intended listing changes are version and release notes only. Description,
-artwork, screenshot order, visibility and older releases will be preserved.
-No remote upload, branch, commit, tag or push has been made for this candidate.
-Evidence: `artifacts/release-1.5.2/` and `artifacts/date-menu-wrap/`.
-Unrelated `docs/RELEASING.md` and `release/reddit/` edits remain untouched.
+GitHub tag, notes, Latest and authenticated/anonymous downloads verify. Store
+draft and public downloads match the frozen digest. General/Emery catalogs
+verify version, notes, description and artwork order. Description, assets,
+visibility, unrelated listing fields and all older releases were preserved.
+The canonical store page verifies version, description and linked PBW. The
+separate web changelog remains stale after three bounded read-only checks.
+
+Frozen candidate: `.release/1.5.2/candidate-1/manifest.json`. Evidence:
+`artifacts/release-1.5.2/` and `artifacts/date-menu-wrap/`. Source was committed
+on `fix/date-menu-wrap` and pushed to that branch and `main`; tag `v1.5.2`
+identifies the frozen app source. Unrelated `docs/RELEASING.md` and
+`release/reddit/` edits remain untouched and excluded from commits.
+Never rebuild or overwrite the published bytes.
 
 ---
 

@@ -1,21 +1,23 @@
-# Prepared 1.5.2 — October 14, 2026
+# Published 1.5.2 — October 14, 2026
 
-The owner invoked `missal-release` for date-menu wraparound. Candidate
-`.release/1.5.2/candidate-1/` is frozen at 972,536 bytes; SHA-256
+Date-menu wraparound is released on GitHub (public/Latest) and the existing
+listed Pebble App Store app after successful owner PT2 testing and explicit
+release approval. Source/tag: `47fd5db0b29124746340c9ce14db10812b568fa6` / `v1.5.2`, pushed.
+Store release: `29a2a665ac00417a993583e4`. Frozen candidate:
+`.release/1.5.2/candidate-1/`; SHA-256
 `68358b5c780658161f4c84667c59d03336a5b723da53d130ca311448ba86620d`.
-All four ASan/UBSan suites, clean build and final-version Emery checks pass.
-Five/six-row wrapping, selection, Back and held navigation verify; emulator
-clock restored. Static footprint: 61,080 bytes; resources unchanged.
 
-The exact frozen PBW installed and launched on PT2 4.40.0 through CloudPebble.
-Running UUID, fault-free logs and a native screenshot verify launch. Owner
-confirmed the physical wraparound behavior works well and approved release.
-GitHub and the existing Pebble listing are approved destinations. Notes are ready;
-store description and artwork stay as observed. The owner approved a new-branch
-commit and publication of this candidate. Base `1127d18` plus source patch
-and hashes identify the uncommitted source. No upload, branch, commit, tag or
-push was made. Preserve unrelated `docs/RELEASING.md` and `release/reddit/` edits.
-See docs/RELEASE.md and `artifacts/release-1.5.2/` for evidence.
+All four host suites, clean build, final Emery wrapping/selection checks and
+exact-byte PT2 4.40.0 installation/launch passed. Owner testing passed. GitHub
+and store downloads match; both catalogs verify version/notes.
+The canonical store page verifies version, description and linked PBW. The
+separate web changelog remains stale after three bounded read-only checks.
+Phone cache refresh and dedicated offline/overnight/battery checks are unobserved.
+
+Static footprint: 61,080 bytes; resources unchanged. Description, artwork,
+visibility and older releases were preserved. Source was committed on
+`fix/date-menu-wrap` and pushed to that branch and `main`. Preserve unrelated
+`docs/RELEASING.md` and `release/reddit/` edits. See docs/RELEASE.md and the manifest.
 
 ---
 
