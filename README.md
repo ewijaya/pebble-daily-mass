@@ -6,9 +6,9 @@ bundled on the watch, with an owner-supplied John 8:12–20 supplement.
 
 ## Status
 
-Version 1.5.0 is published on GitHub Releases and the Pebble App Store with
-special Mass selection. The store web page is still showing cached older content;
-use the GitHub download below for the verified 1.5.0 file.
+Version 1.5.1 is published on GitHub Releases and the Pebble App Store.
+The date shortcut is now called **Next Feast**, with the same feast/solemnity
+search. Both public downloads match the tested release.
 
 The app automatically selects readings using the watch's local date and the
 **General Roman Calendar (2020–2037)**. The menu shows the season/week and
@@ -78,7 +78,7 @@ reading navigation and the wrap, touch and tap/hold controls above.
 Calendar selection has one daily default plus the explicit special Mass choices
 above; national calendars and optional-memorial choices remain outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
 Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
-or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.0).
+or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.1).
 The public PBW downloads have matching checksums. The legacy SDK size warning
 did not block the store upload.
 See [release status](docs/RELEASE.md) for verification and remaining checks.

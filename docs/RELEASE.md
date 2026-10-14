@@ -1,39 +1,45 @@
-# Prepared candidate — 1.5.1 (October 14, 2026)
+# Public release — 1.5.1
 
-Version 1.5.1 renames the date shortcut to **Next Feast**, retaining the
-“Feast or solemnity” subtitle and the same calendar search. GitHub and the
-Pebble App Store are approved destinations; the owner confirmed successful
-PT2 testing and approved release on October 14, 2026.
-The current published release remains 1.5.0.
+Daily Roman Missal 1.5.1 is published on GitHub and the Pebble App Store.
+On October 14, 2026, the owner confirmed successful PT2 testing and approved
+publication to both destinations and the proposed new-branch commit.
 
-Frozen candidate: `.release/1.5.1/candidate-1/`; PBW: 972,320 bytes; SHA-256:
-`07fe7628a9a7bd1dd51aaec11355c1747a18757acd609404f19442bc572c42f0`.
-The manifest records base commit `f0836c09f35c55ddfa715739582585be3f9e356e`,
-the uncommitted source patch and code hashes. No release source commit or tag
-exists yet; the owner has now approved the proposed new-branch commit.
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.1) — public, Latest, release ID `412314473`.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f) — listed and published, release ID `fc6b92518d424c8e8061eb7c`.
+- Source commit: `70baa83450ae1cec0d78ad657347a8ae9cd06ca0`; annotated tag `v1.5.1`, pushed and verified.
+- PBW: 972,320 bytes; SHA-256:
+  `07fe7628a9a7bd1dd51aaec11355c1747a18757acd609404f19442bc572c42f0`.
 
-All four ASan/UBSan host suites passed for the unchanged runtime sources.
-A clean 1.5.1 SDK build and embedded metadata checks passed. Resources remain
-byte-identical at 945,316 bytes; static footprint is 60,864 bytes (10 fewer
-than 1.5.0 and below 65,535); linker free heap is 70,208 bytes. Existing SDK
-resource-size and linker warnings remain.
+The date shortcut is now **Next Feast**, retaining the “Feast or solemnity”
+subtitle. Calendar search, reading selections and navigation are unchanged.
 
-Final-version Emery checks verified the one-line label and unchanged subtitle
-in Large/Extra Large and Light/Church, matching feast/solemnity targets and
-restoring preferences and real time. The exact frozen PBW installed through
-CloudPebble and launched on PT2 4.40.0 after the owner confirmed the developer
-connection was on. The first two transfers failed; the subsequent attempt
-succeeded. Running UUID, fault-free logs and a screenshot of the first reading
-verify launch. Normal exit retained zero app allocations. The owner confirmed
-the Next Feast change works on PT2. Dedicated offline/overnight/battery checks
-remain unobserved.
+All four ASan/UBSan host suites passed. A clean SDK 4.33.1 build and embedded
+identity/version checks passed. Final-version Emery checks verify one-line
+labels and subtitles in Large/Extra Large and Light/Church, unchanged feast
+and solemnity targets, and restoration of preferences and real time.
+Resources are byte-identical at 945,316 bytes. Static footprint is 60,864 bytes
+(10 fewer than 1.5.0, below 65,535); linker free heap is 70,208 bytes. Existing
+SDK resource-size and linker warnings remain.
 
-The authenticated store baseline has no 1.5.1 draft. Intended store changes
-are the new version and its release notes; description, artwork, screenshot
-order and visibility remain as observed. Notes: `release/github/v1.5.1.md`
-and the frozen `release-notes-store.txt`. Evidence: `artifacts/release-1.5.1/`
-and `artifacts/next-feast-label/`. No remote upload, branch, commit, tag or push
-has been made. Unrelated `docs/RELEASING.md` and `release/reddit/` remain intact.
+The exact frozen PBW installed and launched on PT2 4.40.0 after the owner
+confirmed the developer connection. Two initial attempts failed; the subsequent
+attempt succeeded. Running UUID, fault-free logs and a reading screenshot verify
+launch; normal exit retained zero app allocations. The owner then tested the
+shortcut successfully and approved release. Dedicated offline/overnight/battery
+measurements remain unobserved; phone My Apps cache refresh is not claimed.
+
+GitHub tag, notes, Latest and authenticated/anonymous downloads verify. Store
+draft and public downloads match the frozen digest. General/Emery catalogs
+verify the version, notes, description and artwork order. Description, assets,
+visibility, unrelated listing fields and all older releases were preserved.
+The canonical store page and separate changelog verify the release.
+
+Frozen candidate: `.release/1.5.1/candidate-1/manifest.json`. Evidence:
+`artifacts/release-1.5.1/` and `artifacts/next-feast-label/`. Source was committed
+on `fix/next-feast-label` and pushed to that branch and `main`; tag `v1.5.1`
+identifies the frozen app source. Unrelated `docs/RELEASING.md` and
+`release/reddit/` edits remain untouched and excluded from commits.
+Never rebuild or overwrite the published bytes.
 
 ---
 

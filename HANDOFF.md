@@ -1,23 +1,23 @@
-# Prepared 1.5.1 — October 14, 2026
+# Published 1.5.1 — October 14, 2026
 
-The owner invoked `missal-release` after the Next Feast change. Patch candidate
-`.release/1.5.1/candidate-1/` is frozen at 972,320 bytes; SHA-256
+Next Feast is released on GitHub (public/Latest) and the existing listed Pebble
+App Store app after successful owner PT2 testing and explicit release approval.
+Source/tag: `70baa83450ae1cec0d78ad657347a8ae9cd06ca0` / `v1.5.1`, pushed.
+Store release: `fc6b92518d424c8e8061eb7c`. Frozen candidate:
+`.release/1.5.1/candidate-1/`; SHA-256
 `07fe7628a9a7bd1dd51aaec11355c1747a18757acd609404f19442bc572c42f0`.
-Clean build and final-version Emery font/theme/navigation checks pass; all four
-ASan/UBSan suites passed for the unchanged runtime sources. Static footprint
-is 60,864 bytes; resources remain byte-identical. Emulator clock/preferences restored.
 
-The exact frozen PBW installed and launched on PT2 4.40.0 after the owner
-confirmed the developer connection was on. The first two attempts failed;
-the subsequent attempt succeeded. Running UUID, fault-free logs and a physical
-reading screenshot verify launch; normal exit retained zero app allocations.
-The owner tested Next Feast successfully and approved release to both destinations.
+All four host suites, clean build, final Emery checks and exact-byte PT2 4.40.0
+installation/launch passed. The first two phone installs failed; installation
+succeeded after the owner confirmed the developer connection. Owner testing
+passed. GitHub and store downloads match. Both catalogs verify version/notes.
+The canonical store page and separate changelog verify the release.
+Phone cache refresh and dedicated offline/overnight/battery checks are unobserved.
 
-GitHub and the existing Pebble listing are approved destinations. Notes are ready;
-store description and artwork stay as observed. The owner approved the proposed
-new-branch commit and publication after physical testing. The manifest records
-base `f0836c0`, a source patch and code hashes; publication is starting. Preserve unrelated `docs/RELEASING.md` and `release/reddit/` edits.
-See `docs/RELEASE.md`, `artifacts/release-1.5.1/` and the frozen manifest.
+Static footprint: 60,864 bytes; resources unchanged. Description, artwork,
+visibility and older releases were preserved. Source was committed on
+`fix/next-feast-label` and pushed to that branch and `main`. Preserve unrelated
+`docs/RELEASING.md` and `release/reddit/` edits. See docs/RELEASE.md and the manifest.
 
 ---
 
