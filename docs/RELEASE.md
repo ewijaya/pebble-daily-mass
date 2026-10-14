@@ -1,3 +1,42 @@
+# Prepared candidate — 1.5.1 (October 14, 2026)
+
+Version 1.5.1 renames the date shortcut to **Next Feast**, retaining the
+“Feast or solemnity” subtitle and the same calendar search. GitHub and the
+Pebble App Store are approved destinations; the owner confirmed successful
+PT2 testing and approved release on October 14, 2026.
+The current published release remains 1.5.0.
+
+Frozen candidate: `.release/1.5.1/candidate-1/`; PBW: 972,320 bytes; SHA-256:
+`07fe7628a9a7bd1dd51aaec11355c1747a18757acd609404f19442bc572c42f0`.
+The manifest records base commit `f0836c09f35c55ddfa715739582585be3f9e356e`,
+the uncommitted source patch and code hashes. No release source commit or tag
+exists yet; the owner has now approved the proposed new-branch commit.
+
+All four ASan/UBSan host suites passed for the unchanged runtime sources.
+A clean 1.5.1 SDK build and embedded metadata checks passed. Resources remain
+byte-identical at 945,316 bytes; static footprint is 60,864 bytes (10 fewer
+than 1.5.0 and below 65,535); linker free heap is 70,208 bytes. Existing SDK
+resource-size and linker warnings remain.
+
+Final-version Emery checks verified the one-line label and unchanged subtitle
+in Large/Extra Large and Light/Church, matching feast/solemnity targets and
+restoring preferences and real time. The exact frozen PBW installed through
+CloudPebble and launched on PT2 4.40.0 after the owner confirmed the developer
+connection was on. The first two transfers failed; the subsequent attempt
+succeeded. Running UUID, fault-free logs and a screenshot of the first reading
+verify launch. Normal exit retained zero app allocations. The owner confirmed
+the Next Feast change works on PT2. Dedicated offline/overnight/battery checks
+remain unobserved.
+
+The authenticated store baseline has no 1.5.1 draft. Intended store changes
+are the new version and its release notes; description, artwork, screenshot
+order and visibility remain as observed. Notes: `release/github/v1.5.1.md`
+and the frozen `release-notes-store.txt`. Evidence: `artifacts/release-1.5.1/`
+and `artifacts/next-feast-label/`. No remote upload, branch, commit, tag or push
+has been made. Unrelated `docs/RELEASING.md` and `release/reddit/` remain intact.
+
+---
+
 # Public release — 1.5.0
 
 Daily Roman Missal 1.5.0 is published on both services. On October 14, 2026,

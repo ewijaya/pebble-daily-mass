@@ -2,8 +2,8 @@
 
 The watch uses its local civil date on launch. It refreshes the menu after a
 midnight/date change; an open reading keeps its original text until Back returns
-to the menu. Hold Select for Today, Previous/Next day, Next Sunday and Next Holy
-Day. The latter searches for the next feast or solemnity in this General Roman
+to the menu. Hold Select for Today, Previous/Next day, Next Sunday and Next Feast.
+The latter searches for the next feast or solemnity in this General Roman
 Calendar; it is not a national list of holy days of obligation. Next Sunday is
 strictly the following Sunday, even when browsing a Sunday. Hold Up/Down on the
 main menu to step backward/forward through days; continued holds repeat. Short

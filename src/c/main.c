@@ -836,7 +836,7 @@ static void choose_date(int index, void *context) {
   }
   window_stack_pop(true);
 }
-static const char *date_titles[]={"Today","Previous day","Next day","Next Sunday","Next Holy Day","Evening Mass"};
+static const char *date_titles[]={"Today","Previous day","Next day","Next Sunday","Next Feast","Evening Mass"};
 static uint16_t date_count(MenuLayer *layer,uint16_t section,void *context) {
   return planner_evening(calendar,time(NULL))>=0 ? 6 : 5;
 }

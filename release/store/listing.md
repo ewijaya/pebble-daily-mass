@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.5.0
+Version: 1.5.1
 Developer: Edward
 
 ## Description
@@ -58,11 +58,9 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.5.0 adds Choose Mass for Christmas, Easter, Pentecost and three saints' vigils.
+Daily Roman Missal 1.5.1 renames the date shortcut to “Next Feast,” keeping the “Feast or solemnity” subtitle.
 
-Choose Christmas Day, Vigil, Night or Dawn; Easter Vigil with the correct A/B/C Gospel and baptism-dependent psalm; Pentecost Vigil in simple or extended form; and vigils for the Nativity of St John the Baptist, Saints Peter and Paul, and the Assumption. Evening Mass opens the relevant chooser when available.
-
-All readings remain offline. Existing daily reading selections are unchanged. The Easter Vigil includes all seven Old Testament readings; long forms and first psalm options are used. Full vigil rites and prayers are not included.
+It still finds the next feast or solemnity in the General Roman Calendar, not a national list of holy days of obligation. Reading selections and navigation are unchanged.
 
 ## Privacy
 

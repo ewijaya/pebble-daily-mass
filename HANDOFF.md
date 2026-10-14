@@ -1,3 +1,44 @@
+# Prepared 1.5.1 — October 14, 2026
+
+The owner invoked `missal-release` after the Next Feast change. Patch candidate
+`.release/1.5.1/candidate-1/` is frozen at 972,320 bytes; SHA-256
+`07fe7628a9a7bd1dd51aaec11355c1747a18757acd609404f19442bc572c42f0`.
+Clean build and final-version Emery font/theme/navigation checks pass; all four
+ASan/UBSan suites passed for the unchanged runtime sources. Static footprint
+is 60,864 bytes; resources remain byte-identical. Emulator clock/preferences restored.
+
+The exact frozen PBW installed and launched on PT2 4.40.0 after the owner
+confirmed the developer connection was on. The first two attempts failed;
+the subsequent attempt succeeded. Running UUID, fault-free logs and a physical
+reading screenshot verify launch; normal exit retained zero app allocations.
+The owner tested Next Feast successfully and approved release to both destinations.
+
+GitHub and the existing Pebble listing are approved destinations. Notes are ready;
+store description and artwork stay as observed. The owner approved the proposed
+new-branch commit and publication after physical testing. The manifest records
+base `f0836c0`, a source patch and code hashes; publication is starting. Preserve unrelated `docs/RELEASING.md` and `release/reddit/` edits.
+See `docs/RELEASE.md`, `artifacts/release-1.5.1/` and the frozen manifest.
+
+---
+
+# Next Feast label — October 14, 2026
+
+Renamed the date shortcut from “Next Holy Day” to “Next Feast” in the app,
+README and calendar guide. “Feast or solemnity” remains below it; Controls
+already uses generic date-shortcut wording. Planner logic and naming are unchanged.
+
+All four ASan/UBSan host suites and `pebble build` pass with the existing SDK
+resource-size/linker warnings. Static footprint: 60,874 → 60,864 bytes (below
+65,535); heap before allocations: 70,198 → 70,208. Resources are byte-identical.
+Emery screenshots confirm one-line labels and subtitles in Large/Extra Large,
+Light/Church. Before/after navigation matches: October 8 → October 28 → November 1,
+2026. Emulator clock and preferences restored. A connection timeout required an
+emulator restart without clearing state before the successful install/checks.
+Evidence: `artifacts/next-feast-label/`. No version bump, release, commit or push;
+unrelated `docs/RELEASING.md` and `release/reddit/` edits are untouched.
+
+---
+
 # Published 1.5.0 — October 14, 2026
 
 Special Mass readings are released on GitHub (public/Latest) and the existing
