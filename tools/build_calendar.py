@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Join the pinned General Roman calendar to the local EPUB's reading catalog.
 
-Build-time selection only; CAL1 on the watch is a bounded, offline date index.
+Build-time selection only; CAL2 on the watch is a bounded, offline date index.
 The first allowed (normally long) reading form is used, with audited exceptions.
 """
 import datetime as dt
@@ -16,9 +16,13 @@ import zlib
 from pmr import HEADER, CHUNK_SIZE, unpack
 from extract import NS, text
 from supplements import john_8
+from vigils import variants
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-KINDS = ['First Reading', 'Psalm', 'Second Reading', 'Sequence', 'Acclamation', 'Gospel']
+KINDS = ['First Reading', 'Psalm', 'Second Reading', 'Sequence', 'Acclamation', 'Gospel', 'Third Reading', 'Fourth Reading', 'Fifth Reading', 'Sixth Reading', 'Seventh Reading', 'Epistle']
+MAX_READINGS = 20
+DAY_RECORD_SIZE = 18
+HEADER_SIZE = 56
 SEASONS = ['ORDINARY_TIME', 'ADVENT', 'CHRISTMAS_TIME', 'LENT', 'PASCHAL_TRIDUUM', 'EASTER_TIME']
 RANKS = ['WEEKDAY', 'SUNDAY', 'MEMORIAL', 'OPTIONAL_MEMORIAL', 'FEAST', 'SOLEMNITY', 'COMMEMORATION']
 # Stored enum order matches CalColor. Use romcal's first permitted color:
@@ -207,7 +211,7 @@ class Catalog:
         id = day['id']
         note = ''
         if id == 'holy_saturday':
-            return [], 'No daytime Mass on Holy Saturday. The Easter Vigil is celebrated after nightfall; vigil selection is not included in this edition.'
+            return [], 'No daytime Mass on Holy Saturday. The Easter Vigil is celebrated after nightfall; choose Mass to open its readings.'
         if day['rank'] in ('MEMORIAL', 'COMMEMORATION', 'OPTIONAL_MEMORIAL'):
             if id in PROPER_MEMORIALS:
                 return self.mass(PROPER_MEMORIALS[id], cycle), 'Proper readings for this memorial.'
@@ -229,7 +233,7 @@ class Catalog:
             result = self.mass(FIXED[id], cycle)
             if day['rank'] == 'FEAST' and date.weekday() != 6:
                 result = [r for r in result if r['kind'] != 2]
-            if id == 'nativity_of_the_lord': note = 'Christmas Mass during the Day. Vigil, Night and Dawn forms are not selected automatically.'
+            if id == 'nativity_of_the_lord': note = 'Christmas Mass during the Day. Choose Mass for Vigil, Night or Dawn readings.'
             if id == 'holy_thursday': note = "Evening Mass of the Lord's Supper."
             if id == 'friday_of_the_passion_of_the_lord': note = "Good Friday: celebration of the Lord's Passion (not Mass)."
             return result, note
@@ -295,14 +299,12 @@ def build():
             string_ids[value] = len(strings); strings.extend(value.encode()+b'\0')
         return string_ids[value]
     sections, sec_ids, parts, refs, masses, mass_ids, days = [], {}, [], [], [], {}, []
-    report = []
-    for iso, celebrations in sorted(calendar['days'].items()):
-        date = dt.date.fromisoformat(iso); day = celebrations[0]
-        selection, note = cat.resolve(date, day)
-        assert not selection or {0,1,5}.issubset({r['kind'] for r in selection}), (iso,day,selection)
+    form_records, form_ids = [], {}
+    def compile_mass(selection):
+        assert len(selection) <= MAX_READINGS
         chosen = []
         for r in selection:
-            assert r['citation'] or r['kind'] in (3,4), (iso,r)
+            assert r['citation'] or r['kind'] in (3,4), r
             key = (r['kind'], r['citation'], tuple(r['refs']))
             if key not in sec_ids:
                 sec_ids[key] = len(sections)
@@ -318,6 +320,21 @@ def build():
         key = tuple(chosen)
         if key not in mass_ids:
             mass_ids[key] = len(masses); masses.append(key)
+        return mass_ids[key]
+
+    report = []
+    for iso, celebrations in sorted(calendar['days'].items()):
+        date = dt.date.fromisoformat(iso); day = celebrations[0]
+        selection, note = cat.resolve(date, day)
+        assert not selection or {0,1,5}.issubset({r['kind'] for r in selection}), (iso,day,selection)
+        default_mass = compile_mass(selection)
+        forms = variants(cat, day)
+        records = tuple((compile_mass(f['readings']), string(f['label']),
+                         string(f['note']), COLORS.index(f['color'])) for f in forms)
+        if records not in form_ids:
+            form_ids[records] = len(form_records)
+            form_records.extend(records)
+        first_form = form_ids[records]
         display_rank = 'COMMEMORATION' if day['id']=='commemoration_of_all_the_faithful_departed' else day['rank']
         optional = '\n\n'.join(f"{x['rank'].replace('_',' ').title()}: {x['name']}" for x in celebrations[1:])
         details = f"{display_rank.replace('_',' ').title()}: {day['name']}"
@@ -330,21 +347,24 @@ def build():
             # No daytime Mass/assigned color on Holy Saturday. Keep it neutral.
             assert day['id']=='holy_saturday', (iso,day)
             color = 'NONE'
-        days.append((mass_ids[key],string(day['name']),string(details),SEASONS.index(day['season']),day['week'],cyc,RANKS.index(display_rank),COLORS.index(color)))
-        report.append({'date':iso,'id':day['id'],'name':day['name'],'rank':display_rank,'season':day['season'],'week':day['week'],'color':color,'readings':[{'kind':KINDS[r['kind']],'page':r['page'],'start':r['start'],'citation':r['citation'],'refs':r['refs']} for r in selection]})
+        days.append((default_mass,string(day['name']),string(details),SEASONS.index(day['season']),day['week'],cyc,RANKS.index(display_rank),COLORS.index(color),first_form,len(forms)))
+        report.append({'date':iso,'id':day['id'],'name':day['name'],'rank':display_rank,'season':day['season'],'week':day['week'],'color':color,'readings':[{'kind':KINDS[r['kind']],'page':r['page'],'start':r['start'],'citation':r['citation'],'refs':r['refs']} for r in selection], 'variants':forms})
     # Fixed-width records, read directly from flash. Offsets are absolute except
     # string offsets (relative to the string pool). Little endian, no C packing.
-    header_size = 48
-    day_bytes = b''.join(struct.pack('<HII5B',*d) for d in days)
-    mass_bytes = b''.join(struct.pack('<B7H',len(m),*(list(m)+[0]*(7-len(m)))) for m in masses)
+    header_size = HEADER_SIZE
+    day_bytes = b''.join(struct.pack('<HII5BHB',*d) for d in days)
+    mass_bytes = b''.join(struct.pack(f'<B{MAX_READINGS}H',len(m),*(list(m)+[0]*(MAX_READINGS-len(m)))) for m in masses)
     sec_bytes = b''.join(struct.pack('<IHBB',*s) for s in sections)
     part_bytes = b''.join(struct.pack('<IH',*p) for p in parts)
     ref_bytes = struct.pack(f'<{len(refs)}H',*refs)
-    blocks=[day_bytes,mass_bytes,sec_bytes,part_bytes,ref_bytes,strings]
+    form_bytes = b''.join(struct.pack('<HIIB', *f) for f in form_records)
+    blocks=[day_bytes,mass_bytes,sec_bytes,part_bytes,ref_bytes,form_bytes,strings]
     offsets=[];at=header_size
     for block in blocks:offsets.append(at);at+=len(block)
     start = (dt.date(calendar['first'],1,1)-dt.date(1970,1,1)).days
-    header=struct.pack('<4s11I',b'CAL1',start,len(days),len(masses),len(sections),len(parts),*offsets)
+    assert len(form_records)<65536 and len(masses)<65536 and len(parts)<65536
+    header=struct.pack('<4s13I',b'CAL2',start,len(days),len(masses),len(sections),len(parts),
+                       *offsets[:5],offsets[6],offsets[5],len(form_records))
     blob=header+b''.join(blocks)
     # A single synthetic PMR2 segment wraps the binary index. This reuses the
     # checked bounded-memory decoder without adding another compression format.

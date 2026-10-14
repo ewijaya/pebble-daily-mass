@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.4.3
+Version: 1.5.0
 Developer: Edward
 
 ## Description
@@ -26,9 +26,16 @@ surroundings. Hold Select for 0.7 seconds to exit to the launcher, then press
 Back to return to your watchface. Find reading and date shortcuts in Controls,
 after Settings on the main menu. Swipe to
 scroll, tap for a few lines, or hold to turn pages. Look ahead to Sunday or
-the next feast. An evening shortcut offers tomorrow's
-day readings before Sunday and solemnities. The launcher can show today's
-celebration before you open the app.
+the next feast. An evening shortcut opens tomorrow's readings and, where
+available, a choice of Mass. The launcher can show today's celebration before
+you open the app.
+
+Choose Mass offers Christmas Day, Vigil, Night and Dawn readings; the Easter
+Vigil with the year's Gospel and a psalm choice for celebrations with or without
+baptism; simple and extended Pentecost Vigil readings; and the vigils of the
+Nativity of St John the Baptist, Saints Peter and Paul, and the Assumption.
+The daily readings remain the default until you choose another Mass. Opening
+the app or changing dates restores the daily default.
 
 “The important thing is that we should love the Mass and make it the centre of our day.”
 — St. Josemaría Escrivá, Christ Is Passing By, no. 154
@@ -36,11 +43,14 @@ celebration before you open the app.
 This edition contains selected English Mass readings for the General Roman
 Calendar, 2020–2037. It is a daily reading companion, rather than the complete
 liturgical Roman Missal: the Order of Mass and all its prayers are not included.
-One reading form is provided for each date with a daytime Mass. National and
-local calendars, optional memorial choices and separate vigil readings are not
-included. Epiphany is January 6; Ascension and Corpus Christi are Thursdays.
-Christmas uses Mass during the Day; Holy Saturday displays a notice, without
-the Easter Vigil readings.
+One default reading set is provided for each date with a daytime Mass, with the
+special Mass choices listed above. National and local calendars and optional
+memorial choices are not included. Epiphany is January 6; Ascension and Corpus
+Christi are Thursdays. Holy Saturday has no daytime Mass; its Easter Vigil is
+for after nightfall. The Easter Vigil includes all seven Old Testament readings,
+the Epistle and Gospel. Long reading forms and first psalm options are used,
+with the Easter psalm choice noted above. The intervening prayers and complete
+vigil rites are not included.
 
 Readings: Pocket Missal Project, Pocket Missal [v.04.X.2026], based on the New
 American Bible; John 8:12–20 supplied from USCCB (CCD). Calendar: romcal (MIT).
@@ -48,9 +58,11 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.4.3 brings navigation help together in Controls, after Settings on the main menu.
+Daily Roman Missal 1.5.0 adds Choose Mass for Christmas, Easter, Pentecost and three saints' vigils.
 
-Read the button and date shortcuts in the normal bold reading font, with your chosen text size and theme. The faint Settings hint and the date-shortcut instruction in Day details have moved into Controls.
+Choose Christmas Day, Vigil, Night or Dawn; Easter Vigil with the correct A/B/C Gospel and baptism-dependent psalm; Pentecost Vigil in simple or extended form; and vigils for the Nativity of St John the Baptist, Saints Peter and Paul, and the Assumption. Evening Mass opens the relevant chooser when available.
+
+All readings remain offline. Existing daily reading selections are unchanged. The Easter Vigil includes all seven Old Testament readings; long forms and first psalm options are used. Full vigil rites and prayers are not included.
 
 ## Privacy
 

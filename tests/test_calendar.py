@@ -8,7 +8,8 @@ import sys
 import tempfile
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
-from build_calendar import Catalog, COLORS
+from build_calendar import Catalog, COLORS, HEADER_SIZE, DAY_RECORD_SIZE
+from vigils import variants
 cal=json.loads((ROOT/'artifacts/calendar-days.json').read_text())['days']
 catalog=Catalog(next((ROOT/'data/source').glob('*.epub')),json.loads((ROOT/'artifacts/readings.json').read_text()))
 # Independently chosen celebrations exercise feast overrides and optional colors.
@@ -25,7 +26,7 @@ report=json.loads((ROOT/'artifacts/calendar-selection.json').read_text())
 for index, (iso, celebrations) in enumerate(sorted(cal.items())):
     color=celebrations[0]['colors'][0] if celebrations[0]['colors'] else 'NONE'
     assert color!='NONE' or celebrations[0]['id']=='holy_saturday'
-    assert raw[48+index*15+14] == COLORS.index(color), iso
+    assert raw[HEADER_SIZE+index*DAY_RECORD_SIZE+14] == COLORS.index(color), iso
     assert report[index]['date']==iso and report[index]['color']==color
 
 def readings(iso):
@@ -92,6 +93,53 @@ for page in (1042,1043,1044,1051,1055,958):
         texts=[catalog.segments[ref&0x7fff] for ref in r['refs']]
         assert not any(t=='Or:' or t.startswith('Short form') for t in texts)
 assert len([r for r in catalog.mass(1055) if r['kind']==2])==1
+# Special forms: independent expected source/citation/order checks.
+def forms(iso):
+    return variants(catalog, cal[iso][0])
+assert not forms('2026-10-08')
+assert [f['readings'][-1]['citation'] for f in forms('2026-12-25')] == [
+    'Matthew 1: 1–25', 'Luke 2: 1–14', 'Luke 2: 15–20']
+for iso, page, gospel in [('2026-06-24',336,'Luke 1: 5–17'),
+                          ('2026-06-29',341,'John 21: 15–19'),
+                          ('2026-08-15',432,'Luke 11: 27–28')]:
+    fs=forms(iso)
+    assert len(fs)==1 and len(fs[0]['readings'])==5
+    assert {r['page'] for r in fs[0]['readings']}=={page}
+    assert fs[0]['readings'][-1]['citation']==gospel
+for iso, gospel in [('2026-04-04','Matthew 28: 1–10'),
+                     ('2027-03-27','Mark 16: 1–7'),
+                     ('2028-04-15','Luke 24: 1–12')]:
+    for form in forms(iso):
+        rs=form['readings']
+        assert len(rs)==17
+        assert [r['kind'] for r in rs]==[0,1,2,1,6,1,7,1,8,1,9,1,10,1,11,1,5]
+        assert rs[4]['citation']=='Exodus 14: 15 — 15: 1'
+        assert rs[14]['citation']=='Romans 6: 3–11'
+        assert rs[-1]['citation']==gospel
+        assert not any(catalog.segments[r&0x7fff].startswith('Year ') for r in rs[-1]['refs'])
+    assert forms(iso)[0]['readings'][13]['citation']=='Psalm 42 (43): 3, 4'
+    assert forms(iso)[1]['readings'][13]['citation']=='Isaiah 12: 2–3, 4bcd, 5–6 (:3)'
+    tomorrow=(dt.date.fromisoformat(iso)+dt.timedelta(days=1)).isoformat()
+    assert forms(iso)==forms(tomorrow)
+fs=forms('2026-05-24')
+assert len(fs)==5
+assert [f['readings'][0]['citation'] for f in fs[:4]]==[
+    'Genesis 11: 1–9','Exodus 19: 3–8a,16–20b','Ezequiel 37: 1–14','Joel 3: 1–5']
+assert all(len(f['readings'])==5 for f in fs[:4])
+assert len(fs[4]['readings'])==11
+assert [r['kind'] for r in fs[4]['readings']]==[0,1,2,1,6,1,7,1,8,4,5]
+assert all(f['readings'][-1]['citation']=='John 7: 37–39' for f in fs)
+# Every generated form has complete bodies, no navigation text or mixed alternatives.
+for d in report:
+    expected= forms(d['date'])
+    assert d['variants']==expected
+    for f in expected:
+        assert f['readings'][-1]['kind']==5
+        for r in f['readings']:
+            assert any(not ref&0x8000 for ref in r['refs'])
+            ts=[catalog.segments[ref&0x7fff] for ref in r['refs']]
+            assert not any('➔' in t or t=='Or:' or t.startswith(('The Creed','Prayer after the reading')) for t in ts)
+print('Christmas, saint vigils, Easter cycles/baptism choices and Pentecost forms passed',flush=True)
 print('Calendar precedence, transfers, cycles, readings and alternative-boundary regressions passed',flush=True)
 with tempfile.TemporaryDirectory() as folder:
     folder=pathlib.Path(folder);src=ROOT/'src/c'

@@ -7,6 +7,10 @@
 static Window *menu_window, *reader_window, *options_window;
 static MenuLayer *menu;
 static MenuLayer *options_menu;
+static Window *mass_window;
+static MenuLayer *mass_menu;
+static uint8_t selected_form;
+static char mass_label[32], mass_note[240];
 static TextLayer *title, *season, *celebration;
 static TextLayer *settings_footer;
 static Layer *body_layer, *ribbon_layer;
@@ -19,7 +23,7 @@ static Calendar *calendar;
 static CalDay day;
 static bool day_valid, info_mode;
 static uint8_t reading_part;
-static char citations[CAL_MAX_READINGS][CAL_CITATION_SIZE];
+static char (*citations)[CAL_CITATION_SIZE];
 static char date_text[32], season_text[64], celebration_text[160], day_name[128], day_details[1600];
 static int32_t browsing_date=-1; // -1 follows today; other values are absolute civil dates.
 static int shown_year, shown_month, shown_day;
@@ -45,6 +49,8 @@ static void load_reading_part(uint8_t part);
 static void refresh_date(bool force);
 static void open_dates(ClickRecognizerRef recognizer, void *context);
 static void open_evening(void);
+static void open_masses(void);
+static int reading_row_start(void) {return (evening_offer ? 1 : 0)+(day.form_count ? 1 : 0);}
 static void step_date(int delta);
 static void layout_menu(void);
 static void open_options(ClickRecognizerRef recognizer, void *context);
@@ -101,7 +107,7 @@ static void refresh_theme(void) {
     theme.ink=!day_valid ? GColorLightGray : day.color==CAL_GREEN ? GColorMintGreen :
         day.color==CAL_PURPLE ? GColorLavenderIndigo : day.color==CAL_WHITE ? GColorPastelYellow : theme.rubric;
   }
-  Window *windows[]={menu_window,reader_window,options_window,date_window,prompt_window};
+  Window *windows[]={menu_window,reader_window,options_window,date_window,prompt_window,mass_window};
   for (size_t i=0;i<ARRAY_LENGTH(windows);++i)
     if (windows[i]) window_set_background_color(windows[i],theme.paper);
   if (title) {
@@ -110,7 +116,7 @@ static void refresh_theme(void) {
   }
   if (season) {text_layer_set_text_color(season,theme.ink);text_layer_set_background_color(season,GColorClear);}
   if (celebration) {text_layer_set_text_color(celebration,theme.ink);text_layer_set_background_color(celebration,GColorClear);}
-  style_menu(menu);style_menu(date_menu);style_menu(options_menu);
+  style_menu(menu);style_menu(date_menu);style_menu(options_menu);style_menu(mass_menu);
   if (settings_footer) text_layer_set_text_color(settings_footer,dark_mode ? GColorLightGray : GColorDarkGray);
   if (body_layer) layer_mark_dirty(body_layer);
   snprintf(settings_summary,sizeof(settings_summary),"%s text · %s",font_size ? "XL" : "Large",dark_mode ? "Dark" : "Light");
@@ -122,8 +128,8 @@ static uint32_t now_ms(void) {
   time_ms(&seconds, &milliseconds);
   return (uint32_t)seconds * 1000 + milliseconds;
 }
-static const char *reading_titles[] = {"FIRST READING", "PSALM", "SECOND READING", "SEQUENCE", "ACCLAMATION", "GOSPEL"};
-static const char *menu_titles[] = {"First Reading", "Psalm", "Second Reading", "Sequence", "Acclamation", "Gospel"};
+static const char *reading_titles[] = {"FIRST READING", "PSALM", "SECOND READING", "SEQUENCE", "ACCLAMATION", "GOSPEL", "THIRD READING", "FOURTH READING", "FIFTH READING", "SIXTH READING", "SEVENTH READING", "EPISTLE"};
+static const char *menu_titles[] = {"First Reading", "Psalm", "Second Reading", "Sequence", "Acclamation", "Gospel", "Third Reading", "Fourth Reading", "Fifth Reading", "Sixth Reading", "Seventh Reading", "Epistle"};
 static const char *season_names[] = {"Ordinary Time", "Advent", "Christmas Time", "Lent", "Paschal Triduum", "Easter Time"};
 static const char *rank_names[] = {"Weekday", "Sunday", "Memorial", "Optional Memorial", "Feast", "Solemnity", "Commemoration"};
 
@@ -309,7 +315,7 @@ static void layout_reading(void) {
 
 static void select_adjacent(int delta) {
   selected+=delta;
-  if (menu) menu_layer_set_selected_index(menu,(MenuIndex){0,selected+(evening_offer ? 1 : 0)},MenuRowAlignCenter,false);
+  if (menu) menu_layer_set_selected_index(menu,(MenuIndex){0,selected+reading_row_start()},MenuRowAlignCenter,false);
   load_reading_part(delta>0 ? 0 : day.readings[selected].parts-1);
   if (delta<0) move_to(max_offset);
 }
@@ -452,13 +458,15 @@ static void load_reading_part(uint8_t part) {
         "Tap Select: text size and theme.\n\n"
         "Hold Select: exit to launcher. Press Back there for your watchface.\n\n"
         "Back: return to reading list.\n\n"
+        "On special dates\n\n"
+        "Choose Mass: day or vigil readings.\n\n"
         "On the reading list\n\n"
         "Hold Up/Down: change date.\n\n"
         "Hold Select: date shortcuts.\n\n"
         "Swipe to scroll when touch is enabled.");
   } else if (info_mode) {
-    snprintf(reading, READING_CAPACITY, "%s\n\n%s\n\nGeneral Roman Calendar\nEpiphany: January 6\nAscension and Corpus Christi: Thursday\nSunday cycle %c; weekday cycle %s\n\nOffline calendar: 2020-2037",
-        date_text, day_details, day_valid ? 'A'+(day.cycles&3) : '?', day_valid && (day.cycles&4) ? "II" : "I");
+    snprintf(reading, READING_CAPACITY, "%s\n\n%s%s%s%s%s\n\nGeneral Roman Calendar\nEpiphany: January 6\nAscension and Corpus Christi: Thursday\nSunday cycle %c; weekday cycle %s\n\nOffline calendar: 2020-2037",
+        date_text, day.form_count ? mass_label : "", day.form_count ? "\n" : "", mass_note, day.form_count ? "\n\n" : "", day_details, day_valid ? 'A'+(day.cycles&3) : '?', day_valid && (day.cycles&4) ? "II" : "I");
   } else {
     uint16_t refs[CAL_MAX_REFS], count=0;
     ok = day_valid && selected < day.count && calendar_part(calendar, &day.readings[selected], part, refs, &count) && ensure_database();
@@ -531,18 +539,19 @@ static void reader_unload(Window *window) {
 
 static void select_reading(MenuLayer *layer, MenuIndex *index, void *context) {
   if (evening_offer && !index->row) {open_evening();return;}
-  selected = index->row-(evening_offer ? 1 : 0);
+  if (day.form_count && index->row==(evening_offer ? 1 : 0)) {open_masses();return;}
+  selected = index->row-reading_row_start();
   if (selected==day.count+1) {open_options(NULL,NULL);return;}
   info_mode = selected >= day.count;
   window_stack_push(reader_window, true);
 }
 
 static uint16_t menu_row_count(MenuLayer *layer, uint16_t section, void *context) {
-  return day.count + 3 + (evening_offer ? 1 : 0);
+  return day.count + 3 + reading_row_start();
 }
 
 static int16_t menu_row_height(MenuLayer *layer, MenuIndex *index, void *context) {
-  int row=(int)index->row-(evening_offer ? 1 : 0);
+  int row=(int)index->row-reading_row_start();
   return (font_size ? 60 : 48)+(day.count && row==day.count ? 9 : 0);
 }
 
@@ -595,9 +604,9 @@ static void menu_draw_row(GContext *ctx, const Layer *cell, MenuIndex *index, vo
     first_menu_draw = true;
     APP_LOG(APP_LOG_LEVEL_INFO, "Startup first menu draw: %lu ms", (unsigned long)(now_ms() - startup_ms));
   }
-  int row=(int)index->row-(evening_offer ? 1 : 0);
-  const char *label=row<0 ? "Evening Mass" : row<day.count ? menu_titles[day.readings[row].kind] : row==day.count ? "Day details" : row==day.count+1 ? "Settings" : "Controls";
-  const char *subtitle=row<0 ? "Tomorrow's readings" : row<day.count ? (citations[row][0] ? citations[row] : "Read text") : row==day.count ? "Full calendar details" : row==day.count+1 ? settings_summary : "Buttons and shortcuts";
+  int row=(int)index->row-reading_row_start();
+  const char *label=row<0 ? (day.form_count && row==-1 ? "Choose Mass" : "Evening Mass") : row<day.count ? menu_titles[day.readings[row].kind] : row==day.count ? "Day details" : row==day.count+1 ? "Settings" : "Controls";
+  const char *subtitle=row<0 ? (day.form_count && row==-1 ? mass_label : "Tomorrow's readings") : row<day.count ? (citations[row][0] ? citations[row] : "Read text") : row==day.count ? "Full calendar details" : row==day.count+1 ? settings_summary : "Buttons and shortcuts";
   // Keep the divider in row drawing; the separator callback faults on PT2 4.38.4.
   draw_choice(ctx,cell,label,subtitle,row>=0 && row<day.count ? theme.rubric : theme.ink,
       day.count && row==day.count ? 9 : 0);
@@ -627,6 +636,8 @@ static void refresh_date(bool force) {
   int today=calendar_day_number(local.tm_year+1900,local.tm_mon+1,local.tm_mday);
   bool after_four=local.tm_hour>=16;
   if (!force && today==clock_day && after_four==clock_evening) return;
+  int previous_day=calendar_day_number(shown_year,shown_month,shown_day);
+  uint8_t previous_form=selected_form;
   clock_day=today;
   clock_evening=after_four;
   if (browsing_date>=0) planner_date(browsing_date,&local);
@@ -639,6 +650,16 @@ static void refresh_date(bool force) {
   evening_date=planner_evening(calendar,now);
   evening_offer=evening_date>=0 && (browsing_date<0 || browsing_date==today);
   day_valid=calendar && calendar_day(calendar,shown_year,shown_month,shown_day,&day);
+  selected_form=!force && previous_day==calendar_day_number(shown_year,shown_month,shown_day) ? previous_form : 0;
+  mass_note[0]=0;
+  snprintf(mass_label,sizeof(mass_label),"%s",day.count ? "Day Mass" : "No daytime Mass");
+  if (day_valid && selected_form) {
+    uint32_t label, note;
+    day_valid=calendar_select_form(calendar,&day,selected_form) &&
+      calendar_form_info(calendar,&day,selected_form,&label,&note) &&
+      calendar_string(calendar,label,mass_label,sizeof(mass_label)) &&
+      calendar_string(calendar,note,mass_note,sizeof(mass_note));
+  }
   if (day_valid) {
     day_valid=calendar_string(calendar,day.name,day_name,sizeof(day_name)) &&
               calendar_string(calendar,day.details,day_details,sizeof(day_details));
@@ -658,6 +679,7 @@ static void refresh_date(bool force) {
       snprintf(celebration_text,sizeof(celebration_text),"%s: %s",rank_names[day.rank],day_name);
     else celebration_text[0]=0;
   }
+  if (day_valid && selected_form) snprintf(season_text,sizeof(season_text),"%s",mass_label);
   refresh_theme();
   if (title) text_layer_set_text(title,date_text);
   if (season) text_layer_set_text(season,season_text);
@@ -666,6 +688,58 @@ static void refresh_date(bool force) {
   if (menu) menu_layer_set_selected_index(menu,(MenuIndex){0,0},MenuRowAlignTop,false);
   APP_LOG(APP_LOG_LEVEL_INFO,"Calendar %04d-%02d-%02d: ok=%d readings=%u",shown_year,shown_month,shown_day,day_valid,day.count);
 }
+
+static uint16_t mass_count(MenuLayer *layer,uint16_t section,void *context) {return day.form_count+1;}
+static void mass_draw(GContext *ctx,const Layer *cell,MenuIndex *index,void *context) {
+  char label[32], note[240];uint32_t label_id,note_id;
+  if (!index->row) {
+    snprintf(label,sizeof(label),"%s",day.default_color==CAL_NONE ? "No daytime Mass" : "Day Mass");
+    snprintf(note,sizeof(note),"Daily default");
+  } else if (!calendar_form_info(calendar,&day,index->row,&label_id,&note_id) ||
+      !calendar_string(calendar,label_id,label,sizeof(label)) ||
+      !calendar_string(calendar,note_id,note,sizeof(note))) {
+    snprintf(label,sizeof(label),"Unavailable");note[0]=0;
+  }
+  // Short, useful subtitles fit both text sizes; full scope is in Day details.
+  const char *subtitle=index->row==selected_form ? "Selected" : !index->row ? note :
+    !strcmp(label,"Easter Vigil") ? "With baptism" :
+    !strcmp(label,"Vigil: no baptism") ? "Without baptism" :
+    strstr(label,"Vigil:") && strcmp(label,"Vigil: extended") ? "Simple form" : "Open readings";
+  draw_choice(ctx,cell,label,subtitle,theme.ink,0);
+}
+static void mass_select(MenuLayer *layer,MenuIndex *index,void *context) {
+  uint8_t form=index->row;
+  int32_t original_date=calendar_day_number(shown_year,shown_month,shown_day);
+  // Reload the default before applying a form, so changing back restores color/text.
+  refresh_date(true);
+  if (original_date!=calendar_day_number(shown_year,shown_month,shown_day)) {window_stack_pop(true);return;}
+  if (!day_valid || !calendar_select_form(calendar,&day,form)) {window_stack_pop(true);return;}
+  selected_form=form;mass_note[0]=0;
+  uint32_t label,note;
+  if (form && (!calendar_form_info(calendar,&day,form,&label,&note) ||
+      !calendar_string(calendar,label,mass_label,sizeof(mass_label)) ||
+      !calendar_string(calendar,note,mass_note,sizeof(mass_note)))) return;
+  for (uint8_t i=0;i<day.count;i++)
+    if (!calendar_string(calendar,day.readings[i].citation,citations[i],sizeof(citations[i]))) return;
+  if (form) snprintf(season_text,sizeof(season_text),"%s",mass_label);
+  refresh_theme();
+  if (season) text_layer_set_text(season,season_text);
+  layout_menu();
+  if (menu) menu_layer_set_selected_index(menu,(MenuIndex){0,day.count ? reading_row_start() : 0},MenuRowAlignTop,false);
+  APP_LOG(APP_LOG_LEVEL_INFO,"Mass form=%u label=%s readings=%u",form,mass_label,day.count);
+  window_stack_pop(true);
+}
+static void mass_load(Window *window) {
+  mass_menu=menu_layer_create(layer_get_bounds(window_get_root_layer(window)));
+  if (!mass_menu) return;
+  menu_layer_set_callbacks(mass_menu,NULL,(MenuLayerCallbacks){.get_num_rows=mass_count,
+    .get_cell_height=choice_height,.draw_row=mass_draw,.select_click=mass_select});
+  menu_layer_set_click_config_onto_window(mass_menu,window);style_menu(mass_menu);
+  layer_add_child(window_get_root_layer(window),menu_layer_get_layer(mass_menu));
+  menu_layer_set_selected_index(mass_menu,(MenuIndex){0,selected_form},MenuRowAlignTop,false);
+}
+static void mass_unload(Window *window) {if (mass_menu) menu_layer_destroy(mass_menu);mass_menu=NULL;}
+static void open_masses(void) {if (day_valid && day.form_count) window_stack_push(mass_window,true);}
 
 static void minute_tick(struct tm *tick_time, TimeUnits changed) {
   // Preserve an open reading across midnight; refresh when its menu reappears.
@@ -690,6 +764,7 @@ static void choose_prompt(void) {
     show_date(target>=0 ? target : -1);
   }
   window_stack_pop(false);
+  if (prompt_mode==PROMPT_EVENING && day_valid && day.form_count) open_masses();
 }
 static void prompt_move(int offset) {
   if (!prompt_scroll || !prompt_footer) return;
@@ -744,7 +819,7 @@ static void open_evening(void) {
   evening_date=planner_evening(calendar,time(NULL));
   if (!planner_date(evening_date,&tomorrow)) return;
   char date[32];strftime(date,sizeof(date),"%a %d %b %Y",&tomorrow);
-  snprintf(prompt_message,sizeof(prompt_message),"Tomorrow's Mass\n%s\nDay Mass readings.\nSeparate vigil texts\nare not included.",date);
+  snprintf(prompt_message,sizeof(prompt_message),"Tomorrow's Mass\n%s\nOpen the readings. Where available, choose Day Mass or a special Mass form.",date);
   prompt_mode=PROMPT_EVENING;
   window_stack_push(prompt_window,true);
 }
@@ -869,17 +944,20 @@ int main(void) {
   dark_mode=persist_exists(DARK_MODE_KEY) && persist_read_bool(DARK_MODE_KEY);
   // The small offline calendar opens first; the scripture database stays lazy.
   calendar = calloc(1, sizeof(*calendar));
+  citations = calloc(CAL_MAX_READINGS,sizeof(*citations));
   menu_window = window_create();
   reader_window = window_create();
   options_window = window_create();
   date_window = window_create();
   prompt_window = window_create();
-  if (menu_window && reader_window && options_window && date_window && prompt_window) {
+  mass_window = window_create();
+  if (calendar && citations && menu_window && reader_window && options_window && date_window && prompt_window && mass_window) {
     window_set_window_handlers(menu_window, (WindowHandlers){.load = menu_load, .unload = menu_unload, .appear = menu_appear});
     window_set_window_handlers(reader_window, (WindowHandlers){.load = reader_load, .unload = reader_unload, .disappear = reader_disappear});
     window_set_window_handlers(options_window, (WindowHandlers){.load = options_load, .unload = options_unload});
     window_set_window_handlers(date_window,(WindowHandlers){.load=date_load,.unload=date_unload});
     window_set_window_handlers(prompt_window,(WindowHandlers){.load=prompt_load,.unload=prompt_unload});
+    window_set_window_handlers(mass_window,(WindowHandlers){.load=mass_load,.unload=mass_unload});
     tick_timer_service_subscribe(MINUTE_UNIT,minute_tick);
     window_set_click_config_provider(prompt_window,prompt_click_config);
     app_touch_navigation_enable(true);
@@ -892,10 +970,12 @@ int main(void) {
   // Refresh on exit using the real clock, not the date-browsing selection.
   // The system advances the saved slices even while this app is closed.
   app_glance_reload(glance_reload,NULL);
+  if (mass_window) window_destroy(mass_window);
   if (prompt_window) window_destroy(prompt_window);
   if (date_window) window_destroy(date_window);
   if (options_window) window_destroy(options_window);
   if (reader_window) window_destroy(reader_window);
   if (menu_window) window_destroy(menu_window);
+  free(citations);
   free(calendar);
 }

@@ -4,7 +4,7 @@ The complete extracted library is bundled in a Pebble Time 2 (Emery) resource.
 The menu selects readings for the local watch date using the General Roman
 Calendar, 2020–2037. It shows season/week and celebration names/ranks. Day details
 lists full names and optional memorials. Hold Select for date shortcuts, or hold
-Up/Down on the main menu to step through days. Each launch opens today's menu. Evening preparation offers tomorrow's day readings.
+Up/Down on the main menu to step through days. Each launch opens today's menu. Evening preparation opens tomorrow's celebration and its special Mass choices.
 See [CALENDAR.md](CALENDAR.md) for mapping rules, scope and reproduction.
 Tap Up/Down to scroll using the SDK's default step. After 500 ms, a held button
 pages by 80% of the reader viewport (182 pixels on Emery), repeating every 325 ms.
@@ -15,6 +15,48 @@ Large and Light/Church (dark) preferences persist; Extra Large is the default.
 Menus use 24/28 bold titles and 18/24 bold subtitles; prompts use 24/28 bold.
 Source paragraphs retain an 8-pixel gap. Midnight updates the menu;
 an open reading stays unchanged until the menu reappears.
+
+## Special Mass selection (October 14, 2026 development)
+
+The CAL2 resource supports explicit Christmas, Easter, Pentecost and three
+saints' vigil forms. `tools/vigils.py` supplies source-checked special sequences;
+`tools/build_calendar.py` compiles them alongside the unchanged daily defaults.
+The watch exposes Choose Mass on applicable dates and opens that selector from
+the Evening Mass shortcut. See CALENDAR.md for source pages and exact scope.
+
+CAL2 permits twenty entries per Mass, repeated psalms, third through seventh
+readings, and Epistle. Easter uses seventeen entries; extended Pentecost uses
+eleven. A date stores its default Mass and a range of additional forms, whose
+records carry a Mass ID, label, selection note, and color. The decoder rejects
+CAL1 resources; app and resource must be rebuilt together. The Scripture resource
+is unchanged. The enlarged citation array is heap allocated to retain headroom
+under the SDK's 65,535-byte static footprint boundary.
+
+The SDK build uses 945,316 resource bytes, a 60,874-byte static footprint and
+70,198 bytes of linker-reported heap before runtime allocations. The existing
+legacy resource/linker warnings remain. PBW: `build/daily-roman-missal.pbw`.
+The initial development build used 1.4.3; release preparation bumps the metadata
+to 1.5.0 and freezes a separate candidate. Published release bytes remain frozen.
+
+All four ASan/UBSan host suites pass: 6,575 dates, 2,586 complete reading parts,
+13,168 Scripture segments and 1,006 source pages, plus App Glance and planner
+boundaries. Comparing the generated manifests confirms every pre-existing daily
+reading selection is unchanged. Special-form tests cover Christmas Gospels,
+saints' vigils, all Easter Gospel cycles and baptism-dependent psalms, Pentecost
+simple/extended order, and exclusion of source navigation/alternative bodies.
+
+Emulator checks pass for every Mass choice, all seventeen Easter menu entries,
+A/B/C Gospels, direct forward/back reading transitions, cancellation, restoring
+the no-daytime-Mass default, evening routing, both font sizes/themes, date/relaunch
+reset, stable open readings across midnight, and a chooser left open overnight.
+Screenshots were visually inspected; normal exits retained zero app allocations.
+The emulator was restored to real time. Evidence is in
+`artifacts/vigil-readings/`. The automation waits for reading-load logs and native
+window transitions; initial timing assumptions were corrected before final passes.
+A failed initial transfer
+and unresponsive connection recovered after restarting this task's emulator
+without wiping its state. Physical-watch installation and release publication
+are separate steps and have not been performed for this development build.
 
 ## Version 1.4.0 navigation (October 9, 2026)
 

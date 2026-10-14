@@ -6,6 +6,9 @@ bundled on the watch, with an owner-supplied John 8:12–20 supplement.
 
 ## Status
 
+Version 1.5.0 is being prepared with special Mass selection. The published
+1.4.3 release does not yet include this feature.
+
 The app automatically selects readings using the watch's local date and the
 **General Roman Calendar (2020–2037)**. The menu shows the season/week and
 celebration name and rank; Day details includes full names and optional memorials.
@@ -16,8 +19,17 @@ both directions, and touch navigation is enabled.
 
 Each launch opens today's menu; reading positions and browsed dates are not saved.
 From 4 PM on Saturdays or the eve of a solemnity, an
-**Evening Mass** option offers tomorrow's day readings with a notice that separate
-vigil texts are not included.
+**Evening Mass** option opens tomorrow's celebration and, when available,
+its Mass selector. **Choose Mass** appears on Christmas, Easter/Holy Saturday,
+Pentecost, the Nativity of St John the Baptist, Saints Peter and Paul, and the
+Assumption. Christmas has Day, Vigil, Night and Dawn forms. Easter Vigil offers
+all seven Old Testament readings, the Epistle and the cycle's Gospel, with a
+choice of psalm depending on whether baptism is celebrated. Pentecost has simple
+forms (four first-reading choices) and the extended sequence. These are readings,
+not the complete vigil rites or prayers. Long forms and first psalm options are
+used. The daily default remains selected until a Mass is chosen; choosing a new
+date or reopening the app restores that default. Holy Saturday has no daytime
+Mass; its Easter Vigil is for after nightfall.
 
 Tap Up/Down for the SDK's short scrolling step
 (32 pixels on the tested firmware). Hold either button for 0.5 seconds to page
@@ -63,9 +75,8 @@ refresh midnight boundaries. Long subtitles use the launcher's native ellipsis.
 Version 1.4.3 is publicly available on GitHub Releases and the Pebble App Store,
 collecting navigation help in the Controls page. Version 1.4.0 introduced direct
 reading navigation and the wrap, touch and tap/hold controls above.
-Calendar selection uses one
-reading set per date; national calendars, separate vigil readings and optional-memorial
-choices are outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
+Calendar selection has one daily default plus the explicit special Mass choices
+above; national calendars and optional-memorial choices remain outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
 Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
 or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.4.0).
 The public PBW downloads have matching checksums. The legacy SDK size warning

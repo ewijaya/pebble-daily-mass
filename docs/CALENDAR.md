@@ -44,14 +44,14 @@ proper set. See the [Guardian Angels indications](https://www.usccb.org/resource
 and [Martha/Mary/Lazarus indications](https://www.usccb.org/prayer-worship/liturgical-year/saints-martha-mary-and-lazarus).
 The rule follows [GIRM 357–358](https://www.vatican.va/roman_curia/congregations/ccdds/documents/rc_con_ccdds_doc_20030317_ordinamento-messale_en.html).
 
-One permitted reading set is selected per date, normally the first long form in
-the source. Alternatives are not concatenated. All Souls uses one set from the
+One permitted reading set is the default per date, normally the first long form in
+the source. Special Mass forms are explicitly selectable as described below. Alternatives are not concatenated. All Souls uses one set from the
 Common of the Dead. All Souls is labeled Commemoration, while romcal uses its solemnity-level rank
 for precedence. Lord's feasts include a second reading when celebrated on
 Sunday. Palm Sunday uses the Mass readings, excluding the procession Gospel.
-Christmas selects Mass during the Day. Other vigil/night/dawn texts and optional
-memorial choices are not included in the selection UI. Holy Saturday explicitly says there is
-no daytime Mass and that the Easter Vigil is not included in this edition.
+Christmas defaults to Mass during the Day; its other forms have a Choose Mass
+menu. Optional memorial choices remain outside the selection UI. Holy Saturday
+explicitly says there is no daytime Mass and offers the Easter Vigil separately.
 These limitations must be included in release claims.
 
 The EPUB lacks John 8:12–20 for Monday of Lent Week 5 in Year C. The owner
@@ -69,13 +69,48 @@ a previously chosen Large/Extra Large preference is respected.
 
 From 16:00 local time on Saturday, or on the evening before a solemnity, the main
 menu and date menu offer Evening Mass → Tomorrow's readings. A confirmation
-identifies the date and explicitly says these are the **day Mass readings**;
-separate vigil texts are not included. This is an optional date shortcut, never
-an automatic switch or an assertion that every evening liturgy uses that set.
-Christmas offers Christmas Day readings; Holy Saturday offers Easter Sunday Day
-readings with the same notice, not the Easter Vigil. The main menu updates when
-16:00 is crossed, while open readings remain stable. App Glance continues to
+identifies the date; continuing opens its readings and offers a Mass selector
+when special forms exist.
+This is an optional date shortcut, never an automatic switch or an assertion
+that every evening liturgy uses one particular set. Christmas Eve opens the
+Christmas selector; Holy Saturday evening opens Easter's selector. The main menu
+updates when 16:00 is crossed, while open readings remain stable. App Glance continues to
 show the actual civil date's celebration.
+
+## Special Mass forms (development)
+
+Choose Mass precedes the reading list on the applicable celebration. The daily
+default remains option zero. Choosing a form updates the reading list, its color,
+and the season heading; Day details shows the full form name and selection scope.
+Back cancels the chooser. Reader navigation traverses all selected entries in
+order, including repeated psalms. Font/theme settings apply throughout.
+A choice lasts while browsing that date, including a 16:00 menu refresh; explicit
+date navigation or reopening resets it. Midnight preserves an open reading until
+Back, and App Glance continues to describe the actual civil day.
+
+| Celebration | Additional forms | EPUB reading pages |
+| --- | --- | --- |
+| Christmas | Vigil, Night, Dawn | 963, 964, 965 |
+| Nativity of St John the Baptist | Vigil | 336 |
+| Saints Peter and Paul | Vigil | 341 |
+| Assumption | Vigil | 432 |
+| Holy Saturday / Easter Sunday | Easter Vigil, with/without baptism psalm | 1054 |
+| Pentecost | Simple (Genesis, Exodus, Ezekiel or Joel), extended | 1120, 1119 |
+
+The Easter sequence includes all seven Old Testament readings with their psalms,
+the Epistle, its psalm, and exactly one Gospel for A/B/C: 17 entries. Both Easter
+forms use long readings and the first permitted psalm at each position, with the
+reading-seven psalm chosen for baptism or no baptism. No automatic omission of
+readings is attempted; readers can select individual entries from the menu.
+The extended Pentecost sequence has 11 entries. Intervening prayers and the
+complete vigil rites are not included. Scripture wording and source citation
+numbering are retained; the source's `Ezequiel` spelling is unchanged.
+
+`tools/vigils.py` checks explicit source node boundaries, excludes alternative
+bodies and navigation links, and selects the Easter Gospel by cycle. The existing
+daily resolver is retained. Forms attach to observed calendar identities, so
+precedence/transfers follow the bundled calendar rather than fixed month/day
+checks. No new Scripture text or external runtime access is needed.
 
 ## Liturgical colors and launcher
 
@@ -151,32 +186,33 @@ Scripture wording is imported from these external reference checks.
 
 ## Format and memory
 
-CAL1 is wrapped as a single synthetic PMR2 segment, using the same checked zlib
-decoder as Scripture. CAL1 starts 24 bytes into the uncompressed PMR2 payload.
+CAL2 is wrapped as a single synthetic PMR2 segment, using the same checked zlib
+decoder as Scripture. CAL2 starts 24 bytes into the uncompressed PMR2 payload.
 All integers are little endian and decoded explicitly, without packed C structs.
 
 | Record | Layout |
 | --- | --- |
-| Header, 48 bytes | `CAL1`, then 11 uint32 values: first epoch day, day/mass/reading/part counts, offsets to days/masses/readings/parts/refs/strings |
-| Day, 15 bytes | mass uint16; name/details string offsets uint32; season/week/cycles/rank/color uint8 |
-| Mass, 15 bytes | count uint8; seven reading IDs uint16 |
+| Header, 56 bytes | `CAL2`, then 13 uint32 values: first epoch day, day/mass/reading/part counts, offsets to days/masses/readings/parts/refs/strings/forms, form count |
+| Day, 18 bytes | default mass uint16; name/details string offsets uint32; season/week/cycles/rank/color uint8; first form uint16; form count uint8 |
+| Mass, 41 bytes | count uint8; twenty reading IDs uint16 |
 | Reading, 8 bytes | citation string offset uint32; first part uint16; part count/kind uint8 |
 | Part, 6 bytes | first reference ordinal uint32; reference count uint16 |
 | Reference, 2 bytes | source segment ID in low 15 bits, rubric flag in high bit |
+| Form, 11 bytes | Mass ID uint16; label/note string offsets uint32; color uint8 |
 | String pool | NUL-terminated UTF-8; offsets relative to pool |
 
 Epoch days start at 1970-01-01. Cycle bits 0–1 represent A/B/C; bit 2 represents
 weekday II. Enum order is explicit in `tools/build_calendar.py` and the watch UI.
-Color codes are 0 green, 1 purple, 2 white, 3 red, 4 rose, 5 none. The 1.1.0
-layout adds one color byte per date (6,575 uncompressed bytes); its decoder
-rejects the earlier 14-byte layout. App and calendar resources ship together.
+Color codes are 0 green, 1 purple, 2 white, 3 red, 4 rose, 5 none. CAL2 rejects earlier CAL1 resources. Reading kinds 0–5 retain their previous
+meaning; 6–10 are Third through Seventh Reading, and 11 is Epistle. App and calendar resources ship together.
 The C reader validates counts, offsets, record bounds, capacities, colors and dates.
 
 Readings split only between source paragraphs, at 6,500 bytes or 56 references.
 The 8 KiB buffer and 64 paragraph boxes also accommodate the citation. Down at
 the end of a part continues to the next; Up at its start returns to the previous
-part. Holding Up/Down jumps to the beginning/end of the whole reading. No source
-paragraph is truncated. A footer identifies the part on long readings.
+part. Holding Up/Down pages through a reading and its parts, stopping at its boundary.
+A fresh tap continues to the adjacent reading. No source paragraph is truncated.
+The progress ribbon covers every part.
 
 A separate calendar decoder is heap allocated: the firmware metadata limits
 static virtual size to 65,535 bytes despite Emery's larger total RAM budget.

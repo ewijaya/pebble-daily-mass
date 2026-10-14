@@ -35,7 +35,7 @@ int main(int argc,char **argv) {
   assert(planner_evening(&calendar,at(2026,10,10,16,0))==day(2026,10,11));
   assert(planner_evening(&calendar,at(2026,10,9,18,0))==-1);
   assert(planner_evening(&calendar,at(2026,12,24,16,0))==day(2026,12,25));
-  assert(planner_evening(&calendar,at(2026,4,4,16,0))==day(2026,4,5)); // Day Mass only, UI discloses missing Vigil.
+  assert(planner_evening(&calendar,at(2026,4,4,16,0))==day(2026,4,5)); // UI offers the Easter Vigil and Day Mass choices.
   assert(planner_evening(&calendar,at(2026,11,1,18,0))==-1); // All Souls is a commemoration.
   assert(planner_evening(&calendar,at(2037,12,31,18,0))==-1);
   assert(!setenv("TZ","America/New_York",1));tzset();
