@@ -77,7 +77,7 @@ Christmas selector; Holy Saturday evening opens Easter's selector. The main menu
 updates when 16:00 is crossed, while open readings remain stable. App Glance continues to
 show the actual civil date's celebration.
 
-## Special Mass forms (development)
+## Special Mass forms (1.5.0)
 
 Choose Mass precedes the reading list on the applicable celebration. The daily
 default remains option zero. Choosing a form updates the reading list, its color,

@@ -1,3 +1,27 @@
+# Published 1.5.0 — October 14, 2026
+
+Special Mass readings are released on GitHub (public/Latest) and the existing
+listed Pebble App Store app after the owner tested the feature on PT2 and
+explicitly approved publication. Source/tag: `37e273219002477463ec22f54a338cd181a8acdd`
+/ `v1.5.0`, both pushed. Store release: `36ff8ebd5c8f43cdb37e70fc`.
+
+The frozen candidate is `.release/1.5.0/candidate-1/`; SHA-256
+`8123048c819cee17dd95d8b9afae512d1c4f531ee8b889a9e2240da63354ca7b`.
+Clean build, all four host suites, final-byte emulator checks and exact-byte
+PT2 4.40.0 installation/launch passed. GitHub and public catalog PBW downloads
+match those bytes. General/Emery catalogs verify the new version, description
+and notes. Canonical web page version/description/linked PBW remain stale after
+three read-only checks, and the separate changelog is stale. Use GitHub while
+those web caches refresh; do not re-upload or republish. Phone cache refresh and
+dedicated offline/overnight/battery measurements remain unobserved.
+
+See docs/RELEASE.md and the manifest for full evidence. Never rebuild the frozen
+release. Existing artwork, screenshot order, listing visibility and older releases
+were preserved. Unrelated docs/RELEASING.md edits and release/reddit content remain
+outside release commits.
+
+---
+
 ## Published 1.4.3 — Controls help page (October 12, 2026)
 
 Controls now follows Settings, with bold reading/date/touch help. Settings footer

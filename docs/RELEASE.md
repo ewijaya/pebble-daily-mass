@@ -1,3 +1,55 @@
+# Public release — 1.5.0
+
+Daily Roman Missal 1.5.0 is published on both services. On October 14, 2026,
+the owner confirmed successful PT2 feature testing and explicitly approved release.
+
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.0) — public, Latest, release ID `412276545`.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f) — listed and published, release ID `36ff8ebd5c8f43cdb37e70fc`.
+- Source commit: `37e273219002477463ec22f54a338cd181a8acdd`; annotated tag `v1.5.0`, pushed and verified.
+- PBW: 972,333 bytes; SHA-256:
+  `8123048c819cee17dd95d8b9afae512d1c4f531ee8b889a9e2240da63354ca7b`.
+
+Choose Mass adds Christmas Day/Vigil/Night/Dawn, Easter Vigil (all seventeen
+entries with A/B/C Gospel and baptism-dependent psalm), Pentecost simple/extended
+forms, and the vigils of John the Baptist, Peter and Paul, and the Assumption.
+Evening shortcuts open the relevant chooser. Existing daily defaults remain
+unchanged. Full vigil rites/intervening prayers are outside the feature scope.
+
+All four ASan/UBSan host suites passed. All 6,575 daily selections match the prior
+manifest. The clean SDK 4.33.1 build and embedded identity/version checks pass.
+Final frozen-byte Emery checks verify version 1.5.0 and representative
+Christmas/Easter/Pentecost forms; broader development coverage includes all forms,
+seventeen Easter entries, forward/back transitions, font/theme, evening routes
+and midnight behavior. Emulator time was restored.
+
+The exact frozen PBW installed and launched on PT2 firmware 4.40.0 through
+CloudPebble, verified by running UUID, fault-free startup logs and screenshot.
+Normal exit retained zero app allocations. The owner subsequently tested the
+feature successfully and approved this release. Dedicated offline/overnight
+and battery measurements remain unobserved; phone My Apps refresh is not claimed.
+
+Resources: 945,316 bytes (+7,351 from published 1.4.3). Static footprint: 60,874
+bytes; linker free heap: 70,198 bytes. Scripture resource is unchanged. Existing
+SDK resource/linker warnings remain; the build fits the recorded Emery resource
+limit.
+
+GitHub tag, notes, Latest and authenticated/anonymous downloads verify. Store
+draft/public downloads match the frozen digest. General/Emery catalogs verify
+1.5.0, notes and the approved description. The canonical web page still serves
+its older version, description and linked PBW after three read-only checks;
+the separate web changelog is also stale. Those web cache refreshes remain pending.
+Use the verified GitHub download while the web page catches up. Main/Emery
+descriptions, artwork, screenshot order, visibility, older releases and unrelated
+listing fields were checked against the baseline; only approved fields changed.
+
+Frozen candidate/provenance: `.release/1.5.0/candidate-1/manifest.json`.
+Evidence: `artifacts/release-1.5.0/`; implementation evidence:
+`artifacts/vigil-readings/`. Source/tag are pushed. Unrelated
+`docs/RELEASING.md` edits and `release/reddit/` are preserved and excluded from
+release commits. Never rebuild or overwrite these released bytes.
+
+---
+
 # Public release — 1.4.3
 
 Daily Roman Missal 1.4.3 is published on both services, following the owner's

@@ -16,7 +16,7 @@ Menus use 24/28 bold titles and 18/24 bold subtitles; prompts use 24/28 bold.
 Source paragraphs retain an 8-pixel gap. Midnight updates the menu;
 an open reading stays unchanged until the menu reappears.
 
-## Special Mass selection (October 14, 2026 development)
+## Special Mass selection (1.5.0, October 14, 2026)
 
 The CAL2 resource supports explicit Christmas, Easter, Pentecost and three
 saints' vigil forms. `tools/vigils.py` supplies source-checked special sequences;
@@ -35,8 +35,8 @@ under the SDK's 65,535-byte static footprint boundary.
 The SDK build uses 945,316 resource bytes, a 60,874-byte static footprint and
 70,198 bytes of linker-reported heap before runtime allocations. The existing
 legacy resource/linker warnings remain. PBW: `build/daily-roman-missal.pbw`.
-The initial development build used 1.4.3; release preparation bumps the metadata
-to 1.5.0 and freezes a separate candidate. Published release bytes remain frozen.
+The initial development build used 1.4.3; release preparation bumped the metadata
+to 1.5.0 and froze a separate candidate. Published release bytes remain frozen.
 
 All four ASan/UBSan host suites pass: 6,575 dates, 2,586 complete reading parts,
 13,168 Scripture segments and 1,006 source pages, plus App Glance and planner
@@ -55,8 +55,9 @@ The emulator was restored to real time. Evidence is in
 window transitions; initial timing assumptions were corrected before final passes.
 A failed initial transfer
 and unresponsive connection recovered after restarting this task's emulator
-without wiping its state. Physical-watch installation and release publication
-are separate steps and have not been performed for this development build.
+without wiping its state. The separate frozen 1.5.0 candidate was installed on
+PT2 4.40.0, tested successfully by the owner and published with their approval.
+See RELEASE.md for final-byte evidence and public verification status.
 
 ## Version 1.4.0 navigation (October 9, 2026)
 
