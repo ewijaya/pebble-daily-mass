@@ -6,6 +6,9 @@ bundled on the watch, with an owner-supplied John 8:12–20 supplement.
 
 ## Status
 
+Version 1.5.3 is in release preparation. Repeated responses in the Responsorial
+Psalm now receive the same “R.” marker as the opening response.
+
 Version 1.5.2 is published on GitHub Releases and the Pebble App Store.
 The date shortcut menu now wraps in both directions, including Evening Mass
 when available. Both public downloads match the tested release.
@@ -113,6 +116,7 @@ citation and provenance; it fills a documented omission in the EPUB.
 ```sh
 uv run --with zopfli==0.4.3 python tools/extract.py data/source/*.epub --compression zopfli
 python3 tests/test_reader.py
+python3 tests/test_display.py
 cp artifacts/readings.pmr resources/readings.pmr
 npm ci --prefix tools/calendar --ignore-scripts
 node tools/calendar/generate.cjs

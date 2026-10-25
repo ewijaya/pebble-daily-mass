@@ -1,3 +1,44 @@
+# Release candidate — 1.5.3
+
+Prepared on October 25, 2026 after the owner requested a release-version bump
+for the Responsorial Psalm response-marker fix. Whole-line repetitions of the
+opening response now receive `R.`. Reading wording and bundled resources are
+unchanged. Version 1.5.2 remains the published release on both services.
+
+- Frozen candidate: `.release/1.5.3/candidate-1/manifest.json`.
+- PBW: 972,952 bytes; SHA-256:
+  `50c8549c56181e17836661786d19bac7d4b249cfd1f615f65a68fe34811232bf`.
+- Source base: `4b44699b30dffc8fbb8af59ec241c4895a6bc330`. Changes remain
+  uncommitted on `fix/date-menu-wrap`; the frozen source patch includes new files.
+  Proposed tag `v1.5.3` has not been created.
+- Proposed destinations: public GitHub Release and the existing listed Pebble
+  App Store app. Neither has received 1.5.3; publication scope awaits confirmation.
+
+All five ASan/UBSan suites passed earlier in this session for the same runtime
+and test sources. Their hashes are recorded in `host-results.json`; only release
+metadata and documents changed afterward. A clean SDK build and embedded PBW
+identity/version checks passed. Final-build Emery checks cover repeated responses
+in both font sizes and themes, canticle responses, Easter's alternative response,
+and the Settings version. Screenshots were inspected; emulator preferences and
+real time were restored.
+
+Resources are byte-identical to published 1.5.2 at 945,316 bytes. Static footprint
+is 61,496 bytes (+416); linker free heap is 69,576 bytes. The existing SDK
+resource-size and linker warnings remain. The exact frozen PBW installed and
+launched on PT2 4.41.2 after the owner reopened the companion app. Two earlier
+phone-side attempts failed. Expected running UUID, fault-free logs and an
+inspected native main-menu screenshot verify launch. Explicit owner readability
+and navigation confirmation for this final version remains unobserved.
+Dedicated physical offline/overnight/battery measurements remain unobserved.
+
+GitHub and store notes are frozen. The existing listing description, artwork,
+screenshot order and visibility are preserved. Live preflight verified public
+GitHub 1.5.2 and store release `29a2a665ac00417a993583e4`; no 1.5.3 draft exists.
+Evidence: `artifacts/release-1.5.3/` and `artifacts/psalm-responses/`.
+Unrelated `docs/RELEASING.md` and `release/reddit/` edits are preserved.
+
+---
+
 # Public release — 1.5.2
 
 Daily Roman Missal 1.5.2 is published on GitHub and the Pebble App Store.

@@ -275,7 +275,11 @@ remain black. Header and citation scroll with the reading.
 The UI supports at most 64 paragraph boxes, with an explicit
 error on overflow. The unsupported
 response sign `℟` is displayed as `R` (retaining its following period); database
-text remains unchanged. Curly quotation marks, apostrophes and en dashes are
+text remains unchanged. In psalms, each whole-line repetition of the opening
+response also receives `R.`, including responses within stanzas and separate
+paragraphs. Existing markers and alternative-response lines are preserved.
+`python3 tests/test_display.py` checks formatting and buffer bounds under
+ASan/UBSan. Curly quotation marks, apostrophes and en dashes are
 preserved. Other source-wide glyph coverage has not been audited.
 
 The 8 KiB display buffer holds one bounded part of a reading; the local UI

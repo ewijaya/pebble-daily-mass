@@ -3,6 +3,7 @@
 #include "calendar.h"
 #include "glance.h"
 #include "planner.h"
+#include "display.h"
 
 static Window *menu_window, *reader_window, *options_window;
 static MenuLayer *menu;
@@ -136,21 +137,6 @@ static const char *rank_names[] = {"Weekday", "Sunday", "Memorial", "Optional Me
 static int reading_width(int width) {return width-14;}
 
 static bool is_rubric(size_t index) { return styled_reading && paragraph_rubric[index]; }
-
-static void prepare_display_text(char *text) {
-  // System Gothic fonts lack U+211F (response sign). Preserve the database,
-  // but use the conventional ASCII R. on screen. The following dot is retained.
-  char *src = text, *dest = text;
-  while (*src) {
-    if (strncmp(src, "\xe2\x84\x9f", 3) == 0) {
-      *dest++ = 'R';
-      src += 3;
-    } else {
-      *dest++ = *src++;
-    }
-  }
-  *dest = 0;
-}
 
 static bool split_paragraphs(void) {
   paragraph_count = 0;
@@ -484,8 +470,9 @@ static void load_reading_part(uint8_t part) {
       if (ok) {used+=length;paragraph_rubric[paragraph++]=(refs[i]&0x8000)!=0;}
     }
   }
-  if (ok) prepare_display_text(reading);
-  else snprintf(reading,READING_CAPACITY,"Reading unavailable.\n\nThe bundled reading could not be loaded. Press Back to return.");
+  if (ok) ok=display_prepare(reading,READING_CAPACITY,
+      !info_mode && day.readings[selected].kind==1);
+  if (!ok) snprintf(reading,READING_CAPACITY,"Reading unavailable.\n\nThe bundled reading could not be loaded. Press Back to return.");
   if (!split_paragraphs()) {
     ok=false;
     snprintf(reading,READING_CAPACITY,"Reading unavailable. Too many paragraphs. Press Back to return.");

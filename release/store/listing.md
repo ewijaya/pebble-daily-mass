@@ -2,7 +2,7 @@
 
 Category: Daily
 Platform: Pebble Time 2 (emery)
-Version: 1.5.2
+Version: 1.5.3
 Developer: Edward
 
 ## Description
@@ -58,9 +58,9 @@ No analytics or personal data collection.
 
 ## Release notes
 
-Daily Roman Missal 1.5.2 adds wraparound navigation to the date shortcut menu.
+Daily Roman Missal 1.5.3 fixes repeated response markers in the Responsorial Psalm.
 
-Press Down on the last item to return to Today, or Up on Today to reach the last item. Evening Mass remains the last item when available. Hold Up or Down to keep moving through the shortcuts. Reading selections and calendar search are unchanged.
+The repeated response after each stanza now begins with “R.”, just like the opening response. Scripture wording, reading selections and navigation are unchanged.
 
 ## Privacy
 

@@ -1,3 +1,24 @@
+# Prepared 1.5.3 — October 25, 2026
+
+Responsorial Psalm response markers are fixed and the version is bumped to
+1.5.3. The frozen candidate is `.release/1.5.3/candidate-1/`; SHA-256
+`50c8549c56181e17836661786d19bac7d4b249cfd1f615f65a68fe34811232bf`.
+All five host suites passed for unchanged runtime/test sources. Clean build,
+embedded metadata and final-version Emery checks passed in both text sizes and
+themes, including canticle and alternative responses. Exact frozen PT2
+installation and launch passed on PT2 4.41.2 after the owner reopened the
+companion app; the two earlier phone-side failures are recorded. Running UUID,
+logs and an inspected native screenshot verify launch. See `docs/RELEASE.md`
+and the manifest for evidence.
+
+No commit, tag, push or publication has been performed. Proposed destinations
+are GitHub and the existing Pebble App Store listing; publication scope needs
+confirmation. The current public release remains 1.5.2. Freeze includes new
+source files in its patch; commit only the authorized Psalm/release changes.
+Preserve unrelated `docs/RELEASING.md` and `release/reddit/` work.
+
+---
+
 # Published 1.5.2 — October 14, 2026
 
 Date-menu wraparound is released on GitHub (public/Latest) and the existing
