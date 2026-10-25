@@ -1,18 +1,21 @@
-# Release candidate — 1.5.3
+# GitHub release — 1.5.3
 
-Prepared on October 25, 2026 after the owner requested a release-version bump
-for the Responsorial Psalm response-marker fix. Whole-line repetitions of the
-opening response now receive `R.`. Reading wording and bundled resources are
-unchanged. Version 1.5.2 remains the published release on both services.
+Daily Roman Missal 1.5.3 was published to GitHub on October 25, 2026 after the
+owner identified the unchanged GitHub release as the missing result of the
+version-bump request. Whole-line repetitions of the opening Psalm response now
+receive `R.`. Reading wording and bundled resources are unchanged.
 
+- [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.3)
+  — public, Latest, release ID `423201172`.
+- [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
+  — remains on 1.5.2, release ID `29a2a665ac00417a993583e4`; 1.5.3 has not been
+  uploaded or published there. Store publication scope remains unconfirmed.
+- Source commit: `32f16aa537d3fe4772b0d5235ee37cc36c7c504f` on
+  `fix/psalm-response-markers`, pushed to that branch and `main`. Annotated tag
+  `v1.5.3` is pushed and verified against the source commit.
 - Frozen candidate: `.release/1.5.3/candidate-1/manifest.json`.
 - PBW: 972,952 bytes; SHA-256:
   `50c8549c56181e17836661786d19bac7d4b249cfd1f615f65a68fe34811232bf`.
-- Source base: `4b44699b30dffc8fbb8af59ec241c4895a6bc330`. Changes remain
-  uncommitted on `fix/date-menu-wrap`; the frozen source patch includes new files.
-  Proposed tag `v1.5.3` has not been created.
-- Proposed destinations: public GitHub Release and the existing listed Pebble
-  App Store app. Neither has received 1.5.3; publication scope awaits confirmation.
 
 All five ASan/UBSan suites passed earlier in this session for the same runtime
 and test sources. Their hashes are recorded in `host-results.json`; only release
@@ -31,9 +34,10 @@ inspected native main-menu screenshot verify launch. Explicit owner readability
 and navigation confirmation for this final version remains unobserved.
 Dedicated physical offline/overnight/battery measurements remain unobserved.
 
-GitHub and store notes are frozen. The existing listing description, artwork,
-screenshot order and visibility are preserved. Live preflight verified public
-GitHub 1.5.2 and store release `29a2a665ac00417a993583e4`; no 1.5.3 draft exists.
+GitHub title, notes, tag and Latest state verify. Both authenticated and anonymous
+PBW downloads match the frozen digest. GitHub and intended store notes are frozen.
+The existing store listing description, artwork, screenshot order, visibility
+and releases are unchanged. No store mutation was performed for this release.
 Evidence: `artifacts/release-1.5.3/` and `artifacts/psalm-responses/`.
 Unrelated `docs/RELEASING.md` and `release/reddit/` edits are preserved.
 
