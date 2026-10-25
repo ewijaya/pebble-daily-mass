@@ -6,9 +6,10 @@ bundled on the watch, with an owner-supplied John 8:12–20 supplement.
 
 ## Status
 
-Version 1.5.3 is published on GitHub Releases. Repeated responses in the
-Responsorial Psalm now receive the same “R.” marker as the opening response.
-The Pebble App Store remains on 1.5.2; the 1.5.3 store update is pending.
+Version 1.5.3 is published on GitHub Releases and the Pebble App Store. Repeated
+responses in the Responsorial Psalm now receive the same “R.” marker as the
+opening response. Both store catalogs and the public catalog download verify
+1.5.3; the store website still shows cached 1.5.2 content after three checks.
 The date shortcut menu wraps in both directions, including Evening Mass
 when available.
 
@@ -82,9 +83,10 @@ Calendar selection has one daily default plus the explicit special Mass choices
 above; national calendars and optional-memorial choices remain outside this edition. See [calendar scope and validation](docs/CALENDAR.md).
 Download from the [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
 or [GitHub Releases](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.3).
-The GitHub 1.5.3 download matches the frozen build installed on PT2. The store
-currently provides 1.5.2. The legacy SDK size warning did not block prior store
-uploads.
+The GitHub and store catalog downloads match the frozen 1.5.3 build installed
+on PT2. The store website's version, download link and changelog remain cached
+on 1.5.2; use GitHub while those pages refresh. The legacy SDK size warning did
+not block the store upload.
 See [release status](docs/RELEASE.md) for verification and remaining checks.
 
 ## Project layout

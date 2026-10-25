@@ -1,22 +1,24 @@
-# GitHub 1.5.3 — October 25, 2026
+# Published 1.5.3 — October 25, 2026
 
-The Psalm response-marker fix is published as GitHub Latest after the owner
-pointed out that GitHub still showed 1.5.2. Source/tag:
-`32f16aa537d3fe4772b0d5235ee37cc36c7c504f` / `v1.5.3`, pushed. Source branch
-`fix/psalm-response-markers` and `main` are updated. Release ID: `423201172`.
-Authenticated and anonymous downloads match the exact frozen PT2-installed PBW:
-`50c8549c56181e17836661786d19bac7d4b249cfd1f615f65a68fe34811232bf`.
+The Psalm response-marker fix is published as GitHub Latest and in the existing
+listed Pebble App Store app. The owner explicitly requested store 1.5.3 for
+consistency. Source/tag: `32f16aa537d3fe4772b0d5235ee37cc36c7c504f` / `v1.5.3`,
+pushed. GitHub release ID: `423201172`; store release ID:
+`d45cee0c957b4b37929e7d75`. All verified downloads match the frozen PT2-installed
+PBW: `50c8549c56181e17836661786d19bac7d4b249cfd1f615f65a68fe34811232bf`.
 Candidate: `.release/1.5.3/candidate-1/`; do not rebuild for upload.
 
-All five host suites, clean build, embedded metadata and final-version Emery
-checks passed. The exact candidate installed and launched on PT2 4.41.2 after
-the owner reopened the companion app. Dedicated physical soak and explicit
-final-version owner readability/navigation checks remain unobserved.
+The store dashboard and general/Emery catalogs verify version, notes, description,
+platform and screenshot order. The store website still shows 1.5.2 and links its
+old PBW; its changelog is also stale after three read-only checks. These website
+surfaces and phone My Apps refresh remain unverified for 1.5.3. Do not re-upload
+or republish; GitHub serves the verified 1.5.3 download.
 
-The Pebble App Store remains on 1.5.2. No store upload or publication occurred;
-that destination is not yet confirmed. Notes are ready in the frozen candidate.
-See `docs/RELEASE.md` and the manifest. Preserve unrelated `docs/RELEASING.md`
-and `release/reddit/` work.
+All five host suites, clean build, final Emery checks and exact-byte PT2 4.41.2
+installation/launch passed. Extended physical soak and explicit final-version
+owner readability/navigation checks remain unobserved. Existing store artwork,
+description, visibility and older releases are unchanged. See `docs/RELEASE.md`
+and the manifest. Preserve unrelated `docs/RELEASING.md` and `release/reddit/` work.
 
 ---
 

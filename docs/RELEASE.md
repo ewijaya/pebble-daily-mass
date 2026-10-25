@@ -1,15 +1,15 @@
-# GitHub release — 1.5.3
+# Public release — 1.5.3
 
-Daily Roman Missal 1.5.3 was published to GitHub on October 25, 2026 after the
-owner identified the unchanged GitHub release as the missing result of the
-version-bump request. Whole-line repetitions of the opening Psalm response now
-receive `R.`. Reading wording and bundled resources are unchanged.
+Daily Roman Missal 1.5.3 is published on GitHub and the Pebble App Store as of
+October 25, 2026. The owner requested the store update to make both destinations
+consistent. Whole-line repetitions of the opening Psalm response now receive
+`R.`. Reading wording and bundled resources are unchanged.
 
 - [GitHub Release](https://github.com/ewijaya/pebble-daily-mass/releases/tag/v1.5.3)
   — public, Latest, release ID `423201172`.
 - [Pebble App Store](https://apps.repebble.com/9e466762014d4b1ab248219f)
-  — remains on 1.5.2, release ID `29a2a665ac00417a993583e4`; 1.5.3 has not been
-  uploaded or published there. Store publication scope remains unconfirmed.
+  — listed and published, release ID `d45cee0c957b4b37929e7d75`. Both general
+  and Emery catalogs verify 1.5.3; the canonical website remains cached on 1.5.2.
 - Source commit: `32f16aa537d3fe4772b0d5235ee37cc36c7c504f` on
   `fix/psalm-response-markers`, pushed to that branch and `main`. Annotated tag
   `v1.5.3` is pushed and verified against the source commit.
@@ -35,9 +35,17 @@ and navigation confirmation for this final version remains unobserved.
 Dedicated physical offline/overnight/battery measurements remain unobserved.
 
 GitHub title, notes, tag and Latest state verify. Both authenticated and anonymous
-PBW downloads match the frozen digest. GitHub and intended store notes are frozen.
-The existing store listing description, artwork, screenshot order, visibility
-and releases are unchanged. No store mutation was performed for this release.
+GitHub downloads, the store draft download and the public store catalog PBW match
+the frozen digest. The store dashboard and general/Emery catalogs verify 1.5.3,
+notes, description, platform support and artwork order. Existing description,
+artwork, screenshot order, visibility, unrelated metadata and all older releases
+were preserved. Only the new 1.5.3 release was added and published.
+
+The canonical store website still shows 1.5.2 and links its old PBW; its separate
+changelog is also stale after three bounded read-only checks. Publication is
+verified in the catalogs, but those web surfaces remain pending. Phone My Apps
+cache refresh has not been observed. Use GitHub for the verified 1.5.3 download
+until the website refreshes; do not re-upload or republish identical bytes.
 Evidence: `artifacts/release-1.5.3/` and `artifacts/psalm-responses/`.
 Unrelated `docs/RELEASING.md` and `release/reddit/` edits are preserved.
 
